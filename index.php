@@ -1,14 +1,6 @@
 <?php
 
-/**
- * 작업 내역 
- * DB 연결
- * 라우팅 연결
- * 필요한 리소스 로드
- * 레이아웃 호출
- * - 헤더 레이아웃
- * - 바디 레이아웃
- * - 푸터 레이아웃
- */
-//phpinfo();
-echo 'index.php';
+// 데이터베이스 연결
+require_once(__DIR__.'/config/database.php');
+// 기본 파일 호출
+require_once(__DIR__.'/controller/base.php');
