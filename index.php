@@ -2,6 +2,7 @@
 // 기본 경로: /opt/homebrew/var/www/board01/public_html
 define('BASEPATH', __DIR__);
 define('CONFIGPATH', __DIR__.'/app/config');
-define('DOMAIN', 'http://example01.com');
-
-require_once(BASEPATH.'/app/pages/common.php');
+// 상수 정의 파일 호출
+require_once(CONFIGPATH.'/config.php');
+// 데이터베이스 연결
+require_once(CONFIGPATH.'/database.php');

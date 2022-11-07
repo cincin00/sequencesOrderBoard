@@ -1,3 +1,19 @@
+<?php
+  require_once('../../../index.php');
+  // 게시판 설정 로드
+  $boardBaseQuery = "SELECT * FROM board";
+  $boardWhereQuery = " WHERE id='1'";
+  $boardQuery = $boardBaseQuery.$boardWhereQuery;
+  $boardResult = $dbh->query($boardQuery);
+  $boardData = $boardResult->fetch();
+  // 게시글 정보 조회
+  $postBaseQuery = "SELECT `po`.id, `po`.title as `category_title`, `po`.writer, `po`.regist_date, `po`.hits, `bc`.title FROM post as `po`";
+  $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
+  $postWhereQuery = "";
+  $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
+  $postResult = $dbh->query($postQuery);
+  $postData = $postResult->fetch();
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -23,11 +39,11 @@
       <header class="blog-header py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-4 text-left">
-            <a class="blog-header-logo text-dark" href="<?=BOARD?>/list.php">계층형 게시판 데모</a>
+            <a class="blog-header-logo text-dark" href=""><?= $boardData['title'] ?></a>
           </div>
         </div>
+        <body>
       </header>
-      <body>
         <div class="mar-medium">
           <input type="text" class="form-control pos-right" id="keyword" style="width:300px;" placeholder="검색어를 입력해주세요">
           <button type="button" class="btn btn-default pos-right">검색</button>
@@ -54,15 +70,29 @@
           <tbody class="board-list-head">
             <!-- sample Row -->
             <?php
-              if (false) {
+              if ($postData) {
             ?>
             <tr>
-              <td class="board-list-table-baqh"></td>
-              <td class="board-list-table-baqh"></td>
-              <td class="board-list-table-baqh"></td>
-              <td class="board-list-table-baqh"></td>
-              <td class="board-list-table-baqh"></td>
-              <td class="board-list-table-baqh"></td>
+              <td class="board-list-table-baqh">
+                <?=$postData['id']?>
+              </td>
+              <td class="board-list-table-baqh">
+                <?=$postData['category_title']?>
+              </td>
+              <td class="board-list-table-baqh">
+                <a href="">
+                  <?=$postData['title']?>
+                </a>                
+              </td>
+              <td class="board-list-table-baqh">
+                <?=$postData['writer']?>
+              </td>
+              <td class="board-list-table-baqh">
+                <?=$postData['regist_date']?>
+              </td>
+              <td class="board-list-table-baqh">
+                <?=$postData['hits']?>
+              </td>
             </tr>
             <?php
               } else {

@@ -1,4 +1,5 @@
 <?php
+    require_once('../../../index.php');
     // 게시판 설정 로드
     $boardQuery = "SELECT * FROM board WHERE id='1'";
     $boardResult = $dbh->query($boardQuery);
@@ -58,6 +59,6 @@
                     </td>
                 </tr>
             </tfoot>
+        </form>
         </table>
-    </form>
 </div>
