@@ -1,6 +1,7 @@
 <?php
+// 기본 경로: /opt/homebrew/var/www/board01/public_html
+define('BASEPATH', __DIR__);
 
-// 데이터베이스 연결
-require_once(__DIR__.'/config/database.php');
-// 기본 파일 호출
-require_once(__DIR__.'/controller/base.php');
+define('CONFIGPATH', __DIR__.'/app/config');
+
+require_once(BASEPATH.'/pages/common.php');
