@@ -1,5 +1,4 @@
-/* stylelint-disable selector-list-comma-newline-after */
-
+/** 게시판 전체 레이아웃 */
 .blog-header {
   line-height: 1;
   border-bottom: 1px solid #e5e5e5;
@@ -94,9 +93,7 @@ h6 {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
-/*
-   * Blog name and description
-   */
+/** Blog name and description */
 .blog-title {
   margin-bottom: 0;
   font-size: 2rem;
@@ -114,7 +111,7 @@ h6 {
   }
 }
 
-/* Pagination */
+/** Pagination */
 .blog-pagination {
   margin-bottom: 4rem;
 }
@@ -123,9 +120,7 @@ h6 {
   border-radius: 2rem;
 }
 
-/*
-   * Blog posts
-   */
+/** Blog posts */ 
 .blog-post {
   margin-bottom: 4rem;
 }
@@ -140,9 +135,7 @@ h6 {
   color: #999;
 }
 
-/*
-   * Footer
-   */
+/** Footer */
 .blog-footer {
   padding: 2.5rem 0;
   color: #999;
@@ -156,9 +149,7 @@ h6 {
 }
 
 
-/**
- * Custom Table CSS
- */
+/** Custom Table CSS */
 .col-4.text-left {
   margin: 20px
 }
@@ -204,9 +195,7 @@ h6 {
   vertical-align: top
 }
 
-/**
-  * Custom Button
-  */
+/** Custom Button */  
 .myButton {
   box-shadow: 0px 1px 0px 0px #f0f7fa;
   background: linear-gradient(to bottom, #33bdef 5%, #019ad2 100%);
@@ -234,13 +223,16 @@ h6 {
   top: 1px;
 }
 
+/** 컨테이너 데이터 정렬 */
 .pos-left {
-  float: left;
-}
-.pos-right {
-  float: right;
+  float: left !important;
 }
 
+.pos-right {
+  float: right !important;
+}
+
+/** 마진 스타일 */
 .mar-small {
   margin: 10px;
 }
@@ -275,4 +267,96 @@ h6 {
 
 .mar-bottom-large {
   margin-bottom: 30px;
+}
+
+/** 패딩 스타일 */
+.pad-small {
+  padding: 5px;
+}
+
+.pad-meduim {
+  padding: 15px;
+}
+
+.pad-large {
+  padding: 20px; 
+}
+
+.pad-right-small {
+  padding-right: 5px;
+}
+
+.pad-left-small {
+  padding-left: 5px;
+}
+
+.pad-top-small {
+  padding-top: 5px; 
+}
+
+.pad-bottom-small {
+  padding-bottom: 5px;
+}
+
+.pad-right-medium {
+  padding-right: 15px;
+}
+
+.pad-left-medium {
+  padding-left: 15px;
+}
+
+.pad-top-medium {
+  padding-top: 15px; 
+}
+
+.pad-bottom-medium {
+  padding-bottom: 15px;
+}
+
+.pad-right-large {
+  padding-right: 20px;
+}
+
+.pad-left-large {
+  padding-left: 20px;
+}
+
+.pad-top-large {
+  padding-top: 20px; 
+}
+
+.pad-bottom-large {
+  padding-bottom: 20px;
+}
+
+
+/** 게시판 레이아웃 구성 */
+.title-layer {
+  font-weight: bold;
+}
+
+.post-title-layer {
+  border-top: solid;
+  border-bottom: solid;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.sub-info-layer span {
+  margin: 5px;
+}
+
+.post-content-layer {
+  min-height: 250px;
+}
+
+/** 구분선 스타일 */
+.line-right {
+  border-right: solid;
+}
+.line-left {
+  border-left: solid;
 }

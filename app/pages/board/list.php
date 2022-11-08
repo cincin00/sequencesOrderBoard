@@ -7,7 +7,7 @@
   $boardResult = $dbh->query($boardQuery);
   $boardData = $boardResult->fetch();
   // 게시글 정보 조회
-  $postBaseQuery = "SELECT `po`.id, `po`.title as `category_title`, `po`.writer, `po`.regist_date, `po`.hits, `bc`.title FROM post as `po`";
+  $postBaseQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po`";
   $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
   $postWhereQuery = "";
   $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
@@ -39,7 +39,7 @@
       <header class="blog-header py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-4 text-left">
-            <a class="blog-header-logo text-dark" href=""><?= $boardData['title'] ?></a>
+            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><?= $boardData['title'] ?></a>
           </div>
         </div>
         <body>
@@ -80,7 +80,7 @@
                 <?=$postData['category_title']?>
               </td>
               <td class="board-list-table-baqh">
-                <a href="">
+                <a href="<?=BOARD_DIR?>/view.php?id=<?=$postData['id']?>">
                   <?=$postData['title']?>
                 </a>                
               </td>
@@ -109,7 +109,6 @@
         <footer>
           <div class="pos-right">
               <button type="button" class="btn btn-primary">게시글 작성</button>
-              <!-- <a href="#" class="myButton">게시글 작성</a> -->
           </div>
         </footer>        
       </body>
