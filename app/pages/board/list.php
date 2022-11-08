@@ -38,8 +38,8 @@
     <div class="container">
       <header class="blog-header py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
-          <div class="col-4 text-left">
-            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><?= $boardData['title'] ?></a>
+          <div class="col-4 text-center">
+            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?= $boardData['title'] ?></h1></a>
           </div>
         </div>
         <body>
@@ -108,7 +108,9 @@
         </table>
         <footer>
           <div class="pos-right">
-              <button type="button" class="btn btn-primary">게시글 작성</button>
+              <a href="<?=BOARD_DIR?>/write.php">
+                <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
+              </a>
           </div>
         </footer>        
       </body>
@@ -121,12 +123,15 @@
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
+    <script src="<?=DOMAIN?>/public/js/board/list.js"></script>
     <script>
       Holder.addTheme('thumb', {
         bg: '#55595c',
         fg: '#eceeef',
         text: 'Thumbnail'
       });
+
+      let list = new List();
     </script>
   </body>
 </html>

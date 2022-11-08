@@ -40,7 +40,7 @@
       <header class="py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-4 text-center">
-            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><?= $boardData['title'] ?></a>
+            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?= $boardData['title'] ?></h1></a>
           </div>
         </div>
       </header>
@@ -95,8 +95,8 @@
                 <div class="comment-list container-fluid">
                     <!-- sample dom -->
                     <div class="row">
-                        <span class="col-md-4">지나가던 법사</span>
-                        <span class="col-md-4">2022-11-08 11:00:00</span>
+                        <span class="col-md-2">지나가던 법사</span>
+                        <span class="col-md-*">2022-11-08 11:00:00</span>
                     </div>
                     <div class="row">
                         <span class="col-md-10">지금 딜러 엄청 너프됬는데 ㅎㅎㅎ .. 그냥 법사하세요. 여러분~</span>
@@ -114,6 +114,9 @@
                     </div>
                     <!-- sample dom -->
                 </div>
+            </div>
+            <div class="text-center">
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php" role="button">목록</a>
             </div>
         </div>
       </body>
