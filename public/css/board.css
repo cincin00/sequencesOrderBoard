@@ -353,6 +353,11 @@ h6 {
   min-height: 250px;
 }
 
+/** 댓글 영역 */
+.comment-editor-layer {
+  display: flex;
+}
+
 /** 구분선 스타일 */
 .line-right {
   border-right: solid;

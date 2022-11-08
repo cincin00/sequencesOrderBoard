@@ -57,10 +57,10 @@
                     </div>
                     <div class="sub-tool-layer text-right">
                     <span class="line-right">
-                        <a href="<?=BOARD_DIR?>/modify?id="<?=$postData['id']?>>수정</a>
+                        <a href="<?=BOARD_DIR?>/modify?id="<?=$postData['id']?> role="button">수정</a>
                     </span>            
                     <span class="pad-left-small">
-                        <a href="<?=BOARD_DIR?>/delete?id="<?=$postData['id']?>>삭제</a>
+                        <a href="<?=BOARD_DIR?>/delete?id="<?=$postData['id']?> role="button">삭제</a>
                     </span> 
                     </div>
                 </div>
@@ -92,23 +92,27 @@
                         </div>                                            
                     </div>
                 </div>
-                <div class="comment-list">
+                <div class="comment-list container-fluid">
                     <!-- sample dom -->
-                    <div class="">
-                        <span class="">지나가던 법사</span>
-                        <span class="">2022-11-08 11:00:00</span>
+                    <div class="row">
+                        <span class="col-md-4">지나가던 법사</span>
+                        <span class="col-md-4">2022-11-08 11:00:00</span>
                     </div>
-                    <div class="">
-                        <span class="">
-                            <a href="<?=BOARD_DIR?>/">수정</a>
+                    <div class="row">
+                        <span class="col-md-10">지금 딜러 엄청 너프됬는데 ㅎㅎㅎ .. 그냥 법사하세요. 여러분~</span>
+                    </div>
+                    <div class="row">
+                        <span class="col-md-1">
+                            <a href="<?=BOARD_DIR?>/" role="button">수정</a>
                         </span>            
-                        <span class="pad-left-small line-right line-left">
-                            <a href="<?=BOARD_DIR?>/">삭제</a>
+                        <span class="line-right line-left col-md-1">
+                            <a href="<?=BOARD_DIR?>/" role="button">삭제</a>
                         </span> 
-                        <span class="pad-left-small">
-                            <a href="<?=BOARD_DIR?>/">답글</a>
+                        <span class="col-md-1">
+                            <a href="<?=BOARD_DIR?>/" role="button">답글</a>
                         </span> 
                     </div>
+                    <!-- sample dom -->
                 </div>
             </div>
         </div>
