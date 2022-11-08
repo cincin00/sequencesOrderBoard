@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="post-content-layer">
-                        <textarea></textarea>
+                        <div id="froala_editor" class="form-group"></div>
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
                             <input type="text" name="writer" id="post_writer" class="form-control" placeholder="작성자를 입력해주세요." required="true" maxlength="255" style="width:50%">
@@ -85,20 +85,27 @@
         </form>
       </body>
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Javascript File-->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
+    <script type="text/javascript" src="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/js/froala_editor.pkgd.min.js"></script>
+    <script type="text/javascript" src="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/js/languages/ko.js"></script>
     <script>
       Holder.addTheme('thumb', {
         bg: '#55595c',
         fg: '#eceeef',
         text: 'Thumbnail'
       });
+      var editor = new FroalaEditor('#froala_editor',{
+        // 플로라 에디터 국문 언어팩 옵션
+        language: 'ko',
+      });
+      
     </script>
+    <!-- CSS File -->
+    <link href="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
   </body>
 </html>
