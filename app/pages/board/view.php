@@ -60,12 +60,12 @@
                         <a href="<?=BOARD_DIR?>/modify?id="<?=$postData['id']?> role="button">수정</a>
                     </span>            
                     <span class="pad-left-small">
-                        <a href="<?=BOARD_DIR?>/delete?id="<?=$postData['id']?> role="button">삭제</a>
+                        <a id="btn_post_del" href="<?=BOARD_DIR?>/delete?id="<?=$postData['id']?> role="button" data-toggle="modal" data-target="#myModal">삭제</a>
                     </span> 
                     </div>
                 </div>
                 <div class="post-content-layer">
-                    <?=$postData['contents']?>
+                    <?=htmlspecialchars_decode($postData['contents'])?>
                 </div>
             </div>
             <div class="comment-layer">
@@ -121,10 +121,29 @@
         </div>
       </body>
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form name="post_delete" aciton="<?=BOARD_DIR?>/delete_process.php" method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">비밀번호를 입력해주세요.</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="password" name="post_password" id="post_password" class="form-control" placeholder="비밀번호">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                        <button type="submit" class="btn btn-primary">확인</button>
+                    </div>
+                </div>
+            </form>            
+        </div>
+    </div>
+    <!-- Javascript File-->
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>

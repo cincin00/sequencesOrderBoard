@@ -9,7 +9,10 @@
     $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
     $categoryResult = $dbh->query($categoryQuery);
     foreach ($categoryResult as $categoryData) {
-        $category[$categoryData['sort_order']] = $categoryData['title'];
+        $category[$categoryData['sort_order']] = [
+            'category_id' => $categoryData['id'],
+            'title' => $categoryData['title']
+        ];
     }
 ?>
 <!doctype html>
@@ -42,7 +45,8 @@
         </div>
       </header>
       <body>
-        <form name="board_write" action="" method="post">
+        <form name="post_write" action="<?=BOARD_DIR?>/write_process.php" method="post" enctype="multipart/form-data" autocomplete="off">
+            <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
             <div class="form-layer">
                 <div class="post-layer">
                     <div class="post-title-layer">
@@ -50,8 +54,8 @@
                             <div class="col-md-4">
                                 <select name="board_category" class="form-control">
                                     <option value=''>카테고리 선택</option>
-                                    <?php foreach ($category as $index => $categoryTitle) { ?>
-                                        <option value='<?=$categoryTitle ?>'><?=$categoryTitle ?></option>
+                                    <?php foreach ($category as $index => $categoryData) { ?>
+                                        <option value='<?=$categoryData['category_id']?>'><?=$categoryData['title']?></option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -62,7 +66,9 @@
                         </div>
                     </div>
                     <div class="post-content-layer">
-                        <div id="froala_editor" class="form-group"></div>
+                        <div class="form-group">
+                            <textarea name="contents" id="froala_editor"></textarea>
+                        </div>
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
                             <input type="text" name="writer" id="post_writer" class="form-control" placeholder="작성자를 입력해주세요." required="true" maxlength="255" style="width:50%">

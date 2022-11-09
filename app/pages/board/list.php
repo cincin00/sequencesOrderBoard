@@ -9,10 +9,10 @@
   // 게시글 정보 조회
   $postBaseQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po`";
   $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
-  $postWhereQuery = "";
+  $postWhereQuery = " WHERE `po`.is_delete = 0";
   $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
   $postResult = $dbh->query($postQuery);
-  $postData = $postResult->fetch();
+  $postData = $postResult->fetchAll();
 ?>
 <!doctype html>
 <html lang="en">
@@ -71,30 +71,32 @@
             <!-- sample Row -->
             <?php
               if ($postData) {
+                foreach ($postData as $row) {
             ?>
             <tr>
               <td class="board-list-table-baqh">
-                <?=$postData['id']?>
+                <?=$row['id']?>
               </td>
               <td class="board-list-table-baqh">
-                <?=$postData['category_title']?>
+                <?=$row['category_title']?>
               </td>
               <td class="board-list-table-baqh">
-                <a href="<?=BOARD_DIR?>/view.php?id=<?=$postData['id']?>">
-                  <?=$postData['title']?>
+                <a href="<?=BOARD_DIR?>/view.php?id=<?=$row['id']?>">
+                  <?=$row['title']?>
                 </a>                
               </td>
               <td class="board-list-table-baqh">
-                <?=$postData['writer']?>
+                <?=$row['writer']?>
               </td>
               <td class="board-list-table-baqh">
-                <?=$postData['regist_date']?>
+                <?=$row['regist_date']?>
               </td>
               <td class="board-list-table-baqh">
-                <?=$postData['hits']?>
+                <?=$row['hits']?>
               </td>
             </tr>
             <?php
+                }
               } else {
             ?>
             <tr>
@@ -115,9 +117,7 @@
         </footer>        
       </body>
   </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Javascript File-->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
