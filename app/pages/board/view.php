@@ -61,7 +61,7 @@
                     </div>
                     <div class="sub-tool-layer text-right">
                     <span class="line-right">
-                        <a href="<?=BOARD_DIR?>/modify.php?id=<?=$postData['id']?>" role="button">수정</a>
+                        <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal">수정</a>
                     </span>            
                     <span class="pad-left-small">
                         <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
@@ -141,14 +141,26 @@
             text: 'Thumbnail'
         });
         let view = new View();
-        $('#deleteBtn').on('click', function(){
-            let params = {
-                url: '<?=BOARD_DIR?>/delete_process.php',
-                id: '<?=$postData['id']?>',
-                password: $('#post_password').val(),
-            };            
-            view.delete_post(params);
-        });        
+        $('#btn_post_mod').on('click',function(){
+            $('#passwdSubmitBtn').on('click', function(){
+                let params = {
+                    url: '<?=BOARD_DIR?>/modify.php',
+                    id: '<?=$postData['id']?>',
+                    password: $('#post_password').val(),
+                };
+                view.modify_post(params);
+            });
+        });
+        $('#btn_post_del').on('click',function(){
+            $('#passwdSubmitBtn').on('click', function(){
+                let params = {
+                    url: '<?=BOARD_DIR?>/delete_process.php',
+                    id: '<?=$postData['id']?>',
+                    password: $('#post_password').val(),
+                };
+                view.delete_post(params);
+            });
+        });
     </script>
   </body>
 </html>

@@ -12,7 +12,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" id="deleteBtn" >확인</button>
+                    <button type="button" class="btn btn-primary" id="passwdSubmitBtn" >확인</button>
                 </div>
             </div>
         </form>
