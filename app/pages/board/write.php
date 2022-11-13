@@ -45,7 +45,7 @@
         </div>
       </header>
       <body>
-        <form name="post_write" action="<?=BOARD_DIR?>/write_process.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="validForm();">
+        <form name="post_write" action="<?=BOARD_DIR?>/write_process.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return validForm();">
             <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
             <div class="form-layer">
                 <div class="post-layer">
@@ -114,7 +114,8 @@
       let write = new Write();
       write.cancelClick('<?=BOARD_DIR?>');
       function validForm(){
-        //write.validForm();
+        let result = write.validForm();
+        return result;
       }
     </script>
     <!-- CSS File -->

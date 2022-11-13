@@ -7,7 +7,6 @@ class Write {
      */
     constructor() {
         console.log('write.js is load.');
-        this.validForm();
     }
 
     validForm() {        
