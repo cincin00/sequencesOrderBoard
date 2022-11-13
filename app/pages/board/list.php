@@ -123,7 +123,7 @@
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
-    <script src="<?=DOMAIN?>/public/js/board/list.js"></script>
+    <script src="<?=DOMAIN?>/public/js/board/list.js?ver=<?=date('YmdHis')?>"></script>
     <script>
       Holder.addTheme('thumb', {
         bg: '#55595c',

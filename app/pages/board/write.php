@@ -45,7 +45,7 @@
         </div>
       </header>
       <body>
-        <form name="post_write" action="<?=BOARD_DIR?>/write_process.php" method="post" enctype="multipart/form-data" autocomplete="off">
+        <form name="post_write" action="<?=BOARD_DIR?>/write_process.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="validForm();">
             <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
             <div class="form-layer">
                 <div class="post-layer">
@@ -53,36 +53,34 @@
                         <div class="title-layer row" style="display:flex">
                             <div class="col-md-4">
                                 <select name="board_category" class="form-control">
-                                    <option value=''>카테고리 선택</option>
+                                    <option>카테고리 선택</option>
                                     <?php foreach ($category as $index => $categoryData) { ?>
                                         <option value='<?=$categoryData['category_id']?>'><?=$categoryData['title']?></option>
                                     <?php } ?>
                                 </select>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="title" placeholder="제목을 입력해주세요." required="true" maxlength="255" class="form-control">
+                                <input type="text" name="title" id="post_title" placeholder="제목을 입력해주세요." maxlength="255" class="form-control">
                             </div>                        
                         </div>
                         </div>
                     </div>
                     <div class="post-content-layer">
                         <div class="form-group">
-                            <textarea name="contents" id="froala_editor"></textarea>
+                            <textarea name="contents" id="post_content"></textarea>
                         </div>
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
-                            <input type="text" name="writer" id="post_writer" class="form-control" placeholder="작성자를 입력해주세요." required="true" maxlength="255" style="width:50%">
+                            <input type="text" name="writer" id="post_writer" class="form-control" placeholder="작성자를 입력해주세요." maxlength="255" style="width:50%">
                         </div>
                         <div class="form-group form-inline">
                             <label for="post_password">비밀번호</label>
-                            <input type="password" name="password" id="post_password" class="form-control" placeholder="비밀번호를 입력해주세요." required="true" maxlength="255" style="width:50%">
+                            <input type="password" name="password" id="post_password" class="form-control" placeholder="비밀번호를 입력해주세요." maxlength="255" style="width:50%">
                         </div>
                     </div>
                     <div class="post-content-layer row">
                         <div class="col-md-12 text-center">
-                            <a href="<?=BOARD_DIR?>/list.php">
-                                <button class="btn btn-default">취소</button>
-                            </a>
+                            <button type="reset" id="cancel" class="btn btn-default">취소</button>
                             <button type="submit" class="btn btn-primary">등록</button>
                         </div>     
                     </div>
@@ -99,17 +97,25 @@
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
     <script type="text/javascript" src="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/js/froala_editor.pkgd.min.js"></script>
     <script type="text/javascript" src="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/js/languages/ko.js"></script>
+    <script type="text/javascript" src="<?=DOMAIN?>/public/js/board/write.js?ver=<?=date('YmdHis')?>"></script>
     <script>
+      /** Holder JS */
       Holder.addTheme('thumb', {
         bg: '#55595c',
         fg: '#eceeef',
         text: 'Thumbnail'
       });
-      var editor = new FroalaEditor('#froala_editor',{
+      /** Froala Editor JS */
+      let editor = new FroalaEditor('#post_content',{
         // 플로라 에디터 국문 언어팩 옵션
         language: 'ko',
       });
-      
+      /** Write JS */
+      let write = new Write();
+      write.cancelClick('<?=BOARD_DIR?>');
+      function validForm(){
+        //write.validForm();
+      }
     </script>
     <!-- CSS File -->
     <link href="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />

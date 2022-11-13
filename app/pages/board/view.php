@@ -14,6 +14,9 @@
     $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
+    if(empty($postData)){
+        echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -60,7 +63,7 @@
                         <a href="<?=BOARD_DIR?>/modify?id="<?=$postData['id']?> role="button">수정</a>
                     </span>            
                     <span class="pad-left-small">
-                        <a id="btn_post_del" href="<?=BOARD_DIR?>/delete?id="<?=$postData['id']?> role="button" data-toggle="modal" data-target="#myModal">삭제</a>
+                        <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
                     </span> 
                     </div>
                 </div>
@@ -121,39 +124,30 @@
         </div>
       </body>
     </div>
-
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form name="post_delete" aciton="<?=BOARD_DIR?>/delete_process.php" method="post">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">비밀번호를 입력해주세요.</h4>
-                    </div>
-                    <div class="modal-body">
-                        <input type="password" name="post_password" id="post_password" class="form-control" placeholder="비밀번호">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary">확인</button>
-                    </div>
-                </div>
-            </form>            
-        </div>
-    </div>
+    <?php include_once('./password.php'); ?>
     <!-- Javascript File-->
-    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
+    <script type="text/javascript" src="<?=DOMAIN?>/public/js/board/view.js?ver=<?=date('YmdHis')?>"></script>
     <script>
-      Holder.addTheme('thumb', {
-        bg: '#55595c',
-        fg: '#eceeef',
-        text: 'Thumbnail'
-      });
+        /** Holder JS */
+        Holder.addTheme('thumb', {
+            bg: '#55595c',
+            fg: '#eceeef',
+            text: 'Thumbnail'
+        });
+        let view = new View();
+        $('#deleteBtn').on('click', function(){
+            let params = {
+                url: '<?=BOARD_DIR?>/delete_process.php',
+                id: '<?=$postData['id']?>',
+                password: $('#post_password').val(),
+            };            
+            view.delete_post(params);
+        });        
     </script>
   </body>
 </html>
