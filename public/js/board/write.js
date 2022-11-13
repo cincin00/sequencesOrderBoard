@@ -9,6 +9,11 @@ class Write {
         console.log('write.js is load.');
     }
 
+    /**
+     * 폼 유효성 검증 이벤트
+     * 
+     * @returns bool
+     */
     validForm() {        
         let title = $('#post_title').val();
         let content = $('#post_content').val();

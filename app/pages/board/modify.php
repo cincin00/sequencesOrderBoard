@@ -57,7 +57,7 @@
       </header>
       <body>
         <form name="post_modify" action="<?=BOARD_DIR?>/modify_process.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return validForm();">
-            <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
+            <input type="hidden" name="post_id" value="<?=$postData['id']?>">
             <div class="form-layer">
                 <div class="post-layer">
                     <div class="post-title-layer">

@@ -45,7 +45,8 @@
         ];
     } else {
         // 게시글 삭제
-        $deleteQuery = 'DELETE FROM post WHERE id='.$id;
+        //$deleteQuery = 'DELETE FROM post WHERE id='.$id;
+        $deleteQuery = 'UPDATE post SET is_delete = 1 WHERE id ='.$id;
         $queryResult = $dbh->exec($deleteQuery);
         if ($queryResult) {
             $msg = '게시글이 삭제되었습니다.';
