@@ -7,6 +7,7 @@
     $boardQuery = $boardBaseQuery.$boardWhereQuery;
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
+    
     // 게시글 정보 조회
     $postBaseQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.contents, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po`";
     $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
@@ -43,7 +44,7 @@
       <header class="py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-4 text-center">
-            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?= $boardData['title'] ?></h1></a>
+            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?=$boardData['title'] ?></h1></a>
           </div>
         </div>
       </header>
@@ -60,7 +61,7 @@
                     </div>
                     <div class="sub-tool-layer text-right">
                     <span class="line-right">
-                        <a href="<?=BOARD_DIR?>/modify?id="<?=$postData['id']?> role="button">수정</a>
+                        <a href="<?=BOARD_DIR?>/modify.php?id=<?=$postData['id']?>" role="button">수정</a>
                     </span>            
                     <span class="pad-left-small">
                         <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
