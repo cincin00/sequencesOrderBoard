@@ -29,24 +29,30 @@
         echo '<script>alert(`'.$msg.'`); location.href = "'.BOARD_DIR.'/write.php";</script>';
         exit;
     }
-    
-    // 데이터 가공
+    // 비밀번호 재검증
     $postId = $params['post_id'];
-    $memberId = $params['member_id'];
-    // TODO 체크용으로 변경
     $password = md5($params['password']);
+    
+    $postQuery = "SELECT * FROM post WHERE id = ".$postId;
+    $postResult = $dbh->query($postQuery);
+    $postData = $postResult->fetch();
+    if($postData['password'] !== $password){
+        echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?id='.$postId.'";</script>';
+        exit;
+    }
+
+    // 데이터 가공
+    $memberId = $params['member_id'];
     $title = $params['title'];
     $contents = htmlentities($params['contents']);
     $boardCategory = $params['board_category'];
     $modifyDate = date('Y-m-d H:i:s');
-    //var_dump($_POST);var_dump($params);exit;
     // 데이터 저장
-    $postQuery = "UPDATE post SET title='$title',contents='$contents',board_category=$boardCategory,password='$password' WHERE id = $postId";
-    //var_dump($postQuery);exit;
+    $postQuery = "UPDATE post SET title='$title',contents='$contents',board_category=$boardCategory WHERE id = $postId";
     $result = $dbh->exec($postQuery);
     if($result) {
         echo '<script>alert(`게시글이 수정되었습니다.`);location.href = "'.BOARD_DIR.'/view.php?id='.$postId.'";</script>';
     } else {
-        echo '<script>alert(`게시글 수정이 실패했습니다.`);return false;</script>';
+        echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?id='.$postId.'";</script>';
     }
 ?>

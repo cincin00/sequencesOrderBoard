@@ -17,11 +17,6 @@ class View {
      * 게시글 수정 페이지 이동 이벤트
      */
     modifyPost(formParam) {
-        // $.post(this.baseUrl + formParam.action, formParam, function(res){
-        //     console.log(res);
-        // }).fail(function(res){
-        //     alert(res.msg);
-        // });
         $('#password_form').attr('action', this.baseUrl + '/password_process.php');
         $('#password_form').attr('method', 'post');
         $('#mode').val(formParam.mode);

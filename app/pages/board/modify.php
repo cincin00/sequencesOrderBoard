@@ -1,21 +1,6 @@
 <?php
-    require_once('../../../index.php');
-
-    // 게시판 설정 로드
-    $boardQuery = "SELECT * FROM board WHERE id='1'";
-    $boardResult = $dbh->query($boardQuery);
-    $boardData = $boardResult->fetch();
-
-    // 게시판 카테고리 로드
-    $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
-    $categoryResult = $dbh->query($categoryQuery);
-    foreach ($categoryResult as $categoryData) {
-        $category[$categoryData['sort_order']] = [
-            'category_id' => $categoryData['id'],
-            'title' => $categoryData['title']
-        ];
-    }
-
+    //require_once('../../../index.php');
+    var_dump($postData);
 ?>
 <!doctype html>
 <html lang="en">
@@ -77,7 +62,7 @@
                         </div>
                         <div class="form-group form-inline">
                             <label for="post_password">비밀번호</label>
-                            <input type="password" name="password" id="post_password" class="form-control" placeholder="비밀번호를 입력해주세요." maxlength="255" style="width:50%">
+                            <input type="password" name="password" id="post_password" class="form-control" placeholder="기존 비밀번호를 입력해주세요." maxlength="255" style="width:50%">
                         </div>
                     </div>
                     <div class="post-content-layer row">
