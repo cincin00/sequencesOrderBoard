@@ -16,20 +16,6 @@
         ];
     }
 
-    // 게시글 정보 조회
-    $postBaseQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.contents,`po`.password, `po`.regist_date, `po`.hits, `bc`.id as `category_id`, `bc`.title as `category_title` FROM post as `po`";
-    $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
-    $postWhereQuery = " WHERE `po`.id = ".$_GET['id'];
-    $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
-    $postResult = $dbh->query($postQuery);
-    $postData = $postResult->fetch();
-    if(empty($postData)){
-        echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
-    }
-    
-    if($postData['password'] !== md5($_GET['passwd'])){
-      echo '<script>alert(`비밀번호가 올바르지 않습니다.`); location.href = "'.BOARD_DIR.'/view.php?id='.$_GET['id'].'";</script>';
-    }
 ?>
 <!doctype html>
 <html lang="en">

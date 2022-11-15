@@ -139,17 +139,21 @@
             bg: '#55595c',
             fg: '#eceeef',
             text: 'Thumbnail'
-        });
-        let view = new View();
+        });        
+        /** Board View Js */
+        let boardUrl = '<?=BOARD_DIR?>';
+        let view = new View(boardUrl);
+        // 수정 버튼 이벤트 핸들러
         $('#btn_post_mod').on('click',function(){
             $('#passwdSubmitBtn').on('click', function(){
-                let params = {
-                    url: '<?=BOARD_DIR?>/modify.php',
+                let modifyParam = {
+                    action:'/password_process.php',
+                    mode: 'update',
                     id: '<?=$postData['id']?>',
                     password: $('#post_password').val(),
                 };
-                view.modify_post(params);
-            });
+                view.modifyPost(modifyParam);
+            });            
         });
         $('#btn_post_del').on('click',function(){
             $('#passwdSubmitBtn').on('click', function(){

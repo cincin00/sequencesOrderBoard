@@ -33,6 +33,7 @@
     // 데이터 가공
     $postId = $params['post_id'];
     $memberId = $params['member_id'];
+    // TODO 체크용으로 변경
     $password = md5($params['password']);
     $title = $params['title'];
     $contents = htmlentities($params['contents']);
