@@ -61,18 +61,22 @@
                         <span><?=$postData['regist_date']?></span>
                     </div>
                     <div class="sub-tool-layer text-right">
-                    <span class="line-right">
-                        <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal">수정</a>
-                    </span>            
-                    <span class="pad-left-small">
-                        <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
-                    </span> 
+                        <span class="line-right">
+                            <a id="btn_post_reply" href="#" role="button" data-toggle="" data-target="">답글</a>
+                        </span>
+                        <span class="pad-left-small line-right">
+                            <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal">수정</a>
+                        </span>
+                        <span class="pad-left-small">
+                            <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
+                        </span> 
                     </div>
                 </div>
                 <div class="post-content-layer">
                     <?=htmlspecialchars_decode($postData['contents'])?>
                 </div>
             </div>
+            <?php if(false){ // 게시판 댓글 비활성화 ?>
             <div class="comment-layer">
                 <div class="form-group comment-head">
                     댓글(<span class="">0</span>)
@@ -120,6 +124,7 @@
                     <!-- sample dom -->
                 </div>
             </div>
+            <?php } ?>
             <div class="text-center">
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php" role="button">목록</a>
             </div>
@@ -142,30 +147,12 @@
             text: 'Thumbnail'
         });        
         /** Board View Js */
-        let boardUrl = '<?=BOARD_DIR?>';
-        let view = new View(boardUrl);
-        // 수정 버튼 이벤트 핸들러
-        $('#btn_post_mod').on('click',function(){
-            $('#passwdSubmitBtn').on('click', function(){
-                let modifyParam = {
-                    action:'/password_process.php',
-                    mode: 'update',
-                    id: '<?=$postData['id']?>',
-                    password: $('#post_password').val(),
-                };
-                view.modifyPost(modifyParam);
-            });            
-        });
-        $('#btn_post_del').on('click',function(){
-            $('#passwdSubmitBtn').on('click', function(){
-                let deleteParams = {
-                    url: '/password_process.php',
-                    mode: 'delete',
-                    id: '<?=$postData['id']?>',
-                    password: $('#post_password').val(),
-                };
-                view.delete_post(deleteParams);
-            });
+        let view = new View('<?=BOARD_DIR?>', <?=$postData['id']?>);
+        $('#passwdSubmitBtn').on('click', function(){
+            let mode = $(this).data('mode');
+            let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);
+            // 비밀번호 팝업 이벤트
+            view.passwordFormEvent(param);
         });
     </script>
   </body>
