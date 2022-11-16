@@ -11,7 +11,6 @@ class Write {
      */
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
-
         this.init();
     }
 
@@ -57,7 +56,7 @@ class Write {
      * 게시글 작성 페이지 버튼 핸들러 바인딩
      */
     setButtonEventHandler() {
-        let url = this.baseUrl + '/list.php';
-        $("#cancel").on('click', function () { window.location.href = url; });
+        let url = this.baseUrl;
+        $("#cancel").on('click', function () { window.location.href = url + '/list.php'; });
     }
 }

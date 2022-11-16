@@ -106,7 +106,7 @@
         </table>
         <footer>
           <div class="pos-right">
-              <a href="<?=BOARD_DIR?>/write.php">
+              <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
                 <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
               </a>
           </div>

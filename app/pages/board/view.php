@@ -7,6 +7,9 @@
     $boardQuery = "SELECT * FROM board WHERE id=".$baordId;
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
+    if(empty($boardData) === true){
+        echo '<script>alert(`존재하지 않는 게시판입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+    }
 
     // 게시글 정보 조회
     $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.contents, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$_GET['id']." AND `po`.board_id = ".$baordId;
@@ -147,7 +150,12 @@
             text: 'Thumbnail'
         });        
         /** Board View Js */
-        let view = new View('<?=BOARD_DIR?>', <?=$postData['id']?>);
+        let viewData = {
+            baseUrl: '<?=BOARD_DIR?>',
+            boardId: <?=$baordId?>,
+            postId: <?=$postData['id']?>,
+        }
+        let view = new View(viewData);
         $('#passwdSubmitBtn').on('click', function(){
             let mode = $(this).data('mode');
             let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);

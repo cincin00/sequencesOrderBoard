@@ -1,9 +1,15 @@
 <?php
     require_once('../../../index.php');
+
+    $baordId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
+
     // 게시판 설정 로드 - 게층형 게시판 고정
-    $boardQuery = "SELECT * FROM board WHERE id='1'";
+    $boardQuery = "SELECT * FROM board WHERE id=".$baordId;
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
+    if(empty($boardData) === true){
+      echo '<script>alert(`존재하지 않는 게시판입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+  }
 
     // 게시판 카테고리 로드
     $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
@@ -14,6 +20,18 @@
             'title' => $categoryData['title']
         ];
     }
+
+    // 답글 기능 로드
+    if(isset($_GET['reply']) === true && empty($_GET['reply']) === false){
+      $replyId = $_GET['reply'];
+      if( $replyId > 0 ){
+        $replyQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$replyId." AND `po`.board_id = ".$baordId;
+        $replyPostResult = $dbh->query($replyQuery);
+        $replyPostData = $replyPostResult->fetch();
+      }else {
+        echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+      }
+    }
     ?>
 <!doctype html>
 <html lang="en">
@@ -23,24 +41,19 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="">
-
     <title>개인 프로젝트 사이트</title>
-
     <!-- Bootstrap core CSS -->
     <link href="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
     <link href="<?=DOMAIN?>/public/css/board.css" rel="stylesheet">
   </head>
-
   <body>
-
     <div class="container">
       <header class="py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-4 text-center">
-            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?=$boardData['title'] ?></h1></a>
+            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?=$boardData['title']?></h1></a>
           </div>
         </div>
       </header>
@@ -55,19 +68,19 @@
                                 <select name="board_category" class="form-control">
                                     <option value="">카테고리 선택</option>
                                     <?php foreach ($category as $index => $categoryData) { ?>
-                                        <option value='<?=$categoryData['category_id']?>'><?=$categoryData['title']?></option>
+                                        <option value='<?=$categoryData['category_id']?>' <?php if($replyPostData['board_category'] === $categoryData['category_id']){ ?> selected="selected" <?php } ?> ><?=$categoryData['title']?></option>
                                     <?php } ?>
                                 </select>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="title" id="post_title" placeholder="제목을 입력해주세요." maxlength="255" class="form-control">
+                                <input type="text" name="title" id="post_title" placeholder="제목을 입력해주세요." maxlength="255" class="form-control" value="<?='RE: '.$replyPostData['title']?>">
                             </div>                        
                         </div>
                         </div>
                     </div>
                     <div class="post-content-layer">
                         <div class="form-group">
-                            <textarea name="contents" id="post_content"></textarea>
+                            <textarea name="contents" id="post_content"><?=$replyPostData['contents']?></textarea>
                         </div>
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
