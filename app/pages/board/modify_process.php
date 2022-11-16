@@ -39,7 +39,7 @@
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
     if ($postData['password'] !== $password) {
-        echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id=&'.$params['board_id'].'id='.$postId.'";</script>';
+        echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
         exit;
     }
 

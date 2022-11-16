@@ -5,7 +5,7 @@
   $boardResult = $dbh->query($boardQuery);
   $boardData = $boardResult->fetch();
   // 게시글 정보 조회
-  $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.id DESC";
+  $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_depth, `po`.group_order";
   $postResult = $dbh->query($postQuery);
   $postData = $postResult->fetchAll();
   

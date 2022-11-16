@@ -60,6 +60,11 @@
       <body>
         <form name="post_write" action="<?=BOARD_DIR?>/write_process.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return validForm();">
             <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
+            <?php if(@$replyPostData){ //답변 기능 활성화 ?>
+              <input type="hidden" name="group" value="<?=@$replyPostData['group_id']?>">
+              <input type="hidden" name="depth" value="<?=@$replyPostData['group_depth']?>">
+              <input type="hidden" name="order" value="<?=@$replyPostData['group_order']?>">
+              <?php } ?>
             <div class="form-layer">
                 <div class="post-layer">
                     <div class="post-title-layer">
@@ -68,19 +73,19 @@
                                 <select name="board_category" class="form-control">
                                     <option value="">카테고리 선택</option>
                                     <?php foreach ($category as $index => $categoryData) { ?>
-                                        <option value='<?=$categoryData['category_id']?>' <?php if($replyPostData['board_category'] === $categoryData['category_id']){ ?> selected="selected" <?php } ?> ><?=$categoryData['title']?></option>
+                                        <option value='<?=$categoryData['category_id']?>' <?php if(@$replyPostData['board_category'] === $categoryData['category_id']){ ?> selected="selected" <?php } ?> ><?=$categoryData['title']?></option>
                                     <?php } ?>
                                 </select>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="title" id="post_title" placeholder="제목을 입력해주세요." maxlength="255" class="form-control" value="<?='RE: '.$replyPostData['title']?>">
+                                <input type="text" name="title" id="post_title" placeholder="제목을 입력해주세요." maxlength="255" class="form-control" value="<?php if(@$replyPostData['title']) { echo 'RE: '.@$replyPostData['title'];} ?>">
                             </div>                        
                         </div>
                         </div>
                     </div>
                     <div class="post-content-layer">
                         <div class="form-group">
-                            <textarea name="contents" id="post_content"><?=$replyPostData['contents']?></textarea>
+                            <textarea name="contents" id="post_content"><?=@$replyPostData['contents']?></textarea>
                         </div>
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
