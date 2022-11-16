@@ -8,6 +8,7 @@ class View {
      * Class View 생성자
      * 
      * @param {string} baseUrl Ajax Base Url
+     * @param {int} postId 게시글 번호
      */
     constructor(baseUrl, postId) {
         this.baseUrl = baseUrl;
@@ -18,7 +19,7 @@ class View {
     /**
      * View Js 생성 시 초기화 이벤트
      */
-    init(){
+    init() {
         this.setButtonEventHandler();
     }
     /**
@@ -41,15 +42,15 @@ class View {
      * @returns 
      */
     passwrodFormParamCreate(param_mode, param_post_id) {
-        return {mode: param_mode, method: 'post', url: '/password_process.php', id: param_post_id, password: $('#password').val()}
+        return { mode: param_mode, method: 'post', url: '/password_process.php', id: param_post_id, password: $('#password').val() }
     }
 
     /**
      * 게시글 상세 페이지 버튼 핸들러 바인딩
      */
-    setButtonEventHandler(){
-        $("#btn_post_reply").on('click', function(){ console.log('답글 버튼 클릭');});
-        $('#btn_post_mod').on('click', function(){ $('#myModal #passwdSubmitBtn').data('mode', 'update');});
-        $('#btn_post_del').on('click',function(){$('#myModal #passwdSubmitBtn').data('mode', 'delete');});
+    setButtonEventHandler() {
+        $("#btn_post_reply").on('click', function () { console.log('답글 버튼 클릭'); });
+        $('#btn_post_mod').on('click', function () { $('#myModal #passwdSubmitBtn').data('mode', 'update'); });
+        $('#btn_post_del').on('click', function () { $('#myModal #passwdSubmitBtn').data('mode', 'delete'); });
     }
 }

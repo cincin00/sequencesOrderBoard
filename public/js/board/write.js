@@ -2,11 +2,24 @@
  * write.php JavaScript
  */
 class Write {
+    baseUrl = '';
+
     /**
      * Class Write 생성자
+     * 
+     * @param {string} baseUrl Ajax Base Url
      */
-    constructor() {
-        console.log('write.js is load.');
+    constructor(baseUrl) {
+        this.baseUrl = baseUrl;
+
+        this.init();
+    }
+
+    /**
+     * Write Js 생성 시 초기화 이벤트
+     */
+    init() {
+        this.setButtonEventHandler();
     }
 
     /**
@@ -14,7 +27,7 @@ class Write {
      * 
      * @returns bool
      */
-    validForm() {        
+    validForm() {
         let title = $('#post_title').val();
         let content = $('#post_content').val();
         let writer = $('#post_writer').val();
@@ -32,7 +45,7 @@ class Write {
             msg = '게시글 비밀번호는은 필수입니다.';
         }
 
-        if(msg !== ''){
+        if (msg !== '') {
             alert(msg);
             result = false;
         }
@@ -41,13 +54,10 @@ class Write {
     }
 
     /**
-     * 취소 버튼 이벤트
-     * 
-     * @param {*} domain 
+     * 게시글 작성 페이지 버튼 핸들러 바인딩
      */
-    cancelClick(domain = '') {
-        $("#cancel").on('click', function () {
-            window.location.href = domain + '/list.php';
-        });
+    setButtonEventHandler() {
+        let url = this.baseUrl + '/list.php';
+        $("#cancel").on('click', function () { window.location.href = url; });
     }
 }

@@ -111,12 +111,8 @@
         language: 'ko',
       });
       /** Write JS */
-      let write = new Write();
-      write.cancelClick('<?=BOARD_DIR?>');
-      function validForm(){
-        let result = write.validForm();
-        return result;
-      }
+      let write = new Write('<?=BOARD_DIR?>');
+      function validForm(){ return write.validForm();}
     </script>
     <!-- CSS File -->
     <link href="<?=DOMAIN?>/public/vender/froala_editor_4.0.15/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />

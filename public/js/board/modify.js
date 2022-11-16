@@ -2,7 +2,7 @@ class Modify {
     /**
      * Class Modify 생성자
      */
-    constructor() {        
+    constructor() {
     }
 
     /**
@@ -10,7 +10,7 @@ class Modify {
      * 
      * @returns bool
      */
-     validForm() {        
+    validForm() {
         let title = $('#post_title').val();
         let content = $('#post_content').val();
         let password = $('#post_password').val();
@@ -25,7 +25,7 @@ class Modify {
             msg = '게시글 비밀번호는은 필수입니다.';
         }
 
-        if(msg !== ''){
+        if (msg !== '') {
             alert(msg);
             result = false;
         }
@@ -38,7 +38,7 @@ class Modify {
      * 
      * @param {*} domain 
      */
-     cancelClick(domain = '') {
+    cancelClick(domain = '') {
         $("#cancel").on('click', function () {
             window.location.href = domain + '/list.php';
         });
