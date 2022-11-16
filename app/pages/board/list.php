@@ -4,11 +4,34 @@
   $boardQuery = "SELECT * FROM board WHERE id='1'";
   $boardResult = $dbh->query($boardQuery);
   $boardData = $boardResult->fetch();
-  // 게시글 정보 조회
-  $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC ";
+
+  // 페이징 처리
+  // 현재 페이지 번호(기본: 1페이지)
+  $currentPage = (isset($_GET['page']) === true?$_GET['page']:1);
+  // 게시글 전체 수량
+  $totalRow = $dbh->query('SELECT COUNT(*) as `total_cnt` FROM post')->fetch()[0];
+  // 1개 페이지에 표시할 게시글 수
+  $length = 10;
+  // 전체 페이지 수 - 0인 경우 1 페이지로 고정
+  $totalPage = ceil($totalRow/$length) > 0 ? ceil($totalRow/$length) : 1;
+  // TODO - 몇개의 블록을 표시할 건지
+  $block = 4;
+  // 처음 페이지
+  $firstPage =  1 ;
+  // 이전 페이지
+  $prePage = ($currentPage - 1) > 0 ? $currentPage - 1 : 1;
+  // 다음 페이지
+  $nextPage = ($currentPage + 1) <= $totalPage ? $currentPage + 1 : $totalPage ;
+  // 마지막 페이지
+  $lastPage = $totalPage;
+  //현재 시작 게시글 번호
+  $startRow = ($currentPage - 1) * $length;
+
+  // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
+  $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC LIMIT ".$startRow.", ".$length."";
   $postResult = $dbh->query($postQuery);
   $postData = $postResult->fetchAll();
-  
+  //var_dump();exit;
   ?>
 <!doctype html>
 <html lang="en">
@@ -100,7 +123,7 @@
             </tr>
             <?php
                 }
-  ?>
+            ?>
             <!-- sample Row -->
           </tbody>
         </table>
@@ -109,6 +132,15 @@
               <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
                 <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
               </a>
+          </div>
+          <div id="paging" class="mar-top-large" style="text-align:center;">
+            <a href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">[처음]</a>
+            <a href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">[이전]</a>
+            <?php for($i=1;$i<=$totalPage;$i++){ ?>
+            <a href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?='['.$i.']'?></a>
+            <?php } ?>
+            <a href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">[다음]</a>
+            <a href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">[마지막]</a>
           </div>
         </footer>        
       </body>
