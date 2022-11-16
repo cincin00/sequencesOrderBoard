@@ -6,3 +6,6 @@ define('CONFIGPATH', __DIR__.'/app/config');
 require_once(CONFIGPATH.'/config.php');
 // 데이터베이스 연결
 require_once(CONFIGPATH.'/database.php');
+
+session_start();
+$_SESSION['user_ip'] = $_SERVER['REMOTE_ADDR'];

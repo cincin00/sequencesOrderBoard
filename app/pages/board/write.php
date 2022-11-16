@@ -1,6 +1,6 @@
 <?php
     require_once('../../../index.php');
-    // 게시판 설정 로드
+    // 게시판 설정 로드 - 게층형 게시판 고정
     $boardQuery = "SELECT * FROM board WHERE id='1'";
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
@@ -14,7 +14,7 @@
             'title' => $categoryData['title']
         ];
     }
-?>
+    ?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -53,7 +53,7 @@
                         <div class="title-layer row" style="display:flex">
                             <div class="col-md-4">
                                 <select name="board_category" class="form-control">
-                                    <option>카테고리 선택</option>
+                                    <option value="">카테고리 선택</option>
                                     <?php foreach ($category as $index => $categoryData) { ?>
                                         <option value='<?=$categoryData['category_id']?>'><?=$categoryData['title']?></option>
                                     <?php } ?>

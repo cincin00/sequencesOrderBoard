@@ -1,24 +1,25 @@
 <?php
     require_once('../../../index.php');
 
+    $baordId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
+    $postId = isset($_GET['id']) === true ? $_GET['id'] : 0;
     // 게시판 설정 로드
-    $boardBaseQuery = "SELECT * FROM board";
-    $boardWhereQuery = " WHERE id='1'";
-    $boardQuery = $boardBaseQuery.$boardWhereQuery;
+    $boardQuery = "SELECT * FROM board WHERE id=".$baordId;
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
-    
+
     // 게시글 정보 조회
-    $postBaseQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.contents, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po`";
-    $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
-    $postWhereQuery = " WHERE `po`.id = ".$_GET['id'];
-    $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
+    $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.contents, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$_GET['id']." AND `po`.board_id = ".$baordId;
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
-    if(empty($postData)){
+    if (empty($postData) === true) {
         echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
     }
-?>
+
+    // 조회수 증가 처리
+    $hitsUpdateQuery = "UPDATE post SET hits = hits + 1 WHERE id = ".$postId;
+    $dbh->query($hitsUpdateQuery);
+    ?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -157,12 +158,13 @@
         });
         $('#btn_post_del').on('click',function(){
             $('#passwdSubmitBtn').on('click', function(){
-                let params = {
-                    url: '<?=BOARD_DIR?>/delete_process.php',
+                let deleteParams = {
+                    url: '/password_process.php',
+                    mode: 'delete',
                     id: '<?=$postData['id']?>',
                     password: $('#post_password').val(),
                 };
-                view.delete_post(params);
+                view.delete_post(deleteParams);
             });
         });
     </script>

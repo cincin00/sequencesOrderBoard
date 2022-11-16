@@ -1,6 +1,5 @@
 <?php
     //require_once('../../../index.php');
-    var_dump($postData);
 ?>
 <!doctype html>
 <html lang="en">
@@ -34,6 +33,7 @@
       <body>
         <form name="post_modify" action="<?=BOARD_DIR?>/modify_process.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return validForm();">
             <input type="hidden" name="post_id" value="<?=$postData['id']?>">
+            <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
             <div class="form-layer">
                 <div class="post-layer">
                     <div class="post-title-layer">
@@ -42,7 +42,9 @@
                                 <select name="board_category" class="form-control">
                                     <option>카테고리 선택</option>
                                     <?php foreach ($category as $index => $categoryData) { ?>
-                                        <option value='<?=$categoryData['category_id']?>' <?php if($postData['category_id']===$categoryData['category_id']){ echo "selected='true'";} ?> ><?=$categoryData['title']?></option>
+                                        <option value='<?=$categoryData['category_id']?>' <?php if ($postData['category_id']===$categoryData['category_id']) {
+                                            echo "selected='true'";
+                                        } ?> ><?=$categoryData['title']?></option>
                                     <?php } ?>
                                 </select>
                             </div>

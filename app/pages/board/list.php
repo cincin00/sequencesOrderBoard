@@ -1,19 +1,15 @@
 <?php
   require_once('../../../index.php');
-  // 게시판 설정 로드
-  $boardBaseQuery = "SELECT * FROM board";
-  $boardWhereQuery = " WHERE id='1'";
-  $boardQuery = $boardBaseQuery.$boardWhereQuery;
+  // 게시판 설정 로드 - 게층형 게시판 고정
+  $boardQuery = "SELECT * FROM board WHERE id='1'";
   $boardResult = $dbh->query($boardQuery);
   $boardData = $boardResult->fetch();
   // 게시글 정보 조회
-  $postBaseQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po`";
-  $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
-  $postWhereQuery = " WHERE `po`.is_delete = 0";
-  $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
+  $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.id DESC";
   $postResult = $dbh->query($postQuery);
   $postData = $postResult->fetchAll();
-?>
+  
+  ?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -70,9 +66,9 @@
           <tbody class="board-list-head">
             <!-- sample Row -->
             <?php
-              if ($postData) {
-                foreach ($postData as $row) {
-            ?>
+                if ($postData) {
+                    foreach ($postData as $row) {
+                        ?>
             <tr>
               <td class="board-list-table-baqh">
                 <?=$row['id']?>
@@ -81,7 +77,7 @@
                 <?=$row['category_title']?>
               </td>
               <td class="board-list-table-baqh">
-                <a href="<?=BOARD_DIR?>/view.php?id=<?=$row['id']?>">
+                <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id']?>">
                   <?=$row['title']?>
                 </a>                
               </td>
@@ -96,15 +92,15 @@
               </td>
             </tr>
             <?php
-                }
-              } else {
-            ?>
+                    }
+                } else {
+                    ?>
             <tr>
               <td class="board-list-table-baqh" colspan="6">등록된 게시글이 없습니다.</td>
             </tr>
             <?php
-              }
-            ?>
+                }
+  ?>
             <!-- sample Row -->
           </tbody>
         </table>
@@ -125,12 +121,13 @@
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
     <script src="<?=DOMAIN?>/public/js/board/list.js?ver=<?=date('YmdHis')?>"></script>
     <script>
+      /** Holder JS */
       Holder.addTheme('thumb', {
         bg: '#55595c',
         fg: '#eceeef',
         text: 'Thumbnail'
       });
-
+      /** List JS */
       let list = new List();
     </script>
   </body>
