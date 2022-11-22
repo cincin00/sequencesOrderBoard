@@ -9,7 +9,7 @@ class View {
     /**
      * Class View 생성자
      * 
-     * @param {Object} params 상품 상세 구성 데이터
+     * @param {object} params 상품 상세 구성 데이터
      */
     constructor(params) {
         this.baseUrl = params.baseUrl;
@@ -27,7 +27,7 @@ class View {
     /**
      * 비밀번호 팝업 이벤트
      * 
-     * @param {Object} formParam 폼 데이터
+     * @param {object} formParam 폼 데이터
      */
     passwordFormEvent(formParam) {
         $('#password_form').attr('action', this.baseUrl + formParam.url);

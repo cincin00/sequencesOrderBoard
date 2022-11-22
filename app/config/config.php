@@ -11,3 +11,4 @@ define('PATH_COMMON_JS', DOMAIN.'public/js');
 // php 폴더
 define('PAGES_DIR', DOMAIN.'/app/pages');
 define('BOARD_DIR', DOMAIN.'/app/pages/board');
+define('MEMBER_DIR', DOMAIN.'/app/pages/member');

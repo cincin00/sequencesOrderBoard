@@ -5,7 +5,7 @@
     // 게시판 번호
     $boardId = (isset($_POST['board_id']) === true ? $_POST['board_id'] : 0);
     // 게시글 번호
-    $postId = (isset($_POST['post_id']) === true ? $_POST['post_id'] : 0);
+    $postId = (isset($_POST['id']) === true ? $_POST['id'] : 0);
     // 게시글 처리방식(수정:update,삭제:delete)
     $mode = isset($_POST['mode']) === true ? $_POST['mode'] : '';
     // 게시글 비밀번호(샤용자 입력)

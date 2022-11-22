@@ -1,8 +1,8 @@
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form name="password_form" id="password_form" role="form">
+        <form name="password_form" id="password_form">
             <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
-            <input type="hidden" name="post_id" value="<?=$postData['id']?>">        
+            <input type="hidden" name="id" value="<?=$postData['id']?>">        
             <input type="hidden" name="mode" id="mode">
             <div class="modal-content">
                 <div class="modal-header">
