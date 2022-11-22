@@ -13,9 +13,9 @@
     $params['group_depth'] = (isset($_POST['depth']) === true ? $_POST['depth'] : null);
     $params['group_order'] = (isset($_POST['order']) === true ? $_POST['order'] : null);
 
-    if(isset($_POST['board_category']) === true && empty($_POST['board_category']) === false && gettype($_POST['board_category'] === 'int')){
+    if (isset($_POST['board_category']) === true && empty($_POST['board_category']) === false && gettype($_POST['board_category'] === 'int')) {
         $params['board_category'] = $_POST['board_category'];
-    }else{
+    } else {
         $params['board_category'] = 'NULL';
     }
     $params['writer'] = (isset($_POST['writer']) === true ? $_POST['writer'] : '');
@@ -51,13 +51,13 @@
     $hits = 0;
     //var_dump($_POST);var_dump($params);exit;
     // 답글 데이터 처리 - 이전 게시글 번호가 있는 경우
-    if(empty($params['group_id']) === false && $params['group_id'] > 0){
+    if (empty($params['group_id']) === false && $params['group_id'] > 0) {
         $groupId = $params['group_id'];
         // 해당 그룹에서 가장 order_seq가 높?낮?
         $groupOrder = (int)$params['group_order']+1;
         // 현재 기준이 되는 게시글의 Depth + 1
         $groupDepth = (int)$params['group_depth']+1;
-    }else{
+    } else {
         // 원본 게시글
         $groupOrder = 0;
         $groupDepth = 0;
@@ -70,9 +70,9 @@
     if ($result) {
         $postId = $dbh->lastInsertId();
         // 최상위 게시글은 게시글 그룹을 자기 자신의 post.id(PK)로 할당 - $params['group_id']가 없으면 최상위
-        if(empty($params['group_id']) === true && $params['group_id'] <= 0){
+        if (empty($params['group_id']) === true && $params['group_id'] <= 0) {
             $dbh->exec("UPDATE post SET group_id=".$postId." WHERE id=".$postId);
-        }else{
+        } else {
             $dbh->exec("UPDATE post SET group_id=".$groupId." WHERE id=".$postId);
             // 게시글 순서 갱신 - 같은 게시글 그룹 내에서 순서 1증감한 자기 자신의 순서와 같거나 큰 게시글의 순서 모두 +1 씩 증감 처리
             $dbh->exec("UPDATE post SET group_order =  group_order + 1  WHERE group_id=".$groupId." AND group_order >=".$groupOrder);

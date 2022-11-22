@@ -34,132 +34,142 @@
   ?>
 <!doctype html>
 <html lang="en">
-  <?php require_once('../header.php'); ?>
-  <body>
+<?php require_once('../header.php'); ?>
+
+<body>
     <div class="container">
-      <header class="blog-header py-3">
-        <div class="header-sub">
-          <div class="col-md-6"></div>
-          <div class="col-md-6">
-            <div class="col-md-2 pos-right">
-              <a class="btn btn-link" href="<?=MEMBER_DIR?>/join.php" role="button">회원가입</a>
+        <header class="blog-header py-3">
+            <div class="header-sub">
+                <div class="col-md-6"></div>
+                <div class="col-md-6">
+                    <div class="col-md-2 pos-right">
+                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/join.php" role="button">회원가입</a>
+                    </div>
+                    <div class="col-md-2 pos-right">
+                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>
+                    </div>
+                    <?php if(!$_SESSION){ //TODO 마이페이지 기능 활성화 처리하기 ?>
+                    <div class="col-md-2 pos-right">
+                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a>
+                    </div>
+                    <?php } ?>
+                </div>
             </div>
-            <div class="col-md-2 pos-right">
-              <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php">
+                        <h1><?=$boardData['title']?></h1>
+                    </a>
+                </div>
             </div>
-            <?php if(!$_SESSION){ //TODO 마이페이지 기능 활성화 처리하기 ?>
-            <div class="col-md-2 pos-right">
-              <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a>
-            </div>
-            <?php } ?>
-          </div>
-        </div>
-        <div class="row flex-nowrap justify-content-between align-items-center">
-          <div class="col-4 text-center">
-            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?=$boardData['title']?></h1></a>
-          </div>
-        </div>
-        <body>
-      </header>
+
+            <body>
+        </header>
         <div class="mar-medium">
-          <input type="text" class="form-control pos-right" id="keyword" style="width:300px;" placeholder="검색어를 입력해주세요">
-          <button type="button" class="btn btn-default pos-right">검색</button>
+            <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
+                placeholder="검색어를 입력해주세요">
+            <button type="button" class="btn btn-default pos-right">검색</button>
         </div>
         <table class="board-list-table">
-          <colgroup>
-            <col width="">
-            <col width="">
-            <col width="">
-            <col width="">
-            <col width="">
-            <col width="">
-          </colgroup>
-          <thead class="board-list-head">
-            <tr>
-              <th class="board-list-table-baqh">번호</th>
-              <th class="board-list-table-baqh">카테고리</th>
-              <th class="board-list-table-baqh">제목</th>
-              <th class="board-list-table-baqh">작성자</th>
-              <th class="board-list-table-baqh">등록일</th>
-              <th class="board-list-table-baqh">조회수</th>
-            </tr>
-          </thead>
-          <tbody class="board-list-head">
-            <?php
+            <colgroup>
+                <col width="">
+                <col width="">
+                <col width="">
+                <col width="">
+                <col width="">
+                <col width="">
+            </colgroup>
+            <thead class="board-list-head">
+                <tr>
+                    <th class="board-list-table-baqh">번호</th>
+                    <th class="board-list-table-baqh">카테고리</th>
+                    <th class="board-list-table-baqh">제목</th>
+                    <th class="board-list-table-baqh">작성자</th>
+                    <th class="board-list-table-baqh">등록일</th>
+                    <th class="board-list-table-baqh">조회수</th>
+                </tr>
+            </thead>
+            <tbody class="board-list-head">
+                <?php
                 if ($postData) {
                   foreach ($postData as $row) {
                 ?>
-            <tr>
-              <td class="board-list-table-baqh">
-                <?=$row['id']?>
-              </td>
-              <td class="board-list-table-baqh">
-                <?=$row['category_title']?>
-              </td>
-              <td class="board-list-table-baqh" style="text-align:left;">
-              <?php for($i=0;$i<$row['group_depth'];$i++){
+                <tr>
+                    <td class="board-list-table-baqh">
+                        <?=$row['id']?>
+                    </td>
+                    <td class="board-list-table-baqh">
+                        <?=$row['category_title']?>
+                    </td>
+                    <td class="board-list-table-baqh" style="text-align:left;">
+                        <?php for($i=0;$i<$row['group_depth'];$i++){
                 echo '&nbsp;&nbsp;-';
               }?>
-                <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id']?>">
-                  <?=$row['title']?>
-                </a>                
-              </td>
-              <td class="board-list-table-baqh">
-                <?=$row['writer']?>
-              </td>
-              <td class="board-list-table-baqh">
-                <?=$row['regist_date']?>
-              </td>
-              <td class="board-list-table-baqh">
-                <?=$row['hits']?>
-              </td>`
-            </tr>
-            <?php
+                        <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id']?>">
+                            <?=$row['title']?>
+                        </a>
+                    </td>
+                    <td class="board-list-table-baqh">
+                        <?=$row['writer']?>
+                    </td>
+                    <td class="board-list-table-baqh">
+                        <?=$row['regist_date']?>
+                    </td>
+                    <td class="board-list-table-baqh">
+                        <?=$row['hits']?>
+                    </td>`
+                </tr>
+                <?php
                 }
               } else {
             ?>
-            <tr>
-              <td class="board-list-table-baqh" colspan="6">등록된 게시글이 없습니다.</td>
-            </tr>
-            <?php
+                <tr>
+                    <td class="board-list-table-baqh" colspan="6">등록된 게시글이 없습니다.</td>
+                </tr>
+                <?php
                 }
             ?>
-          </tbody>
+            </tbody>
         </table>
         <footer>
-          <div class="pos-right">
-              <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
-                <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
-              </a>
-          </div>
-          <div id="paging" class="mar-top-large" style="text-align:center;">
-            <a href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">[처음]</a>
-            <a href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">[이전]</a>
-            <?php for($i=1;$i<=$totalPage;$i++){ ?>
-            <a href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?='['.$i.']'?></a>
-            <?php } ?>
-            <a href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">[다음]</a>
-            <a href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">[마지막]</a>
-          </div>
-        </footer>        
-      </body>
-  </div>
-    <!-- Javascript File-->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
-    <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
-    <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
-    <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
-    <script src="<?=DOMAIN?>/public/js/board/list.js?ver=<?=date('YmdHis')?>"></script>
-    <script>
-      /** Holder JS */
-      Holder.addTheme('thumb', {
-        bg: '#55595c',
-        fg: '#eceeef',
-        text: 'Thumbnail'
-      });
-      /** List JS */
-      let list = new List();
-    </script>
-  </body>
+            <div class="pos-right">
+                <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
+                    <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
+                </a>
+            </div>
+            <div id="paging" class="mar-top-large" style="text-align:center;">
+                <a href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">[처음]</a>
+                <a href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">[이전]</a>
+                <?php for($i=1;$i<=$totalPage;$i++){ ?>
+                <a href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?='['.$i.']'?></a>
+                <?php } ?>
+                <a href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">[다음]</a>
+                <a href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">[마지막]</a>
+            </div>
+        </footer>
+</body>
+</div>
+<!-- Javascript File-->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+</script>
+<script>
+window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')
+</script>
+<script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
+<script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
+<script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
+<script src="<?=DOMAIN?>/public/js/board/list.js?ver=<?=date('YmdHis')?>"></script>
+<script>
+/** Holder JS */
+Holder.addTheme('thumb', {
+    bg: '#55595c',
+    fg: '#eceeef',
+    text: 'Thumbnail'
+});
+/** List JS */
+let list = new List();
+</script>
+</body>
+
 </html>

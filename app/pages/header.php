@@ -10,4 +10,5 @@
     <!-- Custom styles for this template -->
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
     <link href="<?=DOMAIN?>/public/css/board.css" rel="stylesheet">
+    <link href="<?=DOMAIN?>/public/css/member.css" rel="stylesheet">
 </head>

@@ -79,7 +79,7 @@
             $msg = '게시글 삭제가 실패했습니다.';
             $href = BOARD_DIR.'/view.php?id='.$id;
         }
-        echo '<script>alert(`'.$msg.'`); location.href = "'.$href.'";</script>';        
+        echo '<script>alert(`'.$msg.'`); location.href = "'.$href.'";</script>';
     } else {
         echo '<script>alert(`잘못된 요청입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
         exit;

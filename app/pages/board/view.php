@@ -7,7 +7,7 @@
     $boardQuery = "SELECT * FROM board WHERE id=".$baordId;
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
-    if(empty($boardData) === true){
+    if (empty($boardData) === true) {
         echo '<script>alert(`존재하지 않는 게시판입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
     }
 
@@ -22,7 +22,7 @@
     // 조회수 증가 처리
     $hitsUpdateQuery = "UPDATE post SET hits = hits + 1 WHERE id = ".$postId;
     $dbh->query($hitsUpdateQuery);
-?>
+    ?>
 <!doctype html>
 <html lang="en">
     <?php require_once('../header.php'); ?>
@@ -62,7 +62,7 @@
                         <?=htmlspecialchars_decode($postData['contents'])?>
                     </div>
                 </div>
-                <?php if(false){ // 게시판 댓글 비활성화 ?>
+                <?php if (false) { // 게시판 댓글 비활성화?>
                 <div class="comment-layer">
                     <div class="form-group comment-head">
                         댓글(<span class="">0</span>)
