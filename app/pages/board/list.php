@@ -28,10 +28,9 @@
   $startRow = ($currentPage - 1) * $length;
 
   // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
-  $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC LIMIT ".$startRow.", ".$length."";
+  $postQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC LIMIT ".$startRow.", ".$length."";
   $postResult = $dbh->query($postQuery);
   $postData = $postResult->fetchAll();
-  //var_dump();exit;
   ?>
 <!doctype html>
 <html lang="en">
@@ -41,24 +40,20 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="">
-
     <title>개인 프로젝트 사이트</title>
-
     <!-- Bootstrap core CSS -->
     <link href="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
     <link href="<?=DOMAIN?>/public/css/board.css" rel="stylesheet">
   </head>
 
   <body>
-
     <div class="container">
       <header class="blog-header py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
           <div class="col-4 text-center">
-            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?= $boardData['title'] ?></h1></a>
+            <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?=$boardData['title']?></h1></a>
           </div>
         </div>
         <body>
@@ -66,7 +61,7 @@
         <div class="mar-medium">
           <input type="text" class="form-control pos-right" id="keyword" style="width:300px;" placeholder="검색어를 입력해주세요">
           <button type="button" class="btn btn-default pos-right">검색</button>
-        </div>          
+        </div>
         <table class="board-list-table">
           <colgroup>
             <col width="">
@@ -77,21 +72,20 @@
             <col width="">
           </colgroup>
           <thead class="board-list-head">
-          <tr>
-            <th class="board-list-table-baqh">번호</th>
-            <th class="board-list-table-baqh">카테고리</th>
-            <th class="board-list-table-baqh">제목</th>
-            <th class="board-list-table-baqh">작성자</th>
-            <th class="board-list-table-baqh">등록일</th>
-            <th class="board-list-table-baqh">조회수</th>
-          </tr>
+            <tr>
+              <th class="board-list-table-baqh">번호</th>
+              <th class="board-list-table-baqh">카테고리</th>
+              <th class="board-list-table-baqh">제목</th>
+              <th class="board-list-table-baqh">작성자</th>
+              <th class="board-list-table-baqh">등록일</th>
+              <th class="board-list-table-baqh">조회수</th>
+            </tr>
           </thead>
           <tbody class="board-list-head">
-            <!-- sample Row -->
             <?php
                 if ($postData) {
-                    foreach ($postData as $row) {
-                        ?>
+                  foreach ($postData as $row) {
+                ?>
             <tr>
               <td class="board-list-table-baqh">
                 <?=$row['id']?>
@@ -99,7 +93,10 @@
               <td class="board-list-table-baqh">
                 <?=$row['category_title']?>
               </td>
-              <td class="board-list-table-baqh">
+              <td class="board-list-table-baqh" style="text-align:left;">
+              <?php for($i=0;$i<$row['group_depth'];$i++){
+                echo '&nbsp;&nbsp;-';
+              }?>
                 <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id']?>">
                   <?=$row['title']?>
                 </a>                
@@ -112,19 +109,18 @@
               </td>
               <td class="board-list-table-baqh">
                 <?=$row['hits']?>
-              </td>
+              </td>`
             </tr>
             <?php
-                    }
-                } else {
-                    ?>
+                }
+              } else {
+            ?>
             <tr>
               <td class="board-list-table-baqh" colspan="6">등록된 게시글이 없습니다.</td>
             </tr>
             <?php
                 }
             ?>
-            <!-- sample Row -->
           </tbody>
         </table>
         <footer>

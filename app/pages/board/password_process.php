@@ -41,15 +41,6 @@
     $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
-    // 게시판 카테고리 조회
-    $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
-    $categoryResult = $dbh->query($categoryQuery);
-    foreach ($categoryResult as $categoryData) {
-        $category[$categoryData['sort_order']] = [
-            'category_id' => $categoryData['id'],
-            'title' => $categoryData['title']
-        ];
-    }
 
     // 공통 검증 - 게시글이 없을때, 비밀번호가 틀릴때
     if (empty($postData) === true) {
@@ -66,6 +57,15 @@
     }
 
     if ($mode === 'update') {
+        // 게시판 카테고리 조회
+        $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
+        $categoryResult = $dbh->query($categoryQuery);
+        foreach ($categoryResult as $categoryData) {
+            $category[$categoryData['sort_order']] = [
+                'category_id' => $categoryData['id'],
+                'title' => $categoryData['title']
+            ];
+        }
         // 수정 페이지 호출
         include_once(BASEPATH.'/app/pages/board/modify.php');
     } elseif ($mode === 'delete') {
