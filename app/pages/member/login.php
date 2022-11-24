@@ -16,19 +16,19 @@
             </div>
             <div class="login__forms">
                 <!-- 로그인 폼 -->
-                <form action="" class="login__register" id="login-in">
+                <form action="" class="login__register" id="form-login-in" onsubmit="return validLoginForm('in');">
                     <h1 class="login__title">로그인</h1>
                     <div class="login__box">
                         <i class='bx bx-user login__icon'></i>
-                        <input type="text" placeholder="User Account" class="login__input">
+                        <input type="text" name="account_id" placeholder="User Account" class="login__input">
                     </div>
                     <div class="login__box">
                         <i class='bx bx-lock login__icon'></i>
-                        <input type="text" placeholder="Password" class="login__input">
+                        <input type="text" name="account_password" placeholder="Password" class="login__input">
                     </div>
                     <a href="#" class="login__forgot">비밀번호를 찾으시나요? </a>
 
-                    <a href="#" class="login__button">로그인</a>
+                    <a href="#" id="sign-in-submit-btn" class="login__button" role="button">로그인</a>
 
                     <div>
                         <span class="login__account login__account--account">계정이 없으신가요?</span>
@@ -37,29 +37,29 @@
                 </form>
 
                 <!-- 계정 생성 폼 -->
-                <form action="" class="login__create none" id="login-up">
+                <form action="" class="login__create none" id="form-login-up" onsubmit="return validLoginForm('up');">
                     <h1 class="login__title">계정 생성</h1>
                     <div class="login__box">
                         <i class='bx bx-user login__icon'></i>
-                        <input type="text" placeholder="User Account" class="login__input">
+                        <input type="text" name="account_id" placeholder="User Account" class="login__input">
                     </div>
 
                     <div class="login__box">
                         <i class='bx bx-user login__icon'></i>
-                        <input type="text" placeholder="Username" class="login__input">
+                        <input type="text" name="name" placeholder="Username" class="login__input">
                     </div>
 
                     <div class="login__box">
                         <i class='bx bx-at login__icon'></i>
-                        <input type="text" placeholder="Email" class="login__input">
+                        <input type="email" name="email" placeholder="Email" class="login__input">
                     </div>
 
                     <div class="login__box">
                         <i class='bx bx-lock login__icon'></i>
-                        <input type="text" placeholder="Password" class="login__input">
+                        <input type="text" name="account_password" placeholder="Password" class="login__input">
                     </div>
 
-                    <a href="#" class="login__button">회원 가입</a>
+                    <a href="#" id="sign-up-submit-btn" class="login__button" role="button">회원 가입</a>
 
                     <div>
                         <span class="login__account login__account--account">계정이 이미 있으신가요?</span>
@@ -82,7 +82,14 @@
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="<?=DOMAIN?>/public/js/member/login.js?ver=<?=date('YmdHis')?>"></script>
     <script>
-        new Login();
+        let login = new Login();
+        
+        /**
+         * 회원가입, 로그인 폼 유효성 검증
+         */
+        function validLoginForm(type){
+            return login.validForm(type);
+        }
     </script>
 </body>
 
