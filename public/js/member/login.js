@@ -1,20 +1,45 @@
-const signup = document.getElementById("sign-up");
-signin = document.getElementById("sign-in");
-loginin = document.getElementById("login-in");
-loginup = document.getElementById("login-up");
+class Login {
 
-signup.addEventListener("click", () => {
-    loginin.classList.remove("block");
-    loginup.classList.remove("none");
+    /**
+     * Class Login 생성자
+     */
+    constructor() {
+        this.addEventListener();
+    }
 
-    loginin.classList.add("none");
-    loginup.classList.add("block");
-})
+    /**
+     * 이벤트 리스너 핸들러
+     */
+    addEventListener() {
+        this.signinEvent();
+        this.signupEvent();
+    }
 
-signin.addEventListener("click", () => {
-    loginin.classList.remove("none");
-    loginup.classList.remove("block");
+    /**
+     * 회원가입 이벤트
+     */
+    signupEvent() {
+        $('#sign-up').on('click', function () {
+            console.log('signupEvent');
+            $('#login-in').removeClass('block');
+            $('#login-up').removeClass('none');
 
-    loginin.classList.add("block");
-    loginup.classList.add("none");
-})
+            $('#login-in').addClass('none');
+            $('#login-up').addClass('block');
+        });
+    }
+
+    /**
+     * 로그인 이벤트
+     */
+    signinEvent() {
+        $('#sign-in').on('click', function () {
+            console.log('signinEvent');
+            $('#login-in').removeClass('none');
+            $('#login-up').removeClass('block');
+
+            $('#login-in').addClass('block');
+            $('#login-up').addClass('none');
+        });
+    }
+}
