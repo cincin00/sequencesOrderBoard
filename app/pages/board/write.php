@@ -32,6 +32,9 @@
         echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
       }
     }
+
+    // 로그인 검증
+    $isLogin = (isset($_SESSION['id']) === true ? true : false);
 ?>
 <!doctype html>
 <html lang="en">
@@ -84,16 +87,24 @@
                         <div class="form-group">
                             <textarea name="contents" id="post_content"><?=@$replyPostData['contents']?></textarea>
                         </div>
-                        <div class="form-group form-inline">
-                            <label for="post_writer">작성자</label>
-                            <input type="text" name="writer" id="post_writer" class="form-control"
+                        <div class="form-group form-inline">                            
+                            <?php if($isLogin === false){ ?>
+                                <label for="post_writer">작성자</label>
+                                <input type="text" name="writer" id="post_writer" class="form-control"
                                 placeholder="작성자를 입력해주세요." maxlength="255" style="width:50%">
+                            <?php } else { ?>
+                                <label class="control-label">작성자</label>
+                                <p class="form-control-static"><?=@$_SESSION['id']?></p>
+                                <input type="hidden" name="member_id" id="post_member" value="<?=@$_SESSION['id']?>" >
+                            <?php } ?>
                         </div>
+                        <?php if($isLogin === false){ ?>
                         <div class="form-group form-inline">
                             <label for="post_password">비밀번호</label>
                             <input type="password" name="password" id="post_password" class="form-control"
                                 placeholder="비밀번호를 입력해주세요." maxlength="255" style="width:50%">
                         </div>
+                        <?php } ?>
                     </div>
                     <div class="post-content-layer row">
                         <div class="col-md-12 text-center">
@@ -102,10 +113,9 @@
                         </div>
                     </div>
                 </div>
-    </div>
-    </form>
+            </form>
+        </body>
 </body>
-</div>
 <!-- Javascript File-->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">

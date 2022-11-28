@@ -25,9 +25,9 @@
         $msg = '게시글 제목은 필수입니다.';
     } elseif (empty($params['contents']) === true) {
         $msg = '게시글 내용은 필수입니다.';
-    } elseif (empty($params['writer']) === true) {
+    } elseif (empty($params['writer']) === true && empty($params['member_id']) === true) {
         $msg = '작성자는 필수입니다.';
-    } elseif (empty($params['password']) === true) {
+    } elseif (empty($params['password']) === true && empty($params['member_id']) === true) {
         $msg = '비밀번호는 필수입니다.';
     } else {
         $msg = '';
@@ -49,7 +49,15 @@
     $registDate = date('Y-m-d H:i:s');
     $isDelete = 0;
     $hits = 0;
-    //var_dump($_POST);var_dump($params);exit;
+
+    if($params['member_id']){        
+        $query = $dbh->prepare("SELECT * FROM member WHERE account_id = ? ");
+        $query->execute([$params['member_id']]);
+        $memberInfo = $query->fetchAll();
+        $writer = $memberId = $memberInfo[0]['account_id'];
+        $password = $memberInfo[0]['account_password'];
+    }
+
     // 답글 데이터 처리 - 이전 게시글 번호가 있는 경우
     if (empty($params['group_id']) === false && $params['group_id'] > 0) {
         $groupId = $params['group_id'];
