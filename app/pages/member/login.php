@@ -1,7 +1,9 @@
 `<?php
     //echo 'login.php';
     require_once('../../../index.php');
-    
+    if(isset($_SESSION['id']) === true){
+        header("Location: ".BOARD_DIR."/list.php");
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -16,7 +18,8 @@
             </div>
             <div class="login__forms">
                 <!-- 로그인 폼 -->
-                <form method="post" action="<?=MEMBER_DIR?>/member_process.php" class="login__register" id="form-login-in" onsubmit="return validLoginForm('in');">
+                <form method="post" action="<?=MEMBER_DIR?>/member_process.php" class="login__register"
+                    id="form-login-in" onsubmit="return validLoginForm('in');">
                     <input type="hidden" name="mode" value="signin">
                     <h1 class="login__title">로그인</h1>
                     <div class="login__box">
@@ -38,7 +41,8 @@
                 </form>
 
                 <!-- 계정 생성 폼 -->
-                <form method="post" action="<?=MEMBER_DIR?>/member_process.php" class="login__create none" id="form-login-up" onsubmit="return validLoginForm('up');">
+                <form method="post" action="<?=MEMBER_DIR?>/member_process.php" class="login__create none"
+                    id="form-login-up" onsubmit="return validLoginForm('up');">
                     <input type="hidden" name="mode" value="signup">
                     <h1 class="login__title">계정 생성</h1>
                     <div class="login__box">
@@ -87,17 +91,18 @@
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <!-- Javascript File-->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
     <script src="<?=DOMAIN?>/public/js/member/login.js?ver=<?=date('YmdHis')?>"></script>
     <script>
-        let login = new Login();
-        
-        /**
-         * 회원가입, 로그인 폼 유효성 검증
-         */
-        function validLoginForm(type){
-            return login.validForm(type);
-        }
+    let login = new Login();
+
+    /**
+     * 회원가입, 로그인 폼 유효성 검증
+     */
+    function validLoginForm(type) {
+        return login.validForm(type);
+    }
     </script>
 </body>
 
