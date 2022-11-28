@@ -25,7 +25,11 @@
           // 세션 저장
           session_destroy();
           session_start();
-          $_SESSION['id'] = $accountId;
+          $_SESSION['id'] = $result[0]['id'];
+          $_SESSION['account_id'] = $result[0]['account_id'];
+          $_SESSION['account_password'] = $result[0]['account_password'];
+          $_SESSION['name'] = $result[0]['name'];
+          $_SESSION['email'] = $result[0]['email'];
           $msg = '로그인되었습니다.';
           $location = BOARD_DIR.'/list.php';
       }
@@ -111,7 +115,11 @@
       // 세션 추가 및 페이지 이동(게시판 목록)
       session_destroy();
       session_start();
-      $_SESSION['id'] = $accountId;
+      $_SESSION['id'] = $sth->lastInsertId();
+      $_SESSION['account_id'] = $accountId;
+      $_SESSION['account_password'] = $accountPassword1;
+      $_SESSION['name'] = $name;
+      $_SESSION['email'] = $email;
       $msg = '회원가입을 환영합니다.';
       $location = BOARD_DIR.'/list.php';
       echo '<script>alert("'.$msg.'");location.href = "'.$location.'"</script>';

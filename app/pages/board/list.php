@@ -75,11 +75,13 @@
 
             <body>
         </header>
+        <?php if(false){ ?>
         <div class="mar-medium">
             <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
                 placeholder="검색어를 입력해주세요">
             <button type="button" class="btn btn-default pos-right">검색</button>
         </div>
+        <?php } ?>
         <table class="board-list-table">
             <colgroup>
                 <col width="">

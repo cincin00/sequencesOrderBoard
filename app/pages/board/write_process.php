@@ -16,7 +16,7 @@
     if (isset($_POST['board_category']) === true && empty($_POST['board_category']) === false && gettype($_POST['board_category'] === 'int')) {
         $params['board_category'] = $_POST['board_category'];
     } else {
-        $params['board_category'] = 'NULL';
+        $params['board_category'] = NULL;
     }
     $params['writer'] = (isset($_POST['writer']) === true ? $_POST['writer'] : '');
 
@@ -51,11 +51,9 @@
     $hits = 0;
 
     if($params['member_id']){        
-        $query = $dbh->prepare("SELECT * FROM member WHERE account_id = ? ");
-        $query->execute([$params['member_id']]);
-        $memberInfo = $query->fetchAll();
-        $writer = $memberId = $memberInfo[0]['account_id'];
-        $password = $memberInfo[0]['account_password'];
+        $memberId = $_SESSION['id'];
+        $writer = $_SESSION['account_id'];
+        $password = $_SESSION['account_password'];
     }
 
     // 답글 데이터 처리 - 이전 게시글 번호가 있는 경우
@@ -71,10 +69,9 @@
         $groupDepth = 0;
     }
 
-    // 데이터 저장
-    $postQuery = "INSERT INTO post (board_id,password,title,contents,board_category,writer,regist_date,is_delete,hits,group_order,group_depth) VALUES ($boardId, '$password', '$title', '$contents', $boardCategory, '$writer', '$registDate', $isDelete, $hits, $groupOrder, $groupDepth)";
-
-    $result = $dbh->exec($postQuery);
+    // 데이터 저장    
+    $sth = $dbh->prepare("INSERT INTO post (board_id,member_id, password,title,contents,board_category,writer,regist_date,is_delete,hits,group_order,group_depth) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+    $result = $sth->execute([$boardId, $memberId, $password, $title, $contents, $boardCategory, $writer, $registDate, $isDelete, $hits, $groupOrder, $groupDepth]);
     if ($result) {
         $postId = $dbh->lastInsertId();
         // 최상위 게시글은 게시글 그룹을 자기 자신의 post.id(PK)로 할당 - $params['group_id']가 없으면 최상위

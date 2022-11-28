@@ -94,7 +94,7 @@
                                 placeholder="작성자를 입력해주세요." maxlength="255" style="width:50%">
                             <?php } else { ?>
                                 <label class="control-label">작성자</label>
-                                <p class="form-control-static"><?=@$_SESSION['id']?></p>
+                                <p class="form-control-static"><?=@$_SESSION['account_id']?></p>
                                 <input type="hidden" name="member_id" id="post_member" value="<?=@$_SESSION['id']?>" >
                             <?php } ?>
                         </div>

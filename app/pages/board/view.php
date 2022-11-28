@@ -12,7 +12,7 @@
     }
 
     // 게시글 정보 조회
-    $postQuery = "SELECT `po`.id, `po`.title , `po`.writer, `po`.contents, `po`.regist_date, `po`.hits, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$postId." AND `po`.board_id = ".$baordId;
+    $postQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$postId." AND `po`.board_id = ".$baordId;
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
     if (empty($postData) === true) {
@@ -22,19 +22,32 @@
     // 조회수 증가 처리
     $hitsUpdateQuery = "UPDATE post SET hits = hits + 1 WHERE id = ".$postId;
     $dbh->query($hitsUpdateQuery);
-    ?>
+
+    // 로그인 검증
+    $isLogin = $ownPost = false;
+    if(isset($_SESSION['id']) === true){
+        $isLogin = true;
+        if($_SESSION['id'] === $postData['member_id']){
+            $ownPost = true;
+        }
+    }
+?>
 <!doctype html>
 <html lang="en">
-    <?php require_once('../header.php'); ?>
-    <body>
-        <div class="container">
+<?php require_once('../header.php'); ?>
+
+<body>
+    <div class="container">
         <header class="py-3">
             <div class="row flex-nowrap justify-content-between align-items-center">
-            <div class="col-4 text-center">
-                <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php"><h1><?=$boardData['title'] ?></h1></a>
-            </div>
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php">
+                        <h1><?=$boardData['title'] ?></h1>
+                    </a>
+                </div>
             </div>
         </header>
+
         <body>
             <div class="form-layer">
                 <div class="post-layer">
@@ -47,15 +60,27 @@
                             <span><?=$postData['regist_date']?></span>
                         </div>
                         <div class="sub-tool-layer text-right">
-                            <span class="line-right">
+                            <span>
                                 <a id="btn_post_reply" href="#" role="button" data-toggle="" data-target="">답글</a>
                             </span>
-                            <span class="pad-left-small line-right">
-                                <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal">수정</a>
+                            <?php if($isLogin === true){ ?>
+                            <?php if($ownPost === true){ ?>
+                            <span class="pad-left-small line-left">
+                                <a id="btn_post_member_mod" href="#" role="button">수정</a>
                             </span>
-                            <span class="pad-left-small">
+                            <span class="pad-left-small line-left">
+                                <a id="btn_post_member_del" href="#" role="button">삭제</a>
+                            </span>
+                            <?php } ?>
+                            <?php } else { ?>
+                                <span class="pad-left-small line-right">
+                                <a id="btn_post_mod" href="#" role="button" data-toggle="modal"
+                                    data-target="#myModal">수정</a>
+                            </span>                
+                            <span class="pad-left-small">                                                            
                                 <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
-                            </span> 
+                            </span>
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="post-content-layer">
@@ -71,11 +96,13 @@
                         <div class="input-layer row">
                             <div class="form-group col-xs-3">
                                 <label class="sr-only" for="comment_writer">작성자</label>
-                                <input type="text" name="comment_writer" id="comment_writer" class="form-control" placeholder="작성자">
+                                <input type="text" name="comment_writer" id="comment_writer" class="form-control"
+                                    placeholder="작성자">
                             </div>
                             <div class="form-group col-xs-3">
                                 <label class="sr-only" for="comment_password">비밀번호</label>
-                                <input type="password" name="comment_pasword" id="comment_pasword" class="form-control" placeholder="비밀번호">
+                                <input type="password" name="comment_pasword" id="comment_pasword" class="form-control"
+                                    placeholder="비밀번호">
                             </div>
                         </div>
                         <div class="comment-editor-layer row">
@@ -84,7 +111,7 @@
                             </div>
                             <div class="col-xs-6 col-md-4">
                                 <button class="btn btn-primary pad-large">댓글 등록</button>
-                            </div>                                            
+                            </div>
                         </div>
                     </div>
                     <div class="comment-list container-fluid">
@@ -99,13 +126,13 @@
                         <div class="row">
                             <span class="col-md-1">
                                 <a href="<?=BOARD_DIR?>/" role="button">수정</a>
-                            </span>            
+                            </span>
                             <span class="line-right line-left col-md-1">
                                 <a href="<?=BOARD_DIR?>/" role="button">삭제</a>
-                            </span> 
+                            </span>
                             <span class="col-md-1">
                                 <a href="<?=BOARD_DIR?>/" role="button">답글</a>
-                            </span> 
+                            </span>
                         </div>
                         <!-- sample dom -->
                     </div>
@@ -116,48 +143,57 @@
                 </div>
             </div>
         </body>
-        </div>
-        <?php include_once('./password.php'); ?>
-        <!-- Javascript File-->
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script>window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
-        <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
-        <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
-        <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
-        <script type="text/javascript" src="<?=DOMAIN?>/public/js/board/view.js?ver=<?=date('YmdHis')?>"></script>
-        <script>
-            /** Holder JS */
-            Holder.addTheme('thumb', {
-                bg: '#55595c',
-                fg: '#eceeef',
-                text: 'Thumbnail'
-            });        
-            /** Board View Js */
-            let viewData = {
-                baseUrl: '<?=BOARD_DIR?>',
-                boardId: <?=$baordId?>,
-                postId: <?=$postData['id']?>,
-            }
-            let view = new View(viewData);
-            $('#passwdSubmitBtn').on('click', function(){
-                let mode = $(this).data('mode');
-                let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);
-                // 비밀번호 팝업 이벤트
-                view.passwordFormEvent(param);
-            });
+    </div>
+    <?php include_once('./password.php'); ?>
+    <!-- Javascript File-->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+    window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')
+    </script>
+    <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
+    <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
+    <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
+    <script type="text/javascript" src="<?=DOMAIN?>/public/js/board/view.js?ver=<?=date('YmdHis')?>"></script>
+    <script>
+    /** Holder JS */
+    Holder.addTheme('thumb', {
+        bg: '#55595c',
+        fg: '#eceeef',
+        text: 'Thumbnail'
+    });
+    /** Board View Js */
+    let viewData = {
+        baseUrl: '<?=BOARD_DIR?>',
+        boardId: <?=$baordId?>,
+        postId: <?=$postData['id']?>,
+    }
+    let view = new View(viewData);
+    $('#passwdSubmitBtn').on('click', function() {
+        let mode = $(this).data('mode');
+        let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);
+        // 비밀번호 팝업 이벤트
+        view.passwordFormEvent(param);
+    });
 
-            $('#passwdSubmitBtn').on('click', function(){
-                let mode = $(this).data('mode');
-                let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);
-                // 비밀번호 팝업 이벤트
-                view.passwordFormEvent(param);
-            });
-            
-            $("#password_form #password").on('keydown',function(e){
-                if(e.keyCode === 13){
-                    $('#passwdSubmitBtn').trigger('click');
-                }
-            });
-        </script>
-    </body>
+    $("#password_form #password").on('keydown', function(e) {
+        if (e.keyCode === 13) {
+            $('#passwdSubmitBtn').trigger('click');
+        }
+    });
+
+    <?php if($isLogin){ ?>
+    $('#btn_post_member_mod').on('click', function() {
+        let parmas = view.passwrodFormParamCreate('update', <?=$postData['id']?>)
+        view.passwordFormEvent(parmas);
+    });
+    $('#btn_post_member_del').on('click', function() {
+        let parmas = view.passwrodFormParamCreate('delete', <?=$postData['id']?>)
+        view.passwordFormEvent(parmas);
+    });
+    <?php } ?>
+    </script>
+</body>
+
 </html>
+<!-- <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
+<input type="hidden" name="id" value="<?=$postData['id']?>"> -->
