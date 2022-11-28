@@ -31,6 +31,11 @@
   $postQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC LIMIT ".$startRow.", ".$length."";
   $postResult = $dbh->query($postQuery);
   $postData = $postResult->fetchAll();
+
+  $memberLogin = false;
+  if(isset($_SESSION['id']) === true && empty($_SESSION['id']) === false){
+    $memberLogin = true;
+  }
   ?>
 <!doctype html>
 <html lang="en">
@@ -42,15 +47,20 @@
             <div class="header-sub">
                 <div class="col-md-6"></div>
                 <div class="col-md-6">
+                    <?php if(!$memberLogin){ ?>
                     <div class="col-md-2 pos-right">
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/join.php" role="button">회원가입</a>
                     </div>
                     <div class="col-md-2 pos-right">
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>
                     </div>
-                    <?php if(!$_SESSION){ //TODO 마이페이지 기능 활성화 처리하기 ?>
+                    <?php }elseif($memberLogin){ ?>
                     <div class="col-md-2 pos-right">
-                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a>
+                        <!-- <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a> -->
+                        <a class="btn btn-link" href="#" role="button">마이페이지</a>
+                    </div>
+                    <div class="col-md-2 pos-right">
+                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>
                     </div>
                     <?php } ?>
                 </div>

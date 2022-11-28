@@ -96,8 +96,10 @@ class Login {
             result = true;
         }
 
-        alert(msg);
-        target.focus();
+        if(result === false){
+            alert(msg);
+            target.focus();
+        }
 
         return result;
     }
@@ -130,8 +132,11 @@ class Login {
             result = true;
         }
 
-        alert(msg);
-        target.focus();
+        if(result === false){
+            alert(msg);
+            target.focus();
+        }
+
         return result;
     };
 }

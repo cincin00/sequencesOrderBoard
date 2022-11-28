@@ -1,4 +1,4 @@
-<?php
+`<?php
     //echo 'login.php';
     require_once('../../../index.php');
     
@@ -16,15 +16,16 @@
             </div>
             <div class="login__forms">
                 <!-- 로그인 폼 -->
-                <form action="" class="login__register" id="form-login-in" onsubmit="return validLoginForm('in');">
+                <form method="post" action="<?=MEMBER_DIR?>/member_process.php" class="login__register" id="form-login-in" onsubmit="return validLoginForm('in');">
+                    <input type="hidden" name="mode" value="signin">
                     <h1 class="login__title">로그인</h1>
                     <div class="login__box">
                         <i class='bx bx-user login__icon'></i>
-                        <input type="text" name="account_id" placeholder="User Account" class="login__input">
+                        <input type="text" name="account_id" placeholder="아이디" class="login__input">
                     </div>
                     <div class="login__box">
                         <i class='bx bx-lock login__icon'></i>
-                        <input type="text" name="account_password" placeholder="Password" class="login__input">
+                        <input type="password" name="account_password1" placeholder="비밀번호" class="login__input">
                     </div>
                     <a href="#" class="login__forgot">비밀번호를 찾으시나요? </a>
 
@@ -37,27 +38,34 @@
                 </form>
 
                 <!-- 계정 생성 폼 -->
-                <form action="" class="login__create none" id="form-login-up" onsubmit="return validLoginForm('up');">
+                <form method="post" action="<?=MEMBER_DIR?>/member_process.php" class="login__create none" id="form-login-up" onsubmit="return validLoginForm('up');">
+                    <input type="hidden" name="mode" value="signup">
                     <h1 class="login__title">계정 생성</h1>
                     <div class="login__box">
                         <i class='bx bx-user login__icon'></i>
-                        <input type="text" name="account_id" placeholder="User Account" class="login__input">
-                    </div>
-
-                    <div class="login__box">
-                        <i class='bx bx-user login__icon'></i>
-                        <input type="text" name="name" placeholder="Username" class="login__input">
-                    </div>
-
-                    <div class="login__box">
-                        <i class='bx bx-at login__icon'></i>
-                        <input type="email" name="email" placeholder="Email" class="login__input">
+                        <input type="text" name="account_id" placeholder="아이디" class="login__input">
                     </div>
 
                     <div class="login__box">
                         <i class='bx bx-lock login__icon'></i>
-                        <input type="text" name="account_password" placeholder="Password" class="login__input">
+                        <input type="password" name="account_password1" placeholder="비밀번호" class="login__input">
                     </div>
+
+                    <div class="login__box">
+                        <i class='bx bx-lock login__icon'></i>
+                        <input type="password" name="account_password2" placeholder="비밀번호 확인 " class="login__input">
+                    </div>
+
+                    <div class="login__box">
+                        <i class='bx bx-user login__icon'></i>
+                        <input type="text" name="name" placeholder="이름" class="login__input">
+                    </div>
+
+                    <div class="login__box">
+                        <i class='bx bx-at login__icon'></i>
+                        <input type="email" name="email" placeholder="이메일" class="login__input">
+                    </div>
+
 
                     <a href="#" id="sign-up-submit-btn" class="login__button" role="button">회원 가입</a>
 
@@ -93,4 +101,4 @@
     </script>
 </body>
 
-</html>
+</html>`
