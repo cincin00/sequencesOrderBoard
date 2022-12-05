@@ -1,4 +1,5 @@
 <?php
+
   require_once('../../../index.php');
   // 게시판 설정 로드 - 게층형 게시판 고정
   $boardQuery = "SELECT * FROM board WHERE id='1'";
@@ -7,15 +8,13 @@
 
   // 페이징 처리
   // 현재 페이지 번호(기본: 1페이지)
-  $currentPage = (isset($_GET['page']) === true?$_GET['page']:1);
-  // 게시글 전체 수량
-  $totalRow = $dbh->query('SELECT COUNT(*) as `total_cnt` FROM post')->fetch()[0];
+  $currentPage = (isset($_GET['page']) === true ? $_GET['page'] : 1);
+  // 게시글 전체 수량(삭제 처리되지 않은 게시글만 조회)
+  $totalRow = $dbh->query('SELECT COUNT(*) as `total_cnt` FROM post WHERE is_delete = 0')->fetch()[0];
   // 1개 페이지에 표시할 게시글 수
   $length = 10;
   // 전체 페이지 수 - 0인 경우 1 페이지로 고정
   $totalPage = ceil($totalRow/$length) > 0 ? ceil($totalRow/$length) : 1;
-  // TODO - 몇개의 블록을 표시할 건지
-  $block = 4;
   // 처음 페이지
   $firstPage =  1 ;
   // 이전 페이지
@@ -33,9 +32,10 @@
   $postData = $postResult->fetchAll();
 
   $memberLogin = false;
-  if(isset($_SESSION['id']) === true && empty($_SESSION['id']) === false){
-    $memberLogin = true;
+  if (isset($_SESSION['id']) === true && empty($_SESSION['id']) === false) {
+      $memberLogin = true;
   }
+
   ?>
 <!doctype html>
 <html lang="en">
@@ -43,11 +43,13 @@
 
 <body>
     <div class="container">
-        <header class="blog-header py-3">
+        <!-- 게시판 목록 헤더 -->
+        <div class="blog-header py-3">
             <div class="header-sub">
                 <div class="col-md-6"></div>
                 <div class="col-md-6">
                     <?php if(!$memberLogin){ ?>
+                    <!-- 비회원 상단 메뉴 -->
                     <div class="col-md-2 pos-right">
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/join.php" role="button">회원가입</a>
                     </div>
@@ -55,44 +57,45 @@
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>
                     </div>
                     <?php }elseif($memberLogin){ ?>
-                    <div class="col-md-2 pos-right">                        
-                        <!-- <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a> -->
+                    <!-- 회원 상단 메뉴 -->
+                    <div class="col-md-2 pos-right">
                         <a class="btn btn-link" href="#" role="button">마이페이지</a>
                     </div>
                     <div class="col-md-2 pos-right">
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>
                     </div>
-                    <div class="col-md-3 pos-right">                   
-                        <span><?=$_SESSION['account_id']?>님 환영입니다.</span>
-                    </div>                    
+                    <div class="col-md-3 pos-right">
+                        <span class="btn disabled"><?=$_SESSION['account_id']?>님 환영입니다.</span>
+                    </div>
                     <?php } ?>
                 </div>
             </div>
+            <!-- 게시판명 -->
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
-                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php">
-                        <h1><?=$boardData['title']?></h1>
+                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR;?>/list.php">
+                        <h1><?=$boardData['title'];?></h1>
                     </a>
                 </div>
             </div>
-
-            <body>
-        </header>
+        </div>
         <?php if(false){ ?>
+        <!-- 검색어 -->
         <div class="mar-medium">
             <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
                 placeholder="검색어를 입력해주세요">
             <button type="button" class="btn btn-default pos-right">검색</button>
         </div>
         <?php } ?>
+        <!-- 게시글 목록 -->
         <table class="board-list-table">
             <colgroup>
-                <col width="">
-                <col width="">
-                <col width="">
-                <col width="">
-                <col width="">
-                <col width="">
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
             </colgroup>
             <thead class="board-list-head">
                 <tr>
@@ -106,52 +109,62 @@
             </thead>
             <tbody class="board-list-head">
                 <?php
+                // 게시글 데이터가 있는 경우
                 if ($postData) {
+                    // 게시글번호 = 전체 게시글 수량 - 시작 게시글 번호
+                    $index = $totalRow - $startRow;
                   foreach ($postData as $row) {
                 ?>
                 <tr>
+                    <!-- 게시글번호 -->
                     <td class="board-list-table-baqh">
-                        <?=$row['id']?>
+                        <?=$index?>
                     </td>
+                    <!-- 게시글 카테고리 -->
                     <td class="board-list-table-baqh">
-                        <?=$row['category_title']?>
+                        <?=$row['category_title']??' - ';?>
                     </td>
+                    <!-- 게시글 제목 -->
                     <td class="board-list-table-baqh" style="text-align:left;">
-                        <?php for($i=0;$i<$row['group_depth'];$i++){
-                echo '&nbsp;&nbsp;-';
-              }?>
-                        <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id']?>">
-                            <?=$row['title']?>
-                        </a>
+                        <?php for($i=0;$i<$row['group_depth'];$i++){ echo '&#9;&#9;└';}?>
+                        <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id'];?>"><?=$row['title'];?></a>
                     </td>
+                    <!-- 게시글 작성자 -->
                     <td class="board-list-table-baqh">
                         <?=$row['writer']?>
                     </td>
+                    <!-- 게시글 등록일 -->
                     <td class="board-list-table-baqh">
                         <?=$row['regist_date']?>
                     </td>
+                    <!-- 게시글 조회수 -->
                     <td class="board-list-table-baqh">
                         <?=$row['hits']?>
-                    </td>`
+                    </td>
                 </tr>
                 <?php
-                }
-              } else {
-            ?>
+                    // 게시글 번호는 -1 씩 감소
+                    $index--;
+                    }
+                } else {
+                // 게시글 데이터가 없는 경우
+                ?>
                 <tr>
                     <td class="board-list-table-baqh" colspan="6">등록된 게시글이 없습니다.</td>
                 </tr>
                 <?php
                 }
-            ?>
+                ?>
             </tbody>
         </table>
-        <footer>
+        <!-- 게시판 목록 푸터 -->
+        <div>
             <div class="pos-right">
                 <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
                     <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
                 </a>
             </div>
+            <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
                 <a href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">[처음]</a>
                 <a href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">[이전]</a>
@@ -161,30 +174,27 @@
                 <a href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">[다음]</a>
                 <a href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">[마지막]</a>
             </div>
-        </footer>
-</body>
-</div>
-<!-- Javascript File-->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-</script>
-<script>
-window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')
-</script>
-<script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
-<script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
-<script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
-<script src="<?=DOMAIN?>/public/js/board/list.js?ver=<?=date('YmdHis')?>"></script>
-<script>
-/** Holder JS */
-Holder.addTheme('thumb', {
-    bg: '#55595c',
-    fg: '#eceeef',
-    text: 'Thumbnail'
-});
-/** List JS */
-let list = new List();
-</script>
+        </div>
+    </div>
+    <!-- Javascript File-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
+    <script> window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
+    <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
+    <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>
+    <script src="<?=DOMAIN?>/public/js/board/list.js?ver=<?=date('YmdHis')?>"></script>
+    <script>
+    /** Holder JS */
+    Holder.addTheme('thumb', {
+        bg: '#55595c',
+        fg: '#eceeef',
+        text: 'Thumbnail'
+    });
+    /** List JS */
+    let list = new List();
+    </script>
 </body>
 
 </html>
