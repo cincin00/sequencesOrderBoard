@@ -50,7 +50,7 @@
     $isDelete = 0;
     $hits = 0;
 
-    if(isset($params['member_id']) === true && ($params['member_id'] === $_SESSION['account_id']) ){
+    if((int)$params['member_id'] == (int)$_SESSION['id']){
         $memberId = $_SESSION['id'];
         $writer = $_SESSION['account_id'];
         $password = $_SESSION['account_password'];
