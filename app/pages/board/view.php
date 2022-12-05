@@ -22,13 +22,13 @@
     // 조회수 증가 처리
     $hitsUpdateQuery = "UPDATE post SET hits = hits + 1 WHERE id = ".$postId;
     $dbh->query($hitsUpdateQuery);
-
-    // 로그인 검증
-    $isLogin = $ownPost = false;
-    if(isset($_SESSION['id']) === true){
-        $isLogin = true;
-        if($_SESSION['id'] === $postData['member_id']){
-            $ownPost = true;
+    
+    // 비회원, 회원 게시글 분기 처리
+    $isMember = $isOwn = false;
+    if($postData['member_id'] && isset($_SESSION['id'])){
+        $isMember = true;
+        if($postData['member_id'] === $_SESSION['id']){
+            $isOwn = true;
         }
     }
 ?>
@@ -63,23 +63,22 @@
                             <span>
                                 <a id="btn_post_reply" href="#" role="button" data-toggle="" data-target="">답글</a>
                             </span>
-                            <?php if($isLogin === true){ ?>
-                            <?php if($ownPost === true){ ?>
-                            <span class="pad-left-small line-left">
-                                <a id="btn_post_member_mod" href="#" role="button">수정</a>
-                            </span>
-                            <span class="pad-left-small line-left">
-                                <a id="btn_post_member_del" href="#" role="button">삭제</a>
-                            </span>
-                            <?php } ?>
+                            <?php if($isMember){ ?>
+                                <?php if($isOwn){ ?>
+                                    <span class="pad-left-small line-left">
+                                        <a id="btn_post_member_mod" href="#" role="button" title="회원용 수정">수정</a>
+                                    </span>
+                                    <span class="pad-left-small line-left">
+                                        <a id="btn_post_member_del" href="#" role="button">삭제</a>
+                                    </span>                              
+                                <?php } ?>
                             <?php } else { ?>
-                                <span class="pad-left-small line-right">
-                                <a id="btn_post_mod" href="#" role="button" data-toggle="modal"
-                                    data-target="#myModal">수정</a>
-                            </span>                
-                            <span class="pad-left-small">                                                            
-                                <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
-                            </span>
+                                    <span class="pad-left-small line-left">
+                                        <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal" title="비회원용 수정">수정</a>
+                                    </span>
+                                    <span class="pad-left-small line-left">                                                            
+                                        <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
+                                    </span>
                             <?php } ?>
                         </div>
                     </div>
@@ -181,7 +180,7 @@
         }
     });
 
-    <?php if($isLogin){ ?>
+    <?php if($isMember){ //TODO 수정 필요 ?>
     $('#btn_post_member_mod').on('click', function() {
         let parmas = view.passwrodFormParamCreate('update', <?=$postData['id']?>)
         view.passwordFormEvent(parmas);
@@ -195,5 +194,3 @@
 </body>
 
 </html>
-<!-- <input type="hidden" name="board_id" value="<?=$boardData['id']?>">
-<input type="hidden" name="id" value="<?=$postData['id']?>"> -->

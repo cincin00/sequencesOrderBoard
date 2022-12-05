@@ -55,13 +55,16 @@
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>
                     </div>
                     <?php }elseif($memberLogin){ ?>
-                    <div class="col-md-2 pos-right">
+                    <div class="col-md-2 pos-right">                        
                         <!-- <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a> -->
                         <a class="btn btn-link" href="#" role="button">마이페이지</a>
                     </div>
                     <div class="col-md-2 pos-right">
                         <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>
                     </div>
+                    <div class="col-md-3 pos-right">                   
+                        <span><?=$_SESSION['account_id']?>님 환영입니다.</span>
+                    </div>                    
                     <?php } ?>
                 </div>
             </div>
