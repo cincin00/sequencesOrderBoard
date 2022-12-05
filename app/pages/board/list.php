@@ -87,6 +87,7 @@
             <button type="button" class="btn btn-default pos-right">검색</button>
         </div>
         <?php } ?>
+        <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">
             <colgroup>
