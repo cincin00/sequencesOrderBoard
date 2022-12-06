@@ -128,7 +128,9 @@
                     <!-- 게시글 제목 -->
                     <td class="board-list-table-baqh" style="text-align:left;">
                         <?php for($i=0;$i<$row['group_depth'];$i++){ echo '&#9;&#9;└';}?>
-                        <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id'];?>"><?=$row['title'];?></a>
+                        <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id'];?>">
+                            <?=$row['title'];?>
+                        </a>                        
                     </td>
                     <!-- 게시글 작성자 -->
                     <td class="board-list-table-baqh">
@@ -159,7 +161,7 @@
             </tbody>
         </table>
         <!-- 게시판 목록 푸터 -->
-        <div>
+        <div style="font-size:12px;">
             <div class="pos-right">
                 <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
                     <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
@@ -167,13 +169,13 @@
             </div>
             <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
-                <a href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">[처음]</a>
-                <a href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">[이전]</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">처음</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">이전</a>
                 <?php for($i=1;$i<=$totalPage;$i++){ ?>
-                <a href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?='['.$i.']'?></a>
+                <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>" href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
                 <?php } ?>
-                <a href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">[다음]</a>
-                <a href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">[마지막]</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">다음</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">마지막</a>
             </div>
         </div>
     </div>
