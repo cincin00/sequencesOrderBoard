@@ -33,7 +33,7 @@
     $boardQuery = "SELECT * FROM board WHERE id='1'";
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
-    
+
     // 게시글 정보 조회
     $postBaseQuery = "SELECT `po`.*, `bc`.id as `category_id`, `bc`.title as `category_title` FROM post as `po`";
     $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
@@ -42,6 +42,7 @@
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
 
+    // FIXME 검증 오류 수정
     // 공통 검증 - 게시글이 없을때, 비밀번호가 틀릴때
     if (empty($postData) === true) {
         $msg = '일치하는 게시글이 없습니다.';
@@ -53,10 +54,12 @@
             $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
         }
     } else {
-        // 회원일때, 자기 게시글 아닐떄
-        if ($memberId !== $postData['member_id']) {
-            $msg = '접근 권한이 없습니다.';
-            $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
+        if ($postData['member_id']) {
+            // 회원일때, 자기 게시글 아닐떄
+            if ($memberId !== $postData['member_id']) {
+                $msg = '접근 권한이 없습니다.';
+                $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
+            }
         }
     }
 
@@ -67,9 +70,9 @@
 
     // 로그인 검증
     $isLogin = $ownPost = false;
-    if(isset($_SESSION['id']) === true){
+    if (isset($_SESSION['id']) === true) {
         $isLogin = true;
-        if($memberId === $postData['member_id']){
+        if ($memberId === $postData['member_id']) {
             $ownPost = true;
         }
     }

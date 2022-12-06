@@ -16,7 +16,7 @@
     if (isset($_POST['board_category']) === true && empty($_POST['board_category']) === false && gettype($_POST['board_category'] === 'int')) {
         $params['board_category'] = $_POST['board_category'];
     } else {
-        $params['board_category'] = NULL;
+        $params['board_category'] = null;
     }
     $params['writer'] = (isset($_POST['writer']) === true ? $_POST['writer'] : '');
 
@@ -50,10 +50,12 @@
     $isDelete = 0;
     $hits = 0;
 
-    if((int)$params['member_id'] == (int)$_SESSION['id']){
-        $memberId = $_SESSION['id'];
-        $writer = $_SESSION['account_id'];
-        $password = $_SESSION['account_password'];
+    if (isset($_SESSION['id'])) {
+        if ((int)$params['member_id'] == (int)$_SESSION['id']) {
+            $memberId = $_SESSION['id'];
+            $writer = $_SESSION['account_id'];
+            $password = $_SESSION['account_password'];
+        }
     }
 
     // 답글 데이터 처리 - 이전 게시글 번호가 있는 경우
@@ -69,7 +71,7 @@
         $groupDepth = 0;
     }
 
-    // 데이터 저장    
+    // 데이터 저장
     $sth = $dbh->prepare("INSERT INTO post (board_id,member_id, password,title,contents,board_category,writer,regist_date,is_delete,hits,group_order,group_depth) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
     $result = $sth->execute([$boardId, $memberId, $password, $title, $contents, $boardCategory, $writer, $registDate, $isDelete, $hits, $groupOrder, $groupDepth]);
     if ($result) {

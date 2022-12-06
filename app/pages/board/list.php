@@ -140,7 +140,7 @@
                     </td>
                     <!-- 게시글 조회수 -->
                     <td class="board-list-table-baqh">
-                        <?=$row['hits']?>
+                        <?=$row['hits']??0?>
                     </td>
                 </tr>
                 <?php

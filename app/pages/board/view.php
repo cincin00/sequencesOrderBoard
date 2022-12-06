@@ -22,16 +22,19 @@
     // 조회수 증가 처리
     $hitsUpdateQuery = "UPDATE post SET hits = hits + 1 WHERE id = ".$postId;
     $dbh->query($hitsUpdateQuery);
-    
+
     // 비회원, 회원 게시글 분기 처리
-    $isMember = $isOwn = false;
-    if($postData['member_id'] && isset($_SESSION['id'])){
-        $isMember = true;
-        if($postData['member_id'] === $_SESSION['id']){
-            $isOwn = true;
+    $isMember = $isOwn = $isMemberOwn = false;
+    if ($postData['member_id']) {
+        $isMemberOwn = true;
+        if (isset($_SESSION['id'])) {
+            $isMember = true;
+            if ($postData['member_id'] === $_SESSION['id']) {
+                $isOwn = true;
+            }
         }
     }
-?>
+    ?>
 <!doctype html>
 <html lang="en">
 <?php require_once('../header.php'); ?>
@@ -63,23 +66,31 @@
                             <span>
                                 <a id="btn_post_reply" href="#" role="button" data-toggle="" data-target="">답글</a>
                             </span>
-                            <?php if($isMember){ ?>
-                                <?php if($isOwn){ ?>
-                                    <span class="pad-left-small line-left">
-                                        <a id="btn_post_member_mod" href="#" role="button" title="회원용 수정">수정</a>
-                                    </span>
-                                    <span class="pad-left-small line-left">
-                                        <a id="btn_post_member_del" href="#" role="button">삭제</a>
-                                    </span>                              
-                                <?php } ?>
-                            <?php } else { ?>
-                                    <span class="pad-left-small line-left">
-                                        <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal" title="비회원용 수정">수정</a>
-                                    </span>
-                                    <span class="pad-left-small line-left">                                                            
-                                        <a id="btn_post_del" href="#" role="button" data-toggle="modal" data-target="#myModal">삭제</a>
-                                    </span>
+                            <?php if ($isMember) { ?>
+                            <?php if ($isOwn) { ?>
+                            <span class="pad-left-small line-left">
+                                <a id="btn_post_member_mod" href="#" role="button" title="회원용 수정">수정</a>
+                            </span>
+                            <span class="pad-left-small line-left">
+                                <a id="btn_post_member_del" href="#" role="button">삭제</a>
+                            </span>
                             <?php } ?>
+                            <?php
+                            } else {
+                                if ($isMemberOwn === false) {
+                                    ?>
+                            <span class="pad-left-small line-left">
+                                <a id="btn_post_mod" href="#" role="button" data-toggle="modal" data-target="#myModal"
+                                    title="비회원용 수정">수정</a>
+                            </span>
+                            <span class="pad-left-small line-left">
+                                <a id="btn_post_del" href="#" role="button" data-toggle="modal"
+                                    data-target="#myModal">삭제</a>
+                            </span>
+                            <?php
+                                }
+                            }
+                            ?>
                         </div>
                     </div>
                     <div class="post-content-layer">
@@ -180,7 +191,7 @@
         }
     });
 
-    <?php if($isMember){ //TODO 수정 필요 ?>
+    <?php if ($isMember) { //TODO 수정 필요?>
     $('#btn_post_member_mod').on('click', function() {
         let parmas = view.passwrodFormParamCreate('update', <?=$postData['id']?>)
         view.passwordFormEvent(parmas);
