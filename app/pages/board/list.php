@@ -104,7 +104,14 @@
                     </td>
                     <!-- 게시글 작성자 -->
                     <td class="board-list-table-baqh">
-                        <?=$row['writer']?>
+                        <span style="display:-webkit-inline-box;">
+                        <?php
+                            echo $row['writer'];
+                            if($row['member_id']){
+                                echo '<img src="'.PATH_COMMON_RESOURCE.'/profile-user.png" style="width:20px;">';
+                            }
+                        ?>
+                        </span>
                     </td>
                     <!-- 게시글 등록일 -->
                     <td class="board-list-table-baqh">

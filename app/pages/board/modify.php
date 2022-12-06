@@ -48,8 +48,26 @@
                         <div class="form-group">
                             <textarea name="contents" id="post_content"><?=$postData['contents']?></textarea>
                         </div>
-                        
-                        <?php if($isLogin === false){ ?>
+                        <?php 
+                            if($postData['member_id']) { 
+                                if($isLogin === true){
+                        ?>
+                            <!-- 회원 작성 게시글 - 로그인 상태 -->
+                            <div class="form-group form-inline">
+                                <label class="control-label">작성자</label> 
+                                <p class="form-control-static"><?=@$_SESSION['account_id']?></p>
+                                <input type="hidden" name="member_id" id="member_id" value="<?=@$_SESSION['id']?>" >
+                            </div>
+                            
+                        <?php 
+                                } else {
+                        ?>
+                            <!-- 회원 작성 게시글 - 비로그인 상태 -->
+                        <?php
+                                }
+                            } else { 
+                        ?>
+                        <!-- 비회원 작성 게시글 - 비로그인/로그인 상태 -->
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
                             <span id="post_writer" style="width:50%"><?=$postData['writer']?></span>
@@ -58,14 +76,8 @@
                             <label for="post_password">비밀번호</label>
                             <input type="password" name="password" id="post_password" class="form-control"
                                 placeholder="기존 비밀번호를 입력해주세요." maxlength="255" style="width:50%">
-                        </div>
-                        <?php } else { ?>
-                        <div class="form-group form-inline">
-                            <label class="control-label">작성자</label> 
-                            <p class="form-control-static"><?=@$_SESSION['account_id']?></p>
-                            <input type="hidden" name="member_id" id="member_id" value="<?=@$_SESSION['id']?>" >
                         </div>                            
-                        <?php } ?>
+                        <?php } ?>                        
                     </div>
                     <div class="post-content-layer row">
                         <div class="col-md-12 text-center">

@@ -42,24 +42,23 @@
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
 
-    // FIXME 검증 오류 수정
     // 공통 검증 - 게시글이 없을때, 비밀번호가 틀릴때
     if (empty($postData) === true) {
         $msg = '일치하는 게시글이 없습니다.';
         $href = BOARD_DIR.'/list.php';
-    } elseif (empty($memberId) === true) {
+    }
+    // 회원 게시글인 경우, 비회원 게시글인 경우 
+    if($postData['member_id']){    
+        // 회원일때, 자기 게시글 아닐떄
+        if ($memberId !== $postData['member_id']) {
+            $msg = '접근 권한이 없습니다.';
+            $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
+        }
+    }else{
         // 비회원일때, 비밀번호 틀렸을때
         if ($postData['password'] !== md5($password)) {
             $msg = '비밀번호가 올바르지 않습니다.';
             $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
-        }
-    } else {
-        if ($postData['member_id']) {
-            // 회원일때, 자기 게시글 아닐떄
-            if ($memberId !== $postData['member_id']) {
-                $msg = '접근 권한이 없습니다.';
-                $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
-            }
         }
     }
 

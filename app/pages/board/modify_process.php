@@ -41,22 +41,23 @@
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
 
-    if (empty($memberId) === false) {
-        // 회원일떄, 본인 게시글 검증
+    if($postData['member_id']){
+        // 회원 게시글
         if ((int)$memberId !== $postData['member_id']) {
+            // 회원일떄, 본인 게시글 검증
             echo '<script>alert(`게시글 수정이 권한이 없습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
             exit;
         }
-    } else {
+    }else{
+        // 비회원 게시글
         if ($postData['password'] !== $password) {
             // 비회원일때, 비밀번호 검증
             echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
             exit;
-        }
+        }    
     }
 
     // 데이터 가공
-
     $title = $params['title'];
     $contents = htmlentities($params['contents']);
     $boardCategory = $params['board_category'];

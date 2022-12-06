@@ -198,8 +198,11 @@
         view.passwordFormEvent(parmas);
     });
     $('#btn_post_member_del').on('click', function() {
-        let parmas = view.passwrodFormParamCreate('delete', <?=$postData['id']?>)
-        view.passwordFormEvent(parmas);
+        let response = confirm('게시글을 삭제하시겠습니까?');
+        if(response === true){
+            let parmas = view.passwrodFormParamCreate('delete', <?=$postData['id']?>)
+            view.passwordFormEvent(parmas);
+        }
     });
     <?php } ?>
     </script>
