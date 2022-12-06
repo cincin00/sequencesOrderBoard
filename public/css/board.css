@@ -120,7 +120,7 @@ h6 {
   border-radius: 2rem;
 }
 
-/** Blog posts */ 
+/** Blog posts */
 .blog-post {
   margin-bottom: 4rem;
 }
@@ -195,7 +195,7 @@ h6 {
   vertical-align: top
 }
 
-/** Custom Button */  
+/** Custom Button */
 .myButton {
   box-shadow: 0px 1px 0px 0px #f0f7fa;
   background: linear-gradient(to bottom, #33bdef 5%, #019ad2 100%);
@@ -279,7 +279,7 @@ h6 {
 }
 
 .pad-large {
-  padding: 20px; 
+  padding: 20px;
 }
 
 .pad-right-small {
@@ -291,7 +291,7 @@ h6 {
 }
 
 .pad-top-small {
-  padding-top: 5px; 
+  padding-top: 5px;
 }
 
 .pad-bottom-small {
@@ -307,7 +307,7 @@ h6 {
 }
 
 .pad-top-medium {
-  padding-top: 15px; 
+  padding-top: 15px;
 }
 
 .pad-bottom-medium {
@@ -323,7 +323,7 @@ h6 {
 }
 
 .pad-top-large {
-  padding-top: 20px; 
+  padding-top: 20px;
 }
 
 .pad-bottom-large {
@@ -362,6 +362,7 @@ h6 {
 .line-right {
   border-right: solid;
 }
+
 .line-left {
   border-left: solid;
 }

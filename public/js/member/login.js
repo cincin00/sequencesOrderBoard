@@ -69,7 +69,7 @@ class Login {
             case 'in':
                 return result = this.validLoginInForm();
             case 'up':
-                return result = this.validLoginUpForm();                
+                return result = this.validLoginUpForm();
             default:
                 alert('폼 유효성 검증에 실패하였습니다.');
                 return result = false;
@@ -92,11 +92,11 @@ class Login {
         } else if (pw.val() === '') {
             msg = '비밀번호는 필수 입력입니다.';
             target = pw;
-        }else{
+        } else {
             result = true;
         }
 
-        if(result === false){
+        if (result === false) {
             alert(msg);
             target.focus();
         }
@@ -128,11 +128,11 @@ class Login {
         } else if (email.val() === '') {
             msg = '이메일은 필수 입력입니다.';
             target = email;
-        }else{
+        } else {
             result = true;
         }
 
-        if(result === false){
+        if (result === false) {
             alert(msg);
             target.focus();
         }
