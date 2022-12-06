@@ -30,12 +30,6 @@
   $postQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC LIMIT ".$startRow.", ".$length."";
   $postResult = $dbh->query($postQuery);
   $postData = $postResult->fetchAll();
-
-  $memberLogin = false;
-  if (isset($_SESSION['id']) === true && empty($_SESSION['id']) === false) {
-      $memberLogin = true;
-  }
-
   ?>
 <!doctype html>
 <html lang="en">
@@ -45,31 +39,7 @@
     <div class="container">
         <!-- 게시판 목록 헤더 -->
         <div class="blog-header py-3">
-            <div class="header-sub">
-                <div class="col-md-6"></div>
-                <div class="col-md-6">
-                    <?php if(!$memberLogin){ ?>
-                    <!-- 비회원 상단 메뉴 -->
-                    <div class="col-md-2 pos-right">
-                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/join.php" role="button">회원가입</a>
-                    </div>
-                    <div class="col-md-2 pos-right">
-                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>
-                    </div>
-                    <?php }elseif($memberLogin){ ?>
-                    <!-- 회원 상단 메뉴 -->
-                    <div class="col-md-2 pos-right">
-                        <a class="btn btn-link" href="#" role="button">마이페이지</a>
-                    </div>
-                    <div class="col-md-2 pos-right">
-                        <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>
-                    </div>
-                    <div class="col-md-3 pos-right">
-                        <span class="btn disabled"><?=$_SESSION['account_id']?>님 환영입니다.</span>
-                    </div>
-                    <?php } ?>
-                </div>
-            </div>
+            <?php include_once('../layout/layout_header.php');?>
             <!-- 게시판명 -->
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">

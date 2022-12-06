@@ -41,6 +41,7 @@
 
 <body>
     <div class="container">
+        <?php include_once('../layout/layout_header.php');?>
         <header class="py-3">
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
