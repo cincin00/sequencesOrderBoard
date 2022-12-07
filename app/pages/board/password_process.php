@@ -1,7 +1,7 @@
 <?php
 
     require_once('../../../index.php');
-
+    
     // 게시판 번호
     $boardId = (isset($_POST['board_id']) === true ? $_POST['board_id'] : 0);
     // 게시글 번호

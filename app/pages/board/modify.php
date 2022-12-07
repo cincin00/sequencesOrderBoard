@@ -1,6 +1,3 @@
-<?php
-    //require_once('../../../index.php');
-?>
 <!doctype html>
 <html lang="en">
 <?php require_once('../header.php'); ?>

@@ -1,11 +1,11 @@
 <?php
 
     require_once('../../../index.php');
-
+    
+    // 게시글 순번
     $id = 0;
-    $passwd = '';
-    $msg = '';
-    $href = '';
+    // 게시글 비밀번호, 안내메시지, 안내 링크
+    $passwd = $msg = $href = '';
 
     // 폼데이터 수신 및 유효성 검증
     if (isset($_POST['id']) === true && empty($_POST['id']) === false) {
@@ -23,9 +23,7 @@
     }
 
     // 게시글 조회
-    $boardBaseQuery = 'SELECT * FROM post';
-    $boardWhereQuery = ' WHERE id = '.$id;
-    $boardQuery = $boardBaseQuery.$boardWhereQuery;
+    $boardQuery = 'SELECT * FROM post WHERE id = '.$id;
     $boardResult = $dbh->query($boardQuery);
     $boardData = $boardResult->fetch();
 
@@ -45,7 +43,6 @@
         ];
     } else {
         // 게시글 삭제
-        //$deleteQuery = 'DELETE FROM post WHERE id='.$id;
         $deleteQuery = 'UPDATE post SET is_delete = 1 WHERE id ='.$id;
         $queryResult = $dbh->exec($deleteQuery);
         if ($queryResult) {

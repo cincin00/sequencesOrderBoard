@@ -1,7 +1,7 @@
 <?php
 
     require_once('../../../index.php');
-
+    
     // 폼 전송 데이터 수신
     $params['board_id'] = (isset($_POST['board_id']) === true ? $_POST['board_id'] : 0);
     $params['member_id'] = (isset($_POST['member_id']) === true ? $_POST['member_id'] : null);

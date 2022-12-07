@@ -1,6 +1,6 @@
 <?php
     require_once('../../../index.php');
-
+    
     $baordId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
     $postId = isset($_GET['id']) === true ? $_GET['id'] : 0;
     // 게시판 설정 로드
