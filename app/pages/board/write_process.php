@@ -34,8 +34,7 @@
     }
 
     if (empty($msg) === false) {
-        echo '<script>alert(`'.$msg.'`); location.href = "'.BOARD_DIR.'/write.php";</script>';
-        exit;
+        commonMoveAlert($msg, BOARD_DIR.'/write.php');
     }
 
     // 데이터 가공
@@ -84,7 +83,7 @@
             // 게시글 순서 갱신 - 같은 게시글 그룹 내에서 순서 1증감한 자기 자신의 순서와 같거나 큰 게시글의 순서 모두 +1 씩 증감 처리
             $dbh->exec("UPDATE post SET group_order =  group_order + 1  WHERE group_id=".$groupId." AND group_order >=".$groupOrder);
         }
-        echo '<script>alert(`게시글이 등록되었습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId.'";</script>';
+        commonMoveAlert('게시글이 등록되었습니다.', BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId);
     } else {
-        echo '<script>alert(`게시글 등록이 실패했습니다.`);return false;</script>';
+        commonAlert('게시글 등록이 실패되었습니다.');
     }

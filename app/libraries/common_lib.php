@@ -14,7 +14,8 @@
     /**
      * debug()함수 별칭
      */
-    function dd($param){
+    function dd($param)
+    {
         debug($param);
     }
     /**

@@ -32,9 +32,7 @@
     $boardData = getBoardSetting(1);
 
     // 게시글 정보 조회
-    $postQuery = "SELECT `po`.*, `bc`.id as `category_id`, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$postId;
-    $postResult = $dbh->query($postQuery);
-    $postData = $postResult->fetch();
+    $postData = getPostData($postId);
 
     // 공통 검증 - 게시글이 없을때, 비밀번호가 틀릴때
     if (empty($postData) === true) {
@@ -57,8 +55,7 @@
     }
 
     if (empty($msg) === false && empty($href) === false) {
-        echo '<script>alert(`'.$msg.'`); location.href = "'.$href.'";</script>';
-        exit;
+        commonMoveAlert($msg, $href);
     }
 
     // 로그인 검증
@@ -86,12 +83,11 @@
 
     if ($mode === 'update') {
         // 게시판 카테고리 조회
-        $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
-        $categoryResult = $dbh->query($categoryQuery);
-        foreach ($categoryResult as $categoryData) {
-            $category[$categoryData['sort_order']] = [
-                'category_id' => $categoryData['id'],
-                'title' => $categoryData['title']
+        $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order']);
+        foreach ($categoryResult as $key) {
+            $category[$key['sort_order']] = [
+                'category_id' => $key['id'],
+                'title' => $key['title']
             ];
         }
         // 수정 페이지 호출
@@ -107,8 +103,7 @@
             $msg = '게시글 삭제가 실패했습니다.';
             $href = BOARD_DIR.'/view.php?id='.$id;
         }
-        echo '<script>alert(`'.$msg.'`); location.href = "'.$href.'";</script>';
+        commonMoveAlert($msg, $href);
     } else {
-        echo '<script>alert(`잘못된 요청입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
-        exit;
+        commonMoveAlert('잘못된 요청입니다.', BOARD_DIR.'/list.php');
     }

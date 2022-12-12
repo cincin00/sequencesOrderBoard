@@ -1,19 +1,18 @@
 <?php
     require_once('../../../index.php');
     
-    $baordId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
+    $boardId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
 
     // 게시판 설정 로드 - 게층형 게시판 고정
-    $boardQuery = "SELECT * FROM board WHERE id=".$baordId;
-    $boardResult = $dbh->query($boardQuery);
-    $boardData = $boardResult->fetch();
+    $boardData = getBoardSetting($boardId);
     if (empty($boardData) === true) {
-        echo '<script>alert(`존재하지 않는 게시판입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+        commonMoveAlert('존재하지 않는 게시판입니다.',BOARD_DIR.'/list.php');
     }
 
     // 게시판 카테고리 로드
     $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
     $categoryResult = $dbh->query($categoryQuery);
+    $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order']);
     foreach ($categoryResult as $categoryData) {
         $category[$categoryData['sort_order']] = [
             'category_id' => $categoryData['id'],
@@ -25,11 +24,11 @@
     if (isset($_GET['reply']) === true && empty($_GET['reply']) === false) {
         $replyId = $_GET['reply'];
         if ($replyId > 0) {
-            $replyQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$replyId." AND `po`.board_id = ".$baordId;
+            $replyQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$replyId." AND `po`.board_id = ".$boardId;
             $replyPostResult = $dbh->query($replyQuery);
             $replyPostData = $replyPostResult->fetch();
         } else {
-            echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+            commonMoveAlert('존재하지 않은 게시글입니다.', BOARD_DIR.'/list.php');
         }
     }
 

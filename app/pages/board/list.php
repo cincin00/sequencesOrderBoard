@@ -7,7 +7,7 @@
   // 페이징 처리
   list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($_GET, 1);
   // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
-  $postData = getPostData(1, $startRow, $length);
+  $postData = getPostDataForPaging(1, $startRow, $length);
   ?>
 <!doctype html>
 <html lang="en">
@@ -80,12 +80,12 @@
                         }?>
                         <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id'];?>">
                             <?=$row['title'];?>
-                        </a>                        
+                        </a>
                     </td>
                     <!-- 게시글 작성자 -->
                     <td class="board-list-table-baqh">
                         <span style="display:-webkit-inline-box;">
-                        <?php
+                            <?php
                             echo $row['writer'];
                         if ($row['member_id']) {
                             echo '<img src="'.PATH_COMMON_RESOURCE.'/profile-user.png" style="width:20px;">';
@@ -114,7 +114,7 @@
                 </tr>
                 <?php
                 }
-  ?>
+                ?>
             </tbody>
         </table>
         <!-- 게시판 목록 푸터 -->
@@ -129,7 +129,8 @@
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">처음</a>
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">이전</a>
                 <?php for ($i=1;$i<=$totalPage;$i++) { ?>
-                <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>" href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
+                <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>"
+                    href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
                 <?php } ?>
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">다음</a>
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">마지막</a>
@@ -140,7 +141,9 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
     </script>
-    <script> window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script>
+    window.jQuery || document.write('<script src="<?=DOMAIN?>/public/vendor/jquery-slim.min.js"><\/script>')
+    </script>
     <script src="<?=DOMAIN?>/public/vender/popper.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
     <script src="<?=DOMAIN?>/public/vender/holder.min.js"></script>

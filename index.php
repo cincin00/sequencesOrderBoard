@@ -15,7 +15,7 @@ $subject = $_SERVER['REQUEST_URI'];
 $pattern = '/app\/pages\/[a-zA-Z]*\/[a-zA-Z|_]*.php/smi';
 // fail: 0 or false, success: array
 preg_match($pattern, $subject, $matches);
-var_dump($pattern, $subject,$matches);
+
 if(empty($matches) === false){
     // URL은 1개만 전달되므로 0번째 고정 - e.g) /app/pages/board/view.php
     $requestUri = explode('/',$matches[0]);

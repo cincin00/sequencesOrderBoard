@@ -56,7 +56,7 @@
     $params['post_id'] = $postId;
     $result = modifyPost($params);
     if ($result) {
-        commonMoveAlert('게시글이 수정되었습니다.',BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);
+        commonMoveAlert('게시글이 수정되었습니다.', BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);
     } else {
-        commonMoveAlert('게시글 수정이 실패했습니다.',BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);        
+        commonMoveAlert('게시글 수정이 실패했습니다.', BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);
     }

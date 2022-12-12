@@ -28,7 +28,7 @@
                                     <select name="board_category" class="form-control">
                                         <option value="">카테고리 선택</option>
                                         <?php foreach ($category as $index => $categoryData) { ?>
-                                        <option value='<?=$categoryData['category_id']?>' <?php if ($postData['category_id']===$categoryData['category_id']) {
+                                        <option value='<?=$categoryData['category_id']?>' <?php if ($postData['board_category']===$categoryData['category_id']) {
                                             echo "selected='true'";
                                         } ?>><?=$categoryData['title']?></option>
                                         <?php } ?>

@@ -63,7 +63,8 @@ function getPagingData(array $params, int $boardId)
     return [$firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
 }
 
-function getSinglePostData(int $postId){
+function getSinglePostData(int $postId)
+{
     global $dbh;
     $response = [];
     $query = "SELECT * FROM post WHERE id = ".$postId;
@@ -76,13 +77,30 @@ function getSinglePostData(int $postId){
 /**
  * 게시판의 전체 게시글 조회
  *
+ * @param int $id 게시글 아이디
+ * @param int $isDelete 삭제된 게시글 포함 여부(0:미포함,1:포함)
+ * @return array
+ */
+function getPostData(int $postId, int $isDelete = 0)
+{
+    global $dbh;
+    $response = [];
+    $query = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.id = '$postId' AND `po`.is_delete = '$isDelete'";
+    $result = $dbh->query($query);
+    $response = $result->fetch();
+
+    return $response;
+}
+/**
+ * 게시판의 전체 게시글 조회
+ *
  * @param int $boardId 게시판 아이디
  * @param int $startRow 조회 시작할 순서
  * @param int $length 조회할 수량
  * @param int $isDelete 삭제된 게시글 포함 여부(0:미포함,1:포함)
  * @return array
  */
-function getPostData(int $boardId, int $startRow = 0, int $length = 10, int $isDelete = 0)
+function getPostDataForPaging(int $boardId, int $startRow = 0, int $length = 10, int $isDelete = 0)
 {
     global $dbh;
     $response = [];
@@ -96,7 +114,8 @@ function getPostData(int $boardId, int $startRow = 0, int $length = 10, int $isD
 /**
  * 게시글 수정
  */
-function modifyPost(array $params){
+function modifyPost(array $params)
+{
     global $dbh;
     $postId = $params['post_id'];
     $title = $params['title'];
@@ -122,4 +141,31 @@ function havePostReplay(int $id = 0)
     $sth = $dbh->query('SELECT COUNT(*) as `reply_num` FROM post WHERE is_delete = 0 AND group_id = '.$id);
     $queryResult = $sth->fetch();
     return $queryResult['reply_num'] > 1 ? true : false;
+}
+
+/**
+ * 게시글 카테고리 조회
+ *
+ * @param array $params 조회 조건
+ * @return array
+ */
+function getCategoryData(array $params = [])
+{
+    global $dbh;
+    $response = [];
+    // 카테고리 조회 기본 쿼리
+    $query = "SELECT * FROM board_category";
+    // 카테고리 조회 조건
+    if ($params['where']) {
+        $query .= ' WHERE '.$params['where'];
+    }
+    // 카테고리 정렬 조건
+    if ($params['orderby']) {
+        $query .= ' ORDER BY '.$params['orderby'];
+    }
+
+    $sth = $dbh->query($query);
+    $response = $sth->fetchAll();
+
+    return $response;
 }

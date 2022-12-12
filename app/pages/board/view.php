@@ -3,12 +3,11 @@
     
     $baordId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
     $postId = isset($_GET['id']) === true ? $_GET['id'] : 0;
+
     // 게시판 설정 로드
-    $boardQuery = "SELECT * FROM board WHERE id=".$baordId;
-    $boardResult = $dbh->query($boardQuery);
-    $boardData = $boardResult->fetch();
+    $boardData = getBoardSetting($baordId);
     if (empty($boardData) === true) {
-        echo '<script>alert(`존재하지 않는 게시판입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+        commonMoveAlert('존재하지 않는 게시판입니다.',BOARD_DIR.'/list.php');
     }
 
     // 게시글 정보 조회
@@ -16,7 +15,7 @@
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
     if (empty($postData) === true) {
-        echo '<script>alert(`존재하지 않는 게시글입니다.`); location.href = "'.BOARD_DIR.'/list.php";</script>';
+        commonMoveAlert('존재하지 않는 게시글입니다.',BOARD_DIR.'/list.php');
     }
 
     // 조회수 증가 처리
