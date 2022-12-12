@@ -1,7 +1,7 @@
 <?php
 
     require_once('../../../index.php');
-    
+
     // 게시판 번호
     $boardId = (isset($_POST['board_id']) === true ? $_POST['board_id'] : 0);
     // 게시글 번호
@@ -25,20 +25,14 @@
     }
 
     if (empty($msg) === false && empty($href) === false) {
-        echo '<script>alert(`'.$msg.'`); location.href = "'.$href.'";</script>';
-        exit;
+        commonMoveAlert($msg, $href);
     }
 
     // 게시판 설정 조회
-    $boardQuery = "SELECT * FROM board WHERE id='1'";
-    $boardResult = $dbh->query($boardQuery);
-    $boardData = $boardResult->fetch();
+    $boardData = getBoardSetting(1);
 
     // 게시글 정보 조회
-    $postBaseQuery = "SELECT `po`.*, `bc`.id as `category_id`, `bc`.title as `category_title` FROM post as `po`";
-    $postJoinQuery = " LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id";
-    $postWhereQuery = " WHERE `po`.id = ".$postId;
-    $postQuery = $postBaseQuery.$postJoinQuery.$postWhereQuery;
+    $postQuery = "SELECT `po`.*, `bc`.id as `category_id`, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$postId;
     $postResult = $dbh->query($postQuery);
     $postData = $postResult->fetch();
 
@@ -47,14 +41,14 @@
         $msg = '일치하는 게시글이 없습니다.';
         $href = BOARD_DIR.'/list.php';
     }
-    // 회원 게시글인 경우, 비회원 게시글인 경우 
-    if($postData['member_id']){    
+    // 회원 게시글인 경우, 비회원 게시글인 경우
+    if ($postData['member_id']) {
         // 회원일때, 자기 게시글 아닐떄
         if ($memberId !== $postData['member_id']) {
             $msg = '접근 권한이 없습니다.';
             $href = BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId;
         }
-    }else{
+    } else {
         // 비회원일때, 비밀번호 틀렸을때
         if ($postData['password'] !== md5($password)) {
             $msg = '비밀번호가 올바르지 않습니다.';
@@ -73,6 +67,20 @@
         $isLogin = true;
         if ($memberId === $postData['member_id']) {
             $ownPost = true;
+        }
+    }
+
+    if ($mode === 'update') {
+        // 답글 검사
+        $isReply = havePostReplay((int)$postData['id']);
+        if ($isReply) {
+            commonMoveAlert('답글이 있는 경우 수정 할 수 없습니다.', BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId);
+        }
+    } else {
+        // 답글 검사
+        $isReply = havePostReplay((int)$postData['id']);
+        if ($isReply) {
+            commonMoveAlert('답글이 있는 경우 삭제 할 수 없습니다.', BOARD_DIR.'/view.php?board_id='.$boardId.'&id='.$postId);
         }
     }
 

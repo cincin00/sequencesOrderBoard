@@ -2,35 +2,12 @@
 
   require_once('../../../index.php');
 
-  // 게시판 설정 로드 - 게층형 게시판 고정
-  $boardQuery = "SELECT * FROM board WHERE id='1'";
-  $boardResult = $dbh->query($boardQuery);
-  $boardData = $boardResult->fetch();
-
+  // 게시판 설정 로드 - 계층형 게시판(1) 고정
+  $boardData = getBoardSetting(1);
   // 페이징 처리
-  // 현재 페이지 번호(기본: 1페이지)
-  $currentPage = (isset($_GET['page']) === true ? $_GET['page'] : 1);
-  // 게시글 전체 수량(삭제 처리되지 않은 게시글만 조회)
-  $totalRow = $dbh->query('SELECT COUNT(*) as `total_cnt` FROM post WHERE is_delete = 0')->fetch()[0];
-  // 1개 페이지에 표시할 게시글 수
-  $length = 10;
-  // 전체 페이지 수 - 0인 경우 1 페이지로 고정
-  $totalPage = ceil($totalRow/$length) > 0 ? ceil($totalRow/$length) : 1;
-  // 처음 페이지
-  $firstPage =  1 ;
-  // 이전 페이지
-  $prePage = ($currentPage - 1) > 0 ? $currentPage - 1 : 1;
-  // 다음 페이지
-  $nextPage = ($currentPage + 1) <= $totalPage ? $currentPage + 1 : $totalPage ;
-  // 마지막 페이지
-  $lastPage = $totalPage;
-  //현재 시작 게시글 번호
-  $startRow = ($currentPage - 1) * $length;
-
+  list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($_GET, 1);
   // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
-  $postQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id  WHERE `po`.is_delete = 0 ORDER BY `po`.group_id DESC, `po`.group_order ASC, `po`.group_depth DESC LIMIT ".$startRow.", ".$length."";
-  $postResult = $dbh->query($postQuery);
-  $postData = $postResult->fetchAll();
+  $postData = getPostData(1, $startRow, $length);
   ?>
 <!doctype html>
 <html lang="en">
@@ -50,7 +27,7 @@
                 </div>
             </div>
         </div>
-        <?php if(false){ ?>
+        <?php if (false) { ?>
         <!-- 검색어 -->
         <div class="mar-medium">
             <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
@@ -85,8 +62,8 @@
                 if ($postData) {
                     // 게시글번호 = 전체 게시글 수량 - 시작 게시글 번호
                     $index = $totalRow - $startRow;
-                  foreach ($postData as $row) {
-                ?>
+                    foreach ($postData as $row) {
+                        ?>
                 <tr>
                     <!-- 게시글번호 -->
                     <td class="board-list-table-baqh">
@@ -98,7 +75,9 @@
                     </td>
                     <!-- 게시글 제목 -->
                     <td class="board-list-table-baqh" style="text-align:left;">
-                        <?php for($i=0;$i<$row['group_depth'];$i++){ echo '&#9;&#9;└';}?>
+                        <?php for ($i=0;$i<$row['group_depth'];$i++) {
+                            echo '&#9;&#9;└';
+                        }?>
                         <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id'];?>">
                             <?=$row['title'];?>
                         </a>                        
@@ -108,9 +87,9 @@
                         <span style="display:-webkit-inline-box;">
                         <?php
                             echo $row['writer'];
-                            if($row['member_id']){
-                                echo '<img src="'.PATH_COMMON_RESOURCE.'/profile-user.png" style="width:20px;">';
-                            }
+                        if ($row['member_id']) {
+                            echo '<img src="'.PATH_COMMON_RESOURCE.'/profile-user.png" style="width:20px;">';
+                        }
                         ?>
                         </span>
                     </td>
@@ -128,14 +107,14 @@
                     $index--;
                     }
                 } else {
-                // 게시글 데이터가 없는 경우
-                ?>
+                    // 게시글 데이터가 없는 경우
+                    ?>
                 <tr>
                     <td class="board-list-table-baqh" colspan="6">등록된 게시글이 없습니다.</td>
                 </tr>
                 <?php
                 }
-                ?>
+  ?>
             </tbody>
         </table>
         <!-- 게시판 목록 푸터 -->
@@ -149,7 +128,7 @@
             <div id="paging" class="mar-top-large" style="text-align:center;">
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">처음</a>
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">이전</a>
-                <?php for($i=1;$i<=$totalPage;$i++){ ?>
+                <?php for ($i=1;$i<=$totalPage;$i++) { ?>
                 <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>" href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
                 <?php } ?>
                 <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">다음</a>

@@ -1,7 +1,7 @@
 <?php
 
     require_once('../../../index.php');
-    
+
     // 폼 전송 데이터 수신
     $params['board_id'] = (isset($_POST['board_id']) === true ? $_POST['board_id'] : 0);
     $params['post_id'] = (isset($_POST['post_id']) === true ? $_POST['post_id'] : 0);
@@ -29,45 +29,34 @@
     }
 
     if (empty($msg) === false) {
-        echo '<script>alert(`'.$msg.'`); location.href = "'.BOARD_DIR.'/write.php";</script>';
-        exit;
+        commonMoveAlert($msg, BOARD_DIR.'/write.php');
     }
 
     // 비밀번호 재검증
     $postId = $params['post_id'];
     $password = md5($params['password']);
     $memberId = $params['member_id'];
+    $postData = getSinglePostData($postId);
 
-    $postQuery = "SELECT * FROM post WHERE id = ".$postId;
-    $postResult = $dbh->query($postQuery);
-    $postData = $postResult->fetch();
-
-    if($postData['member_id']){
+    if ($postData['member_id']) {
         // 회원 게시글
         if ((int)$memberId !== $postData['member_id']) {
             // 회원일떄, 본인 게시글 검증
-            echo '<script>alert(`게시글 수정이 권한이 없습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
-            exit;
+            commonMoveAlert('게시글 수정이 권한이 없습니다.', BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);
         }
-    }else{
+    } else {
         // 비회원 게시글
         if ($postData['password'] !== $password) {
             // 비회원일때, 비밀번호 검증
-            echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
-            exit;
-        }    
+            commonMoveAlert('게시글 수정이 실패했습니다.', BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);
+        }
     }
 
-    // 데이터 가공
-    $title = $params['title'];
-    $contents = htmlentities($params['contents']);
-    $boardCategory = $params['board_category'];
-    $modifyDate = date('Y-m-d H:i:s');
     // 데이터 저장
-    $postQuery = "UPDATE post SET title = '$title', contents = '$contents', board_category = $boardCategory WHERE id = $postId";
-    $result = $dbh->exec($postQuery);
+    $params['post_id'] = $postId;
+    $result = modifyPost($params);
     if ($result) {
-        echo '<script>alert(`게시글이 수정되었습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
+        commonMoveAlert('게시글이 수정되었습니다.',BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);
     } else {
-        echo '<script>alert(`게시글 수정이 실패했습니다.`);location.href = "'.BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId.'";</script>';
+        commonMoveAlert('게시글 수정이 실패했습니다.',BOARD_DIR.'/view.php?board_id='.$params['board_id'].'&id='.$postId);        
     }
