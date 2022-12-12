@@ -1,0 +1,4 @@
+# 리다이렉트 기능 활성화
+RewriteEngine On
+# e.g RewriteCond TestString Pattern [Flags]
+RewriteCond %{REQUEST_URI} !(\.png|\.jpg|\.webp|\.gif|\.jpeg|\.zip|\.css|\.svg|\.js)$
