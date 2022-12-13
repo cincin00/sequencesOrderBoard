@@ -31,48 +31,60 @@
       $name = (isset($_POST['name']) === true ? $_POST['name'] : '');
       $email = (isset($_POST['email']) === true ? $_POST['email'] : '');
 
-      if (!$accountId || !$accountPassword1 || !$accountPassword2 || !$name || !$email) {
-          commonMoveAlert('회원가입 항목을 모두 입력해주세요.', MEMBER_DIR.'/login.php');
+      if (empty($accountId)) {
+          commonMoveAlert('회원가입 항목을 모두 입력해주세요.', MEMBER_DIR.'/login.php?signup=1');
+      }
+      if (empty($accountPassword1)) {
+          commonMoveAlert('회원가입 항목을 모두 입력해주세요.', MEMBER_DIR.'/login.php?signup=1');
+      }
+      if (empty($accountPassword2)) {
+          commonMoveAlert('회원가입 항목을 모두 입력해주세요.', MEMBER_DIR.'/login.php?signup=1');
+      }
+      if (empty($name)) {
+          commonMoveAlert('회원가입 항목을 모두 입력해주세요.', MEMBER_DIR.'/login.php?signup=1');
+      }
+      if (empty($email)) {
+          commonMoveAlert('회원가입 항목을 모두 입력해주세요.', MEMBER_DIR.'/login.php?signup=1');
       }
 
       if ($accountId) {
           // 아이디 검사
           $result = validMemberId($accountId);
           if ($result == false) {
-              commonMoveAlert('영문만 입력 가능합니다.', MEMBER_DIR.'/login.php');
+              commonMoveAlert('영문만 입력 가능합니다.', MEMBER_DIR.'/login.php?signup=1');
           }
 
           // 금지 아이디 검사
           $result = invalidMemberId($accountId);
           if ($result == true) {
-              commonMoveAlert('사용 불가한 아이디입니다.', MEMBER_DIR.'/login.php');
+              commonMoveAlert('사용 불가한 아이디입니다.', MEMBER_DIR.'/login.php?signup=1');
           }
 
           // 계정 중복 검사
           $params = ['where' => "account_id = '$accountId'"];
           $result = getMember($params);
           if (empty($result) === false) {
-              commonMoveAlert('이미 가입된 아이디입니다.', MEMBER_DIR.'/login.php');
+              commonMoveAlert('이미 가입된 아이디입니다.', MEMBER_DIR.'/login.php?signup=1');
           }
       }
       // 비밀번호 검사
       if ($accountPassword1 && $accountPassword2) {
           // 비밀번호 일치 검증
           if ($accountPassword1 !== $accountPassword2) {
-              commonMoveAlert('비밀번호를 재확인 해주세요.', MEMBER_DIR.'/login.php');
+              commonMoveAlert('비밀번호를 재확인 해주세요.', MEMBER_DIR.'/login.php?signup=1');
           }
       }
       // 이메일 유효 검증
       if ($email) {
           $emailRegResult = validEmail($email);
           if ($emailRegResult == false) {
-              commonMoveAlert('올바른 이메일 형식으로 입력해주세요.', MEMBER_DIR.'/login.php');
+              commonMoveAlert('올바른 이메일 형식으로 입력해주세요.', MEMBER_DIR.'/login.php?signup=1');
           }
           // 이메일 중복 검사
           $params = ['where' => 'email = "'.$email.'"'];
           $result = getMember($params);
           if ($result) {
-              commonMoveAlert('가입된 이메일입니다.', MEMBER_DIR.'/login.php');
+              commonMoveAlert('가입된 이메일입니다.', MEMBER_DIR.'/login.php?signup=1');
           }
       }
       // 이름 검사

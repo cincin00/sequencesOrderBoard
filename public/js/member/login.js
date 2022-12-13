@@ -15,6 +15,7 @@ class Login {
         this.changeSignupFromEvent();
         this.submitSigninFormEvent();
         this.submitSignupFormEvent();
+        this.checkSignupEvent();
     }
 
     /**
@@ -139,4 +140,15 @@ class Login {
 
         return result;
     };
+
+    /**
+     * 회원가입 페이지 전환
+     */
+    checkSignupEvent(){
+        let qstr = document.location.search;
+        let isSignup = qstr.indexOf('signup=1');
+        if(isSignup === 1){
+            $('#sign-up').trigger('click');
+        }
+    }
 }
