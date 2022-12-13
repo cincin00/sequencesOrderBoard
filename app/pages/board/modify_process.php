@@ -11,9 +11,9 @@
     $params['contents'] = (isset($_POST['contents']) === true ? $_POST['contents'] : null);
 
     if (isset($_POST['board_category']) === false) {
-        $params['board_category'] = 'NULL';
+        $params['board_category'] = null;
     } elseif (empty($_POST['board_category']) === true) {
-        $params['board_category'] = 'NULL';
+        $params['board_category'] = null;
     } else {
         $params['board_category'] = $_POST['board_category'];
     }

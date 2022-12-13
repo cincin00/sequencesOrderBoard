@@ -7,17 +7,23 @@ require_once(BASEPATH.'/app/libraries/common_lib.php');
 /**
  * 게시판 설정 조회
  *
- * @param int $id 게시판 아이디
+ * @param array $params 게시판 조회 조건
+ * @param int $fetchType 데이터 반환 수(0: 단일, 1: 전체)
  * @return array
  */
-function getBoardSetting(int $id)
+function getBoard(array $params, int $fetchType = 0)
 {
     global $dbh;
     $response = [];
 
-    $query = "SELECT * FROM board WHERE id='$id'";
+    $baseQuery = "SELECT * FROM board";
+    $query = queryBuilder($baseQuery, $params);
     $result = $dbh->query($query);
-    $response = $result->fetch();
+    if($fetchType > 0){
+        $response = $result->fetchAll();
+    }else{
+        $response = $result->fetch();
+    }
 
     return $response;
 }
@@ -113,6 +119,7 @@ function getPostDataForPaging(int $boardId, int $startRow = 0, int $length = 10,
 
 /**
  * 게시글 수정
+ * @todo board_category Error Fix
  */
 function modifyPost(array $params)
 {
@@ -120,10 +127,15 @@ function modifyPost(array $params)
     $postId = $params['post_id'];
     $title = $params['title'];
     $contents = htmlentities($params['contents']);
-    $boardCategory = $params['board_category'];
+    $boardCategory = $params['board_category'] ?? '';
     $modifyDate = date('Y-m-d H:i:s');
+
     // 데이터 저장
-    $query = "UPDATE post SET title = '$title', contents = '$contents', board_category = '$boardCategory', modify_date = '$modifyDate' WHERE id = $postId";
+    $set = "title = '$title', contents = '$contents', modify_date = '$modifyDate'";
+    if($boardCategory){
+        $set .= ", board_category = '$boardCategory'";
+    }
+    $query = "UPDATE post SET $set WHERE id = $postId";
     $response = $dbh->exec($query);
 
     return $response;
@@ -147,25 +159,20 @@ function havePostReplay(int $id = 0)
  * 게시글 카테고리 조회
  *
  * @param array $params 조회 조건
- * @return array
  */
-function getCategoryData(array $params = [])
+function getCategoryData(array $params = [], int $fetchType = 0)
 {
     global $dbh;
     $response = [];
     // 카테고리 조회 기본 쿼리
-    $query = "SELECT * FROM board_category";
-    // 카테고리 조회 조건
-    if ($params['where']) {
-        $query .= ' WHERE '.$params['where'];
+    $baseQuery = "SELECT * FROM board_category";
+    $query = queryBuilder($baseQuery, $params);
+    $result = $dbh->query($query);
+    if($fetchType > 0){
+        $response = $result->fetchAll();
+    }else{
+        $response = $result->fetch();
     }
-    // 카테고리 정렬 조건
-    if ($params['orderby']) {
-        $query .= ' ORDER BY '.$params['orderby'];
-    }
-
-    $sth = $dbh->query($query);
-    $response = $sth->fetchAll();
 
     return $response;
 }

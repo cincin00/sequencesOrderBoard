@@ -5,7 +5,7 @@
     $postId = isset($_GET['id']) === true ? $_GET['id'] : 0;
 
     // 게시판 설정 로드
-    $boardData = getBoardSetting($baordId);
+    $boardData = getBoard(['where'=>$baordId]);
     if (empty($boardData) === true) {
         commonMoveAlert('존재하지 않는 게시판입니다.',BOARD_DIR.'/list.php');
     }

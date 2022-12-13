@@ -4,15 +4,14 @@
     $boardId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
 
     // 게시판 설정 로드 - 게층형 게시판 고정
-    $boardData = getBoardSetting($boardId);
+    $boardData = getBoard(['where'=>$boardId]);
     if (empty($boardData) === true) {
         commonMoveAlert('존재하지 않는 게시판입니다.',BOARD_DIR.'/list.php');
     }
 
     // 게시판 카테고리 로드
-    $categoryQuery = "SELECT * FROM board_category ORDER BY sort_order";
-    $categoryResult = $dbh->query($categoryQuery);
-    $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order']);
+    $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order'], 1);
+
     foreach ($categoryResult as $categoryData) {
         $category[$categoryData['sort_order']] = [
             'category_id' => $categoryData['id'],

@@ -29,7 +29,7 @@
     }
 
     // 게시판 설정 조회
-    $boardData = getBoardSetting(1);
+    $boardData = getBoard(['where'=>1]);
 
     // 게시글 정보 조회
     $postData = getPostData($postId);
@@ -83,7 +83,7 @@
 
     if ($mode === 'update') {
         // 게시판 카테고리 조회
-        $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order']);
+        $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order'], 1);
         foreach ($categoryResult as $key) {
             $category[$key['sort_order']] = [
                 'category_id' => $key['id'],

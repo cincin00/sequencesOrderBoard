@@ -3,20 +3,22 @@
     /**
      * 디버그용 함수
      */
-    function debug($params)
+    function debug($params, int $contuine = 0)
     {
         echo '<pre>';
         print_r($params);
         echo '</pre>';
-        exit;
+        if(!$contuine){
+            exit;
+        }        
     }
 
     /**
      * debug()함수 별칭
      */
-    function dd($param)
+    function dd($params, int $contuine = 0)
     {
-        debug($param);
+        debug($params, $contuine);
     }
     /**
      * 단일 변수의 정의 및 값 존재 여부 반환 함수
@@ -72,4 +74,47 @@
     {
         echo '<script>alert(`'.$msg.'`); location.href = "'.$location.'";</script>';
         exit;
+    }
+
+    /**
+     * 쿼리 빌더
+     * 
+     * @param string $baseQuery 기본 쿼리
+     * @param array $params 쿼리 조건
+     */
+    function queryBuilder(string $baseQuery, array $params = ['where'=>'','join'=>[],'groupby'=>'','limit'=>'']){
+        $query = $baseQuery;
+
+        // where절
+        if(validSingleData($params, 'where')){
+            $query .= ' WHERE '.$params['where'];
+        }
+
+        // join절
+        if(validSingleData($params, 'join')){
+            foreach($params['join'] as $type => $joinQuery){
+                if($type === 'left'){
+                    $query .= ' LEFT JOIN '.$joinQuery;
+                }elseif($type === 'right'){
+                    $query .= ' RIGHT JOIN '.$joinQuery;
+                }
+            }
+        }
+
+        // group by절
+        if(validSingleData($params, 'groupby')){
+            $query .= ' GROUP BY '.$params['groupby'];
+        }
+
+        // having 절
+        if(validSingleData($params, 'having')){
+            $query .= ' HAVING '.$params['having'];
+        }
+
+        // limit 절
+        if(validSingleData($params, 'limit')){
+            $query .= ' LIMIT '.$params['limit'];
+        }
+
+        return $query;
     }

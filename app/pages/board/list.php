@@ -3,7 +3,7 @@
   require_once('../../../index.php');
 
   // 게시판 설정 로드 - 계층형 게시판(1) 고정
-  $boardData = getBoardSetting(1);
+  $boardData = getBoard(['where'=>1]);
   // 페이징 처리
   list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($_GET, 1);
   // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
