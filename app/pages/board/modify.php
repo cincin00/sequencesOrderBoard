@@ -4,7 +4,7 @@
 
 <body>
     <div class="container">
-    <?php include_once('../layout/layout_header.php');?>
+        <?php include_once('../layout/layout_header.php');?>
         <header class="py-3">
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
@@ -49,17 +49,17 @@
                             if($postData['member_id']) { 
                                 if($isLogin === true){
                         ?>
-                            <!-- 회원 작성 게시글 - 로그인 상태 -->
-                            <div class="form-group form-inline">
-                                <label class="control-label">작성자</label> 
-                                <p class="form-control-static"><?=@$_SESSION['account_id']?></p>
-                                <input type="hidden" name="member_id" id="member_id" value="<?=@$_SESSION['id']?>" >
-                            </div>
-                            
+                        <!-- 회원 작성 게시글 - 로그인 상태 -->
+                        <div class="form-group form-inline">
+                            <label class="control-label">작성자</label>
+                            <p class="form-control-static"><?=@$_SESSION['account_id']?></p>
+                            <input type="hidden" name="member_id" id="member_id" value="<?=@$_SESSION['id']?>">
+                        </div>
+
                         <?php 
                                 } else {
                         ?>
-                            <!-- 회원 작성 게시글 - 비로그인 상태 -->
+                        <!-- 회원 작성 게시글 - 비로그인 상태 -->
                         <?php
                                 }
                             } else { 
@@ -68,13 +68,13 @@
                         <div class="form-group form-inline">
                             <label for="post_writer">작성자</label>
                             <span id="post_writer" style="width:50%"><?=$postData['writer']?></span>
-                        </div>    
+                        </div>
                         <div class="form-group form-inline">
                             <label for="post_password">비밀번호</label>
                             <input type="password" name="password" id="post_password" class="form-control"
                                 placeholder="기존 비밀번호를 입력해주세요." maxlength="255" style="width:50%">
-                        </div>                            
-                        <?php } ?>                        
+                        </div>
+                        <?php } ?>
                     </div>
                     <div class="post-content-layer row">
                         <div class="col-md-12 text-center">

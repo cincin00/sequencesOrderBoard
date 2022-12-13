@@ -11,9 +11,14 @@
     }
 
     // 게시글 정보 조회
-    $postQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$postId." AND `po`.board_id = ".$baordId;
-    $postResult = $dbh->query($postQuery);
-    $postData = $postResult->fetch();
+    $params = [
+        'select' => '`post`.*, `bc`.title as `category_title`',
+        'join' => [
+            'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
+        ],
+        'where' => '`post`.id = "'.$postId.'" AND `post`.board_id = "'.$baordId.'"',
+    ];
+    $postData = getPost($params);
     if (empty($postData) === true) {
         commonMoveAlert('존재하지 않는 게시글입니다.',BOARD_DIR.'/list.php');
     }

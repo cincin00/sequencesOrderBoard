@@ -23,9 +23,17 @@
     if (isset($_GET['reply']) === true && empty($_GET['reply']) === false) {
         $replyId = $_GET['reply'];
         if ($replyId > 0) {
-            $replyQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$replyId." AND `po`.board_id = ".$boardId;
-            $replyPostResult = $dbh->query($replyQuery);
-            $replyPostData = $replyPostResult->fetch();
+            // $replyQuery = "SELECT `po`.*, `bc`.title as `category_title` FROM post as `po` LEFT JOIN board_category as `bc` ON `po`.board_category = `bc`.id WHERE `po`.id = ".$replyId." AND `po`.board_id = ".$boardId;
+            // $replyPostResult = $dbh->query($replyQuery);
+            // $replyPostData = $replyPostResult->fetch();
+            $params = [
+                'select' => '`post`.*, `bc`.title as `category_title`',
+                'join' => [
+                    'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
+                ],
+                'where' => '`po`.id = "'.$replyId.'" AND `po`.board_id = "'.$boardId
+            ];
+            $replyPostData = getPost($params);
         } else {
             commonMoveAlert('존재하지 않은 게시글입니다.', BOARD_DIR.'/list.php');
         }

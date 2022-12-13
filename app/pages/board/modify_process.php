@@ -36,7 +36,7 @@
     $postId = $params['post_id'];
     $password = md5($params['password']);
     $memberId = $params['member_id'];
-    $postData = getSinglePostData($postId);
+    $postData = getPost(['where'=>'id = '.$postId]);
 
     if ($postData['member_id']) {
         // 회원 게시글

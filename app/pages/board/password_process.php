@@ -32,7 +32,14 @@
     $boardData = getBoard(['where'=>1]);
 
     // 게시글 정보 조회
-    $postData = getPostData($postId);
+    $params = [
+        'select' => '`post`.*, `bc`.title as `category_title`',
+        'join' => [
+            'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
+        ],
+        'where' => '`post`.id = "'.$postId.'" AND `post`.is_delete = 0'
+    ];
+    $postData = getPost($params);
 
     // 공통 검증 - 게시글이 없을때, 비밀번호가 틀릴때
     if (empty($postData) === true) {

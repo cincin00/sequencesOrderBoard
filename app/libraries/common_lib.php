@@ -82,14 +82,13 @@
      * @param string $baseQuery 기본 쿼리
      * @param array $params 쿼리 조건
      */
-    function queryBuilder(string $baseQuery, array $params = ['where'=>'','join'=>[],'groupby'=>'','limit'=>'']){
-        $query = $baseQuery;
-
-        // where절
-        if(validSingleData($params, 'where')){
-            $query .= ' WHERE '.$params['where'];
+    function queryBuilder(string $table, array $params = ['where'=>'','join'=>[],'groupby'=>'','limit'=>'']){
+        // select절
+        if(validSingleData($params, 'select')){
+            $query = 'SELECT '.$params['select'].' FROM '.$table;
+        }else{
+            $query = 'SELECT * FROM '.$table;
         }
-
         // join절
         if(validSingleData($params, 'join')){
             foreach($params['join'] as $type => $joinQuery){
@@ -99,6 +98,11 @@
                     $query .= ' RIGHT JOIN '.$joinQuery;
                 }
             }
+        }
+
+        // where절
+        if(validSingleData($params, 'where')){
+            $query .= ' WHERE '.$params['where'];
         }
 
         // group by절
@@ -111,9 +115,20 @@
             $query .= ' HAVING '.$params['having'];
         }
 
+        // order by절
+        if(validSingleData($params, 'orderby')){
+            $query .= ' ORDER BY '.$params['orderby'];
+        }
+
         // limit 절
         if(validSingleData($params, 'limit')){
             $query .= ' LIMIT '.$params['limit'];
+        }
+
+        if(validSingleData($params, 'debug')){
+            if($params['debug'] === true){
+                dd($query);
+            }            
         }
 
         return $query;
