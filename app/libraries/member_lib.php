@@ -44,6 +44,39 @@ function validSession()
 }
 
 /**
+ * 로그인 회원 세션 조회
+ * 
+ * @param array $params 조회할 세션 키
+ * @return array
+ */
+function getMemberSession(array $params = [])
+{
+    $response = [];
+    
+    if(empty($params)){
+        $response = $_SESSION;
+    }else{
+        if(in_array('id', $params)){            
+            $response['id'] = $_SESSION['id'];
+        }
+        if(in_array('account_id', $params)){
+            $response['account_id'] = $_SESSION['account_id'];
+        }
+        if(in_array('account_password', $params)){
+            $response['account_password'] = $_SESSION['account_password'];
+        }
+        if(in_array('name', $params)){
+            $response['name'] = $_SESSION['name'];
+        }
+        if(in_array('email', $params)){
+            $response['email'] = $_SESSION['email'];
+        }    
+    }
+    
+    return $response;
+}
+
+/**
  * 회원 세션 정보 저장
  *
  * @param array $params 회원 정보
@@ -66,6 +99,9 @@ function setMemberSession($params)
     }
     if (validSingleData($params, 'email')) {
         $_SESSION['email'] = $params['email'];
+    }
+    if (validSingleData($params, 'mypageToken')) {
+        $_SESSION['mypageToken'] = $params['mypageToken'];
     }
 }
 
@@ -123,6 +159,34 @@ function setMember(array $params)
     $sth = $dbh->prepare("INSERT INTO member (account_id, account_password, name, email) VALUES (?, ?, ?, ?)");
     $sth->execute(array($params['account_id'], $params['account_password'], $params['name'], $params['email']));
     $response = $dbh->lastInsertId();
+
+    return $response;
+}
+
+function updateMember(array $params){
+    global $dbh;
+    $response = false;
+
+    $table = "";
+
+    // 수정 처리 시 변경 값은 필수값
+    if(validSingleData($params, 'set')){
+        $query = 'UPDATE member SET '.$params['set'];
+    }else{
+        commonAlert('회원 정보 수정 실패.');
+    }
+
+    if(validSingleData($params, 'where')){
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if(validSingleData($params, 'debug')){
+        if($params['debug'] === true){
+            dd($query);
+        }
+    }
+
+    $response = $dbh->exec($query);
 
     return $response;
 }

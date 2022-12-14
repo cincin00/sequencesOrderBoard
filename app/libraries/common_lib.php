@@ -89,6 +89,7 @@
         }else{
             $query = 'SELECT * FROM '.$table;
         }
+        
         // join절
         if(validSingleData($params, 'join')){
             foreach($params['join'] as $type => $joinQuery){

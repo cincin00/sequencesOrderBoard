@@ -17,9 +17,16 @@
         </div>
         <?php } elseif (@$memberLogin) { ?>
         <!-- 회원 상단 메뉴 -->
+        <?php if(validSingleData($_SESSION, 'id') && CURRENT_PAGE !== 'mypage'){ ?>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a>
         </div>
+        <?php } ?>
+        <?php if(CURRENT_PAGE === 'mypage'){ ?>
+        <div class="col-md-2 pos-right">
+            <a class="btn btn-link" href="<?=BOARD_DIR?>/list.php" role="button">게시글 목록</a>
+        </div>            
+        <?php } ?>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>
         </div>

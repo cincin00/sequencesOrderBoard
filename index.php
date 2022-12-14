@@ -19,6 +19,7 @@ preg_match($pattern, $subject, $matches);
 if(empty($matches) === false){
     // URL은 1개만 전달되므로 0번째 고정 - e.g) /app/pages/board/view.php
     $requestUri = explode('/',$matches[0]);
+    define('CURRENT_PAGE', str_replace('.php', '', $requestUri[3]));
     switch($requestUri[2]){
         case 'board':
             require_once(BASEPATH.'/app/libraries/board_lib.php');
