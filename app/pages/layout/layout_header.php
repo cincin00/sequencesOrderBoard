@@ -18,7 +18,7 @@
         <?php } elseif (@$memberLogin) { ?>
         <!-- 회원 상단 메뉴 -->
         <div class="col-md-2 pos-right">
-            <a class="btn btn-link" href="#" role="button">마이페이지</a>
+            <a class="btn btn-link" href="<?=MEMBER_DIR?>/mypage.php" role="button">마이페이지</a>
         </div>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>

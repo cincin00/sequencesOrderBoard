@@ -23,7 +23,6 @@ class Login {
      */
     changeSignupFromEvent() {
         $('#sign-up').on('click', function () {
-            console.log('signupEvent');
             $('#form-login-in').removeClass('block');
             $('#form-login-up').removeClass('none');
 
@@ -54,7 +53,6 @@ class Login {
 
     submitSignupFormEvent() {
         $("#sign-up-submit-btn").on('click', function () {
-            console.log('회원가입 이벤트 클릭');
             $('#form-login-up').submit();
         });
     }
@@ -65,15 +63,14 @@ class Login {
      * @param {*} type 
      */
     validForm(type) {
-        let result = false;
         switch (type) {
             case 'in':
-                return result = this.validLoginInForm();
+                return this.validLoginInForm();
             case 'up':
-                return result = this.validLoginUpForm();
+                return this.validLoginUpForm();
             default:
                 alert('폼 유효성 검증에 실패하였습니다.');
-                return result = false;
+                return false;
         }
     }
 
@@ -84,25 +81,24 @@ class Login {
         let msg = '';
         let target = '';
         let id = $('#form-login-in').find(':input[name="account_id"]');
-        let pw = $('#form-login-in').find(':input[name="account_password"]');
+        let pw = $('#form-login-in').find(':input[name="account_password1"]');
         let result = false;
 
         if (id.val() === '') {
             msg = '아이디는 필수 입력입니다.';
             target = id;
-        } else if (pw.val() === '') {
+            this.alertFocus(target, msg);
+            return result;
+        }
+
+        if (pw.val() === '') {
             msg = '비밀번호는 필수 입력입니다.';
             target = pw;
-        } else {
-            result = true;
+            this.alertFocus(target, msg);
+            return result;
         }
 
-        if (result === false) {
-            alert(msg);
-            target.focus();
-        }
-
-        return result;
+        return true;
     }
 
     /**
@@ -112,7 +108,8 @@ class Login {
         let msg = '';
         let target = '';
         let id = $('#form-login-up').find(':input[name="account_id"]');
-        let pw = $('#form-login-up').find(':input[name="account_password"]');
+        let pw1 = $('#form-login-up').find(':input[name="account_password1"]');
+        let pw2 = $('#form-login-up').find(':input[name="account_password2"]');
         let name = $('#form-login-up').find(':input[name="name"]');
         let email = $('#form-login-up').find(':input[name="email"]');
         let result = false;
@@ -120,25 +117,39 @@ class Login {
         if (id.val() === '') {
             msg = '아이디는 필수 입력입니다.';
             target = id;
-        } else if (pw.val() === '') {
+            this.alertFocus(target, msg);
+            return result;
+        }
+
+        if (pw1.val() === '') {
             msg = '비밀번호는 필수 입력입니다.';
-            target = pw;
-        } else if (name.val() === '') {
+            target = pw1;
+            this.alertFocus(target, msg);
+            return result;
+        }
+
+        if (pw2.val() === '') {
+            msg = '비밀번호 확인은 필수 입력입니다.';
+            target = pw2;
+            this.alertFocus(target, msg);
+            return result;
+        }
+
+        if (name.val() === '') {
             msg = '이름은 필수 입력입니다.'
             target = name;
-        } else if (email.val() === '') {
+            this.alertFocus(target, msg);
+            return result;
+        }
+
+        if (email.val() === '') {
             msg = '이메일은 필수 입력입니다.';
             target = email;
-        } else {
-            result = true;
+            this.alertFocus(target, msg);
+            return result;
         }
 
-        if (result === false) {
-            alert(msg);
-            target.focus();
-        }
-
-        return result;
+        return true;
     };
 
     /**
@@ -150,5 +161,14 @@ class Login {
         if(isSignup === 1){
             $('#sign-up').trigger('click');
         }
+    }
+
+    /**
+     * 알림을 표시하고 선택자 포커스 처리
+     */
+    alertFocus(target, msg)
+    {
+        alert(msg);
+        target.focus();
     }
 }

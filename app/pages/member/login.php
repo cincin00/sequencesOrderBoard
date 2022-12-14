@@ -1,5 +1,4 @@
-`<?php
-    //echo 'login.php';
+<?php
     require_once('../../../index.php');
     if(isset($_SESSION['id']) === true){
         header("Location: ".BOARD_DIR."/list.php");
