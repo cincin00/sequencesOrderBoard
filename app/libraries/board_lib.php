@@ -40,10 +40,15 @@ function getPagingData(array $params, int $boardId)
     // 현재 페이지 번호(기본: 1페이지)
     $currentPage = (isset($params['page']) === true ? $params['page'] : 1);
     // 게시글 전체 수량(삭제 처리되지 않은 게시글만 조회)
-    $rowParams = [
-        'select' => 'COUNT(*) as `total_cnt`',
-        'where' => 'board_id = '.$boardId.' AND is_delete = 0'
-    ];
+    if(validSingleData($params, 'row_params')){
+        $rowParams = $params['row_params'];
+    }else{
+        $rowParams = [
+            'select' => 'COUNT(*) as `total_cnt`',
+            'where' => 'board_id = '.$boardId.' AND is_delete = 0'
+        ];
+    }
+
     $totalRow = getPost($rowParams)['total_cnt'];
     // 1개 페이지에 표시할 게시글 수
     $length = 10;

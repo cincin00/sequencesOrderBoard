@@ -24,8 +24,11 @@
         <?php } ?>
         <?php if(CURRENT_PAGE === 'mypage'){ ?>
         <div class="col-md-2 pos-right">
-            <a class="btn btn-link" href="<?=BOARD_DIR?>/list.php" role="button">게시글 목록</a>
-        </div>            
+            <a class="btn btn-link" href="<?=BOARD_DIR?>/mypost.php" role="button">나의 작성 게시글</a>
+        </div>
+        <div class="col-md-2 pos-right">
+            <a class="btn btn-link" href="<?=BOARD_DIR?>/list.php" role="button">게시글 페이지</a>
+        </div>
         <?php } ?>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>

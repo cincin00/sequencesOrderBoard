@@ -1,4 +1,5 @@
 <?php
+
     require_once('../../../index.php');
 
     // 폼 전송 데이터 수신
@@ -30,17 +31,17 @@
     if (empty($msg) === false) {
         commonMoveAlert($msg, MEMBER_DIR.'/mypage.php');
     }
-    
+
     // 이메일 중복 검증
     $memberSession = getMemberSession();
     $memberData = getMember(['where' => ' email = "'.$params['email'].'"']);
-    if(!empty($memberData) && $memberData['id'] !== $memberSession['id'] ){
+    if (!empty($memberData) && $memberData['id'] !== $memberSession['id']) {
         commonMoveAlert('가입된 이메일입니다.', MEMBER_DIR.'/mypage.php');
     }
 
-    if(empty($params['pw1'])){
+    if (empty($params['pw1'])) {
         $md5Pw = $memberSession['account_password'];
-    }else{
+    } else {
         $md5Pw = md5($params['pw1']);
     }
 
@@ -60,5 +61,3 @@
     ];
     setMemberSession($sessionInfo);
     commonMoveAlert('회원 정보가 변경되었습니다.', MEMBER_DIR.'/mypage.php');
-
-?>
