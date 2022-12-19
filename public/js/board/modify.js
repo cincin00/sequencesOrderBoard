@@ -14,6 +14,7 @@ class Modify {
         let title = $('#post_title').val();
         let content = $('#post_content').val();
         let password = $('#post_password').val();
+        let memberId = $('#member_id').val();
         let msg = '';
         let result = true;
 
@@ -21,7 +22,7 @@ class Modify {
             msg = '게시글 제목은 필수입니다.';
         } else if (!content) {
             msg = '게시글 내용은 필수입니다.';
-        } else if (!password) {
+        } else if (!password && !memberId) {
             msg = '게시글 비밀번호는은 필수입니다.';
         }
 

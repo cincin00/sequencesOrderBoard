@@ -1,10 +1,11 @@
 <?php
-
-  require_once('../../../index.php');
-
-  // 게시판 설정 로드 - 계층형 게시판(1) 고정
-  $boardData = getBoard(['where'=>1]);
-  // 페이징 처리
+    require_once('../../../index.php');
+    $boardId = 1;
+    // 페이징 처리
+    $_GET['row_params'] = [
+        'select' => 'COUNT(*) as `total_cnt`',
+        'where' => 'board_id = '.$boardId.' AND is_delete = 0 AND member_id = "'.$_SESSION['id'].'" '
+    ];
   list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($_GET, 1);
   // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
   $params = [
@@ -12,12 +13,13 @@
     'join' => [
         'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
     ],
-    'where' => '`post`.board_id = 1 AND `post`.is_delete = 0',
+    'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND member_id = "'.$_SESSION['id'].'"' ,
     'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
     'limit' => $startRow.", ".$length,
+    //'debug' => true
   ];
   $postData = getPost($params, 1);
-  ?>
+?>
 <!doctype html>
 <html lang="en">
 <?php require_once('../header.php'); ?>
@@ -31,7 +33,7 @@
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
                     <a class="blog-header-logo text-dark" href="<?=BOARD_DIR;?>/list.php">
-                        <h1><?=$boardData['title'];?></h1>
+                        <h1>나의 작성 게시글</h1>
                     </a>
                 </div>
             </div>
@@ -128,21 +130,21 @@
         </table>
         <!-- 게시판 목록 푸터 -->
         <div style="font-size:12px;">
-            <div class="pos-right">
+            <!-- <div class="pos-right">
                 <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
                     <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
                 </a>
-            </div>
+            </div> -->
             <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">처음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">이전</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$firstPage?>" id="first">처음</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$prePage?>" id="prev">이전</a>
                 <?php for ($i=1;$i<=$totalPage;$i++) { ?>
                 <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>"
-                    href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
+                    href="<?=BOARD_DIR?>/mypost.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
                 <?php } ?>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">다음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">마지막</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$nextPage?>" id="next">다음</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$lastPage?>" id="last">마지막</a>
             </div>
         </div>
     </div>
