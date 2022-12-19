@@ -34,6 +34,7 @@
 
     // 이메일 중복 검증
     $memberSession = getMemberSession();
+    // TODO 입력 받은 현재 비밀번호 체크 없음ㄴ
     $memberData = getMember(['where' => ' email = "'.$params['email'].'"']);
     if (!empty($memberData) && $memberData['id'] !== $memberSession['id']) {
         commonMoveAlert('가입된 이메일입니다.', MEMBER_DIR.'/mypage.php');
