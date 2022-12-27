@@ -1,24 +1,6 @@
 <?php
     require_once('../../../index.php');
-    $boardId = 1;
-    // 페이징 처리
-    $_GET['row_params'] = [
-        'select' => 'COUNT(*) as `total_cnt`',
-        'where' => 'board_id = '.$boardId.' AND is_delete = 0 AND member_id = "'.$_SESSION['id'].'" '
-    ];
-  list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($_GET, 1);
-  // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
-  $params = [
-    'select' => '`post`.*, `bc`.title as `category_title`',
-    'join' => [
-        'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
-    ],
-    'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND member_id = "'.$_SESSION['id'].'"' ,
-    'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
-    'limit' => $startRow.", ".$length,
-    //'debug' => true
-  ];
-  $postData = getPost($params, 1);
+    list($boardId, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPostForMypostList($_GET);
 ?>
 <!doctype html>
 <html lang="en">
@@ -32,20 +14,12 @@
             <!-- 게시판명 -->
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
-                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR;?>/list.php">
+                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR;?>/mypost_list.php">
                         <h1>나의 작성 게시글</h1>
                     </a>
                 </div>
             </div>
         </div>
-        <?php if (false) { ?>
-        <!-- 검색어 -->
-        <div class="mar-medium">
-            <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
-                placeholder="검색어를 입력해주세요">
-            <button type="button" class="btn btn-default pos-right">검색</button>
-        </div>
-        <?php } ?>
         <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">
@@ -87,9 +61,9 @@
                     <!-- 게시글 제목 -->
                     <td class="board-list-table-baqh" style="text-align:left;">
                         <?php for ($i=0;$i<$row['group_depth'];$i++) {
-                            echo '&#9;&#9;└';
+                            //echo '&#9;&#9;└';
                         }?>
-                        <a href="<?=BOARD_DIR?>/view.php?board_id=1&id=<?=$row['id'];?>">
+                        <a href="<?=BOARD_DIR?>/mypost_view.php?board_id=1&id=<?=$row['id'];?>">
                             <?=$row['title'];?>
                         </a>
                     </td>
@@ -130,21 +104,16 @@
         </table>
         <!-- 게시판 목록 푸터 -->
         <div style="font-size:12px;">
-            <!-- <div class="pos-right">
-                <a href="<?=BOARD_DIR?>/write.php?board_id=<?=$boardData['id']?>">
-                    <button type="button" class="btn btn-primary" id="btn-write-post">게시글 작성</button>
-                </a>
-            </div> -->
             <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$firstPage?>" id="first">처음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$prePage?>" id="prev">이전</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$firstPage?>" id="first">처음</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$prePage?>" id="prev">이전</a>
                 <?php for ($i=1;$i<=$totalPage;$i++) { ?>
                 <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>"
-                    href="<?=BOARD_DIR?>/mypost.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
+                    href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
                 <?php } ?>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$nextPage?>" id="next">다음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost.php?page=<?=$lastPage?>" id="last">마지막</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$nextPage?>" id="next">다음</a>
+                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$lastPage?>" id="last">마지막</a>
             </div>
         </div>
     </div>

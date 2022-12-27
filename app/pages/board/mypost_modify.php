@@ -8,8 +8,8 @@
         <header class="py-3">
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
-                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php">
-                        <h1><?=$boardData['title'] ?></h1>
+                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/mypost_list.php">
+                        <h1>나의 작성 게시글</h1>
                     </a>
                 </div>
             </div>
@@ -115,7 +115,7 @@ let editor = new FroalaEditor('#post_content', {
 });
 /** Modify JS */
 let modify = new Modify();
-modify.cancelClick('<?=BOARD_DIR?>/list.php');
+modify.cancelClick('<?=BOARD_DIR?>/mypost_list.php');
 
 function validForm() {
     let result = modify.validForm();

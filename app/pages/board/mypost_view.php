@@ -1,6 +1,6 @@
 <?php
     require_once('../../../index.php');
-    list($boardData, $postData, $isMember, $isOwn, $isMemberOwn) = boardViewData($_GET);
+    list($postData, $isMember, $isOwn, $isMemberOwn) = mypostViewData($_GET);
     ?>
 <!doctype html>
 <html lang="en">
@@ -12,8 +12,8 @@
         <header class="py-3">
             <div class="row flex-nowrap justify-content-between align-items-center">
                 <div class="col-4 text-center">
-                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/list.php">
-                        <h1><?=$boardData['title'] ?></h1>
+                    <a class="blog-header-logo text-dark" href="<?=BOARD_DIR?>/mypost_list.php">
+                        <h1>나의 작성 게시글</h1>
                     </a>
                 </div>
             </div>
@@ -65,59 +65,8 @@
                         <?=htmlspecialchars_decode($postData['contents'])?>
                     </div>
                 </div>
-                <?php if (false) { // 게시판 댓글 비활성화?>
-                <div class="comment-layer">
-                    <div class="form-group comment-head">
-                        댓글(<span class="">0</span>)
-                    </div>
-                    <div class="comment-body container-fluid">
-                        <div class="input-layer row">
-                            <div class="form-group col-xs-3">
-                                <label class="sr-only" for="comment_writer">작성자</label>
-                                <input type="text" name="comment_writer" id="comment_writer" class="form-control"
-                                    placeholder="작성자">
-                            </div>
-                            <div class="form-group col-xs-3">
-                                <label class="sr-only" for="comment_password">비밀번호</label>
-                                <input type="password" name="comment_pasword" id="comment_pasword" class="form-control"
-                                    placeholder="비밀번호">
-                            </div>
-                        </div>
-                        <div class="comment-editor-layer row">
-                            <div class="col-xs-12 col-md-8">
-                                <textarea class="form-control" row="3" placeholder="댓글 내용을 입력해주세요."></textarea>
-                            </div>
-                            <div class="col-xs-6 col-md-4">
-                                <button class="btn btn-primary pad-large">댓글 등록</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="comment-list container-fluid">
-                        <!-- sample dom -->
-                        <div class="row">
-                            <span class="col-md-2">지나가던 법사</span>
-                            <span class="col-md-*">2022-11-08 11:00:00</span>
-                        </div>
-                        <div class="row">
-                            <span class="col-md-10">지금 딜러 엄청 너프됬는데 ㅎㅎㅎ .. 그냥 법사하세요. 여러분~</span>
-                        </div>
-                        <div class="row">
-                            <span class="col-md-1">
-                                <a href="<?=BOARD_DIR?>/" role="button">수정</a>
-                            </span>
-                            <span class="line-right line-left col-md-1">
-                                <a href="<?=BOARD_DIR?>/" role="button">삭제</a>
-                            </span>
-                            <span class="col-md-1">
-                                <a href="<?=BOARD_DIR?>/" role="button">답글</a>
-                            </span>
-                        </div>
-                        <!-- sample dom -->
-                    </div>
-                </div>
-                <?php } ?>
                 <div class="text-center">
-                    <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php" role="button">목록</a>
+                    <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php" role="button">목록</a>
                 </div>
             </div>
         </body>

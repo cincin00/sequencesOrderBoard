@@ -134,3 +134,27 @@
 
         return $query;
     }
+
+    /**
+     * 전달하는 문자열로 페이지명이 시작되는지 확인
+     * 
+     * @param string $httpReferer
+     * @param string $startPage
+     * @return bool
+     */
+    function checkPage(string $httpReferer, string $startPage)
+    {    
+        $result = false;
+        $parseUrl = parse_url($httpReferer);
+        $path = explode('/', $parseUrl['path']);
+        $lastIndex = count($path);
+        
+        $subject = $path[$lastIndex-1];
+        $pattern = '/^'.$startPage.'_[a-zA-Z]*.php/smi';
+        preg_match($pattern, $subject, $matches);
+        if(empty($matches) === false){
+            $result = true;
+        }
+
+        return $result;
+    }

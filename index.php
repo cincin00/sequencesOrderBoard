@@ -23,6 +23,7 @@ if(empty($matches) === false){
     switch($requestUri[2]){
         case 'board':
             require_once(BASEPATH.'/app/libraries/board_lib.php');
+            require_once(BASEPATH.'/app/libraries/mypage_lib.php');
             break;
         case 'member':
             require_once(BASEPATH.'/app/libraries/member_lib.php');
