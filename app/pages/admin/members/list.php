@@ -39,7 +39,7 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <table id="datatable-layout" class="table table-bordered table-striped" data-page-length='5'>
+                    <table id="datatable-layout" class="table table-bordered table-striped" data-page-length='10'>
                         <tbody>
                             <?php 
                               if($members){ 
@@ -98,7 +98,6 @@
     <script src="<?=ADMIN_PLUGIN?>/datatables-buttons/js/buttons.colVis.min.js"></script>
     <!-- Page specific script -->
     <script>
-    //let dataSet = [];
     $('#datatable-layout').DataTable({
         order: [[ 0, 'desc' ], [ 1, 'asc' ]],
         searching: false,

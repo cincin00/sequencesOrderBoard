@@ -183,6 +183,39 @@ function modifyPost(array $params)
 }
 
 /**
+ * 게시글 수정
+ * @todo board_category Error Fix
+ * @param array $params
+ * @return object
+ */
+function modifyPost2(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    // 수정 처리 시 변경 값은 필수값
+    if(validSingleData($params, 'set')){
+        $query = 'UPDATE post SET '.$params['set'];
+    }else{
+        commonAlert('게시글 수정 실패.');
+    }
+
+    if(validSingleData($params, 'where')){
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if(validSingleData($params, 'debug')){
+        if($params['debug'] === true){
+            dd($query);
+        }
+    }
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
  * 게시글 답글 여부 확인 함수
  *
  * @param int $id 삭제할 게시글 아이디

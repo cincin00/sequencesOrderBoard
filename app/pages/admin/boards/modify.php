@@ -26,14 +26,6 @@
                         <div class="col-sm-6">
                             <h1>게시글 관리 상세</h1>
                         </div>
-                        <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                        <?php if(!$post['is_delete']){ ?>
-                          <li class="" style="padding-right:10px;"><a role="button" class="btn btn-default" href="<?=ADMIN_DIR?>/boards/modify.php?post_id=<?=$post['id']?>">수정</a></li>
-                          <li class=""><button class="btn btn-danger" id="delete_post" >삭제</button></li>
-                        <?php } ?>
-                        </ol>
-                      </div>
                     </div>
                 </div><!-- /.container-fluid -->
             </section>
@@ -47,8 +39,15 @@
                         if($post['category_title']){
                             echo '['.$post['category_title'].']';
                         }
-                        echo $post['title'];
                     ?>
+                    <div class="input-group input-group-lg">
+                        <select class="custom-select rounded-0" id="category">
+                            <option>Value 1</option>
+                            <option>Value 2</option>
+                            <option>Value 3</option>
+                        </select>
+                        <input type="text" id="title" name="title" class="form-control rounded-0" value="<?=$post['title']?>">
+                    </div>                    
                 </h3>
                 <div class="card-tools">
                     <div>
@@ -68,9 +67,7 @@
                             <p class="form-control-static"><?=$post['writer']?></p>
                         </div>
                         <label class="col-sm-2" for="writer">내용</label>
-                        <div id="writer" class="col-sm-10">
-                            <p class="form-control-static"><?=$post['contents']?></p>
-                        </div>
+                        <textarea id="summernote"><?=$post['contents']?></textarea>
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -102,8 +99,14 @@
     <script src="<?=ADMIN_PLUGIN?>/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="../dist/js/adminlte.min.js"></script>
+    <!-- Summernote -->
+    <script src="<?=ADMIN_PLUGIN?>/summernote/summernote-bs4.min.js"></script>
     <!-- Page specific script -->
     <script>
+        $(function () {
+            // Summernote
+            $('#summernote').summernote()
+        })
         $("#delete_post").click(function(){
             $result = confirm('게시글을 삭제 시키시겠습니까?');
             if($result)

@@ -86,3 +86,40 @@
 
         return $memberData;
     }
+
+    function getPostForAdminList($boardId)
+    {
+        $postCondetion = [
+            'select' => '`post`.*, `bc`.title as `category_title`',
+            'join' => [
+                'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
+            ],
+            'where' => '`post`.board_id = '.$boardId
+        ];
+        $posts = getPost($postCondetion, 1);
+        //dd($posts['board_category']);
+        $response = $posts;
+
+        return $response;
+    }
+
+    function getPostForAdminView()
+    {
+        $postId = (isset($_GET['post_id'])===true?$_GET['post_id']:0);
+        $postCondetion = [
+            'select' => '`post`.*, `bc`.title as `category_title`',
+            'join' => [
+                'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
+            ],
+            'where' => '`post`.id = '.$postId
+        ];
+        $post = getPost($postCondetion);
+        $response = $post;
+        $response['contents'] = htmlspecialchars_decode($post['contents']);
+        $categoryCondtion = [
+            ''
+        ];
+        $response['category'] = getCategoryData();
+
+        return $response;
+    }
