@@ -1,5 +1,8 @@
 <?php
   require_once('../../../../index.php');
+  require_once('../../../libraries/member_lib.php');
+  require_once('../../../libraries/admin_lib.php');
+  $members = getMemberForAdminList();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,11 +27,11 @@
                             <h1>회원 관리</h1>
                         </div>
                         <!-- <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Flot</li>
-            </ol>
-          </div> -->
+                        <ol class="breadcrumb float-sm-right">
+                          <li class="breadcrumb-item"><a href="#">Home</a></li>
+                          <li class="breadcrumb-item active">Flot</li>
+                        </ol>
+                      </div> -->
                     </div>
                 </div><!-- /.container-fluid -->
             </section>
@@ -36,16 +39,23 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <table id="datatable-layout" class="table table-bordered table-striped">
-                        <thead class="text-center">
-                            <th>번호</th>
-                            <th>아이디</th>
-                            <th>이름</th>
-                            <th>아이디</th>
-                            <th>가입일</th>
-                        </thead>
+                    <table id="datatable-layout" class="table table-bordered table-striped" data-page-length='5'>
                         <tbody>
-                            <td colspan="5" class="text-center">회원 정보가 존재하지 않습니다.</td>
+                            <?php 
+                              if($members){ 
+                                foreach($members as $index => $data){
+                            ?>
+                            <tr class="text-center">
+                                <td><?=($index+1)?></td>
+                                <td><?=$data['account_id'];?></td>
+                                <td><?=$data['name'];?></td>
+                                <td><?=$data['email'];?></td>
+                                <td><a href="<?=ADMIN_DIR.'/members/view.php'.'?member_id='.$data['id']?>" class="btn btn-default" role="button">상세</a></td>
+                            </tr>
+                            <?php
+                                }
+                              }
+                            ?>
                         </tbody>
                     </table>
                 </div><!-- /.container-fluid -->
@@ -88,7 +98,42 @@
     <script src="<?=ADMIN_PLUGIN?>/datatables-buttons/js/buttons.colVis.min.js"></script>
     <!-- Page specific script -->
     <script>
-    $('#datatable-layout').DataTable();
+    //let dataSet = [];
+    $('#datatable-layout').DataTable({
+        order: [[ 0, 'desc' ], [ 1, 'asc' ]],
+        searching: false,
+        columns: [
+            {title: '번호'},
+            {title: '아이디'},
+            {title: '이름'},
+            {title: '이메일'},
+            {title: '상세', orderable: false},
+        ],
+        language: {
+          "decimal":        "",
+          "emptyTable":     "회원 정보가 존재하지 않습니다.",
+          "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
+          "infoEmpty":      "Showing 0 to 0 of 0 entries",
+          "infoFiltered":   "(filtered from _MAX_ total entries)",
+          "infoPostFix":    "",
+          "thousands":      ",",
+          "lengthMenu":     "_MENU_ 개씩 보기",
+          "loadingRecords": "로딩중...",
+          "processing":     "",
+          "search":         "검색:",
+          "zeroRecords":    "검색 결과가 없습니다.",
+          "paginate": {
+              "first":      "처음",
+              "last":       "마지막",
+              "next":       "다음",
+              "previous":   "이전"
+          },
+          "aria": {
+              "sortAscending":  ": activate to sort column ascending",
+              "sortDescending": ": activate to sort column descending"
+          }
+      }
+    });
     </script>
 </body>
 

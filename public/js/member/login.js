@@ -36,7 +36,6 @@ class Login {
      */
     changeSigninFormEvent() {
         $('#sign-in').on('click', function () {
-            console.log('signinEvent');
             $('#form-login-in').removeClass('none');
             $('#form-login-up').removeClass('block');
 

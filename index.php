@@ -15,6 +15,7 @@ $subject = $_SERVER['REQUEST_URI'];
 $pattern = '/app\/pages\/[a-zA-Z]*\/[a-zA-Z|_]*.php/smi';
 // fail: 0 or false, success: array
 preg_match($pattern, $subject, $matches);
+
 // FIXME common_lib.php를 최상위로 올려서 처리하자!
 if(empty($matches) === false){
     // URL은 1개만 전달되므로 0번째 고정 - e.g) /app/pages/board/view.php
