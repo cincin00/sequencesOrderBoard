@@ -21,6 +21,8 @@ if(empty($matches) === false){
     $requestUri = explode('/',$matches[0]);
     define('CURRENT_PAGE', str_replace('.php', '', $requestUri[3]));
     switch($requestUri[2]){
+        case 'admin':
+            require_once(BASEPATH.'/app/libraries/admin_lib.php');
         case 'board':
             require_once(BASEPATH.'/app/libraries/board_lib.php');
             require_once(BASEPATH.'/app/libraries/mypage_lib.php');

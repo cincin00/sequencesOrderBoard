@@ -1,6 +1,6 @@
 <?php
   $memberLogin = false;
-  if (isset($_SESSION['id']) === true && empty($_SESSION['id']) === false) {
+  if (isset($_SESSION['id']) === true && empty($_SESSION['id']) === false ) {
       $memberLogin = true;
   }
 ?>
@@ -33,7 +33,7 @@
         <?php if(CURRENT_PAGE === 'mypost_list' || CURRENT_PAGE === 'mypost_view'){ ?>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=BOARD_DIR?>/list.php" role="button">게시글 페이지</a>
-        </div>            
+        </div>
         <?php } ?>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=MEMBER_DIR?>/logout.php" role="button">로그아웃</a>
@@ -42,5 +42,8 @@
             <span class="btn disabled"><?=$_SESSION['account_id']?>님 환영입니다.</span>
         </div>
         <?php } ?>
+        <div class="col-md-3 pos-right">
+            <a class="btn btn-link" href="<?=ADMIN_DIR?>/login.php" role="button">관리자 페이지</a>
+        </div>
     </div>
 </div>
