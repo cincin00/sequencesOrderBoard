@@ -45,7 +45,7 @@
                               if($members){ 
                                 foreach($members as $index => $data){
                             ?>
-                            <tr class="text-center">
+                            <tr class="text-center <?php if($data['withdrawal']){ ?>text-danger<?php }?>">
                                 <td><?=($index+1)?></td>
                                 <td><?=$data['account_id'];?></td>
                                 <td><?=$data['name'];?></td>
