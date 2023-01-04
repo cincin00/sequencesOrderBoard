@@ -39,7 +39,7 @@ function validSession()
         session_start();
     } else {
         //session_destroy();
-        session_start();
+        //session_start();
     }
 }
 

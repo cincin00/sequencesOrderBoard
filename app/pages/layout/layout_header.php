@@ -42,7 +42,7 @@
             <span class="btn disabled"><?=$_SESSION['account_id']?>님 환영입니다.</span>
         </div>
         <?php } ?>
-        <div class="col-md-3 pos-right">
+        <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=ADMIN_DIR?>/login.php" role="button">관리자 페이지</a>
         </div>
     </div>
