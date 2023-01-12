@@ -10,7 +10,7 @@
         <?php if (!@$memberLogin) { ?>
         <!-- 비회원 상단 메뉴 -->
         <div class="col-md-2 pos-right">
-            <a class="btn btn-link" href="<?=MEMBER_DIR?>/join.php" role="button">회원가입</a>
+            <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php?signup=1" role="button">회원가입</a>
         </div>
         <div class="col-md-2 pos-right">
             <a class="btn btn-link" href="<?=MEMBER_DIR?>/login.php" role="button">로그인</a>

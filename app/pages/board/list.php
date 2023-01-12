@@ -1,6 +1,15 @@
 <?php
 
   require_once('../../../index.php');
+//  $_GET = [];
+  // all, title, contents
+//   $_GET['target'] = 'all';
+//   $_GET['keyword'] = '';
+//   $_GET['page'] = '1';
+//   $_GET['block'] = '5';
+//   $_GET['length'] = '10';
+//   $tmp = getPostForListTmp($_GET);
+//   dd($tmp);
   list($boardData, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPostForList($_GET);
   ?>
 <!doctype html>
@@ -21,14 +30,14 @@
                 </div>
             </div>
         </div>
-        <?php if (false) { ?>
         <!-- 검색어 -->
-        <div class="mar-medium">
-            <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
-                placeholder="검색어를 입력해주세요">
-            <button type="button" class="btn btn-default pos-right">검색</button>
-        </div>
-        <?php } ?>
+        <form>
+            <div class="mar-medium">
+                <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
+                    placeholder="검색어를 입력해주세요" autocomplete="off">
+                <button type="button" class="btn btn-default pos-right">검색</button>
+            </div>
+        </form>        
         <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">
