@@ -48,12 +48,12 @@
                                     foreach($proudct as $index => $data){
                                 ?>
                                 <tr class="text-center" >
-                                    <td><?=($index+1)?></td>
-                                    <td><img src="<?=PATH_COMMON_RESOURCE?>/no_image.jpg" style="padding-right:10px;width:50px;height:auto;"/><?=$data['name']??'-';?></td>
-                                    <td><?=$data['price'];?></td>
-                                    <td><?=$data['is_visible'];?></td>
-                                    <td><?=$data['regist_date'];?></td>
-                                    <td><a href="<?=ADMIN_DIR.'/product/modify.php'.'?product_id='.$data['id']?>" class="btn btn-default" role="button">상세</a></td>
+                                    <td class="col-index"><?=($index+1)?></td>
+                                    <td class="col-name"><img src="<?=PATH_COMMON_RESOURCE?>/no_image.jpg" style="padding-right:10px;width:50px;height:auto;"/><?=$data['name']??'-';?></td>
+                                    <td class="col-price"><?=$data['price'];?></td>
+                                    <td class="col-visible"><?=$data['is_visible'];?></td>
+                                    <td class="col-regdate"><?=$data['regist_date'];?></td>
+                                    <td class="col-detail-btn"><a href="<?=ADMIN_DIR.'/product/modify.php'.'?product_id='.$data['id']?>" class="btn btn-default" role="button">상세</a></td>
                                 </tr>
                                 <?php
                                     }
@@ -101,42 +101,50 @@
     <script src="<?=ADMIN_PLUGIN?>/datatables-buttons/js/buttons.colVis.min.js"></script>
     <!-- Page specific script -->
     <script>
-    $('#datatable-layout').DataTable({
-        order: [[ 0, 'desc' ], [ 1, 'asc' ]],
-        searching: false,
-        columns: [
-            {title: '번호'},
-            {title: '상품명'},
-            {title: '판매가'},
-            {title: '표시여부'},
-            {title: '등록일'},
-            {title: '상세', orderable: false},
-        ],
-        language: {
-          "decimal":        "",
-          "emptyTable":     "상품 정보가 존재하지 않습니다.",
-          "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
-          "infoEmpty":      "Showing 0 to 0 of 0 entries",
-          "infoFiltered":   "(filtered from _MAX_ total entries)",
-          "infoPostFix":    "",
-          "thousands":      ",",
-          "lengthMenu":     "_MENU_ 개씩 보기",
-          "loadingRecords": "로딩중...",
-          "processing":     "",
-          "search":         "검색:",
-          "zeroRecords":    "검색 결과가 없습니다.",
-          "paginate": {
-              "first":      "처음",
-              "last":       "마지막",
-              "next":       "다음",
-              "previous":   "이전"
-          },
-          "aria": {
-              "sortAscending":  ": activate to sort column ascending",
-              "sortDescending": ": activate to sort column descending"
-          }
-      }
-    });
+        let dataTable = $("#datatable-layout");
+        dataTable.DataTable({
+            order: [[ 0, 'desc' ], [ 1, 'asc' ]],
+            searching: false,
+            columns: [
+                {title: '번호'},
+                {title: '상품명'},
+                {title: '판매가'},
+                {title: '표시여부'},
+                {title: '등록일'},
+                {title: '상세', orderable: false},
+            ],
+            language: {
+            "decimal":        "",
+            "emptyTable":     "상품 정보가 존재하지 않습니다.",
+            "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty":      "Showing 0 to 0 of 0 entries",
+            "infoFiltered":   "(filtered from _MAX_ total entries)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "_MENU_ 개씩 보기",
+            "loadingRecords": "로딩중...",
+            "processing":     "",
+            "search":         "검색:",
+            "zeroRecords":    "검색 결과가 없습니다.",
+            "paginate": {
+                "first":      "처음",
+                "last":       "마지막",
+                "next":       "다음",
+                "previous":   "이전"
+            },
+            "aria": {
+                "sortAscending":  ": activate to sort column ascending",
+                "sortDescending": ": activate to sort column descending"
+            }
+        }
+        });
+        
+        let priceCol = dataTable.find(".col-price");
+        priceCol.each(function(index, item){
+            let price = $(item).html();
+            let convertPrice = Number(price).toLocaleString('ko-KR');
+            $(item).html(convertPrice);
+        });
     </script>
 </body>
 

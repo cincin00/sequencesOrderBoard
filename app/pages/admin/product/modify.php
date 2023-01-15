@@ -1,9 +1,9 @@
 <?php
-require_once('../../../../index.php');
-require_once('../../../libraries/product_lib.php');
-require_once('../../../libraries/admin_lib.php');
+  require_once('../../../../index.php');
+  require_once('../../../libraries/product_lib.php');
+  require_once('../../../libraries/admin_lib.php');
 
-$product = getProductForAdminView($_GET);
+  $product = getProductForAdminView($_GET);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,67 +40,79 @@ $product = getProductForAdminView($_GET);
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <section class="content">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-
-                                </h3>
-                                <div class="card-tools">
-                                    <div>
+                    <form class="form-horizontal" name="product_update" method="post"
+                        action="<?=ADMIN_DIR?>/product/modify_process.php">
+                        <section class="content">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                    </h3>
+                                    <div class="card-tools">
                                         <div>
-                                            <a href="<?=ADMIN_DIR?>/prodouct/list.php" class="btn btn-default"
-                                                role="button">목록</a>
-                                            <a href="<?=ADMIN_DIR?>/prodouct/list.php" class="btn btn-primary"
-                                                role="button">수정</a>
+                                            <div>
+                                                <a href="<?=ADMIN_DIR?>/product/delete_process.php?product_id=<?=$product['id']?>"
+                                                    class="btn btn-danger" role="button">삭제</a>
+                                                <a href="<?=ADMIN_DIR?>/product/list.php" class="btn btn-default"
+                                                    role="button">목록</a>
+                                                <button type="submit" class="btn btn-primary">수정</button>
+                                                <!-- <a href="#" class="btn btn-primary" role="submit">수정</a> -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <form class="form-horizontal">
+                                <input type="hidden" name="product_id" id="product_id" value="<?=$product['id']?>">
                                 <div class="card-body">
                                     <div class="form-group row">
-                                        <label for="inputEmail3" class="col-sm-2 col-form-label">상품명</label>
+                                        <label for="product_name" class="col-sm-2 col-form-label">상품명</label>
                                         <div class="col-sm-10">
-                                            <input type="email" class="form-control" id="inputEmail3"
+                                            <input type="text" class="form-control" name="product_name" id="productName"
                                                 placeholder="상품명" value="<?=$product['name']?>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="inputPassword3" class="col-sm-2 col-form-label">가격</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="productPice"
-                                                placeholder="가격" value="<?=$product['price']?>">
+                                            <input type="text" class="form-control" name="product_price"
+                                                id="productPrice" placeholder="가격" value="<?=$product['price']?>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="inputPassword3" class="col-sm-2 col-form-label">표시여부</label>
                                         <div class="col-sm-10">
-                                            <select name="" id="" class="custom-select rounded-0">
-                                                <option value="0" selected="<?php ($product['is_visible'] == 0 ? true:'') ?>">미표시</option>
-                                                <option value="1" selected="<?php ($product['is_visible'] == 1 ? true:'') ?>" >표시</option>
+                                            <select name="is_visible" id="is_visible" class="custom-select rounded-0">
+                                                <option value="0" <?=($product['is_visible'] === 0 ? 'selected':''); ?>>
+                                                    미표시
+                                                </option>
+                                                <option value="1" <?=($product['is_visible'] === 1 ? 'selected':''); ?>>
+                                                    표시
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="inputPassword3" class="col-sm-2 col-form-label">상태여부</label>
                                         <div class="col-sm-10">
-                                            <select name="" id="" class="custom-select rounded-0">
-                                                <option value="0" selected="<?php ($product['status'] == 0? true:'') ?>">품절</option>
-                                                <option value="1" selected="<?php ($product['status'] == 1? true:'') ?>">판매</option>
-                                                <option value="2" selected="<?php ($product['status'] == 2? true:'') ?>">예약</option>
+                                            <select name="product_status" id="product_status"
+                                                class="custom-select rounded-0">
+                                                <option value="0" <?=($product['status'] === 0 ? 'selected':''); ?>>품절
+                                                </option>
+                                                <option value="1" <?=($product['status'] === 1 ? 'selected':''); ?>>판매
+                                                </option>
+                                                <option value="2" <?=($product['status'] === 2 ? 'selected':''); ?>>예약
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="productDetail">상품 상세 설명</label>
-                                        <textarea name="description"
-                                            id="productDetail"><?=$product['description']?></textarea>
+                                        <label for="product_detail">상품 상세 설명</label>
+                                        <textarea name="product_desc"
+                                            id="product_detail"><?=htmlspecialchars_decode($product['description'])?></textarea>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
-                    </section>
+
+                            </div>
+                        </section>
+                    </form>
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer text-center"></div>
@@ -140,7 +152,10 @@ $product = getProductForAdminView($_GET);
     <script>
     $(function() {
         // Summernote
-        $('#productDetail').summernote()
+        $('#product_detail').summernote();
+        // $('').on('keypress', function(
+        //   event.key >= 0 && event.key <= 9
+        // ));
     });
     </script>
 </body>
