@@ -97,7 +97,7 @@
             'where' => '`post`.board_id = '.$boardId
         ];
         $posts = getPost($postCondetion, 1);
-        //dd($posts['board_category']);
+
         $response = $posts;
 
         return $response;

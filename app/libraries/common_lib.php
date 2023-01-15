@@ -158,3 +158,36 @@
 
         return $result;
     }
+
+    /**
+     * 문자열 자르기
+     * 
+     * @description 
+     * - 주어진 문자열($str)을 전달 받은 길이 값($length)으로 잘라 반환
+     * @param string $str
+     * @param string $length
+     */
+    function cutStr(string $str, int $length){
+        // 반환 값 초기화
+        $result = $msg = '';
+        
+        // 문자열 유효성 검증
+        if(empty($str)){
+            $msg = '기준 문자열은 필수입니다.';
+        } else if (empty($length)) {
+            $msg = '기준 길이값은 필수입니다.';
+        }
+    
+        if($msg){
+            commonAlert($msg);
+        }
+    
+        $strLen = mb_strlen($str, 'UTF-8');
+        if($strLen > $length){
+            $result = mb_substr($str, 0, $length, 'UTF-8');
+        } else {
+            $result = $str;
+        }
+    
+        return $result;
+    }

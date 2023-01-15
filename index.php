@@ -31,6 +31,9 @@ if(empty($matches) === false){
         case 'member':
             require_once(BASEPATH.'/app/libraries/member_lib.php');
             break;
+        case 'product':
+            require_once(BASEPATH.'/app/libraries/product_lib.php');
+            break;
         default:
             require_once(BASEPATH.'/app/libraries/common_lib.php');
     }

@@ -36,9 +36,9 @@
                with font-awesome or any other icon font library -->
           <li class="nav-item">
             <a href="<?=ADMIN_DIR?>/members/list.php" class="nav-link">
-              <i class="nav-icon fas fa-book"></i>
+              <i class="nav-icon fa fa-user-circle"></i>
               <p>
-                회원관리
+                회원 관리
               </p>
             </a>
           </li>
@@ -46,10 +46,18 @@
             <a href="<?=ADMIN_DIR?>/boards/list.php" class="nav-link">
               <i class="nav-icon fas fa-book"></i>
               <p>
-                게시판관리
+                게시판 관리
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?=ADMIN_DIR?>/product/list.php" class="nav-link">
+              <i class="nav-icon fa fa-gift"></i>
+              <p>
+                상품 관리
+              </p>
+            </a>
+          </li>          
           <li class="nav-item">
             <a href="pages/widgets.html" class="nav-link">
               <i class="nav-icon fas fa-th"></i>

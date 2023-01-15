@@ -1,8 +1,9 @@
-<?php
-    require_once('../../../../index.php');
-    require_once('../../../libraries/board_lib.php');
-    require_once('../../../libraries/admin_lib.php');
-    $post = getPostForAdminView();
+<?php 
+  require_once('../../../../index.php');
+  require_once('../../../libraries/product_lib.php');
+  require_once('../../../libraries/admin_lib.php');
+  
+  $product = getProductForAdminView($_GET);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,37 +25,33 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>게시글 관리 상세</h1>
+                            <h1>상품 관리</h1>
                         </div>
+                        <!-- <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                          <li class="breadcrumb-item"><a href="#">Home</a></li>
+                          <li class="breadcrumb-item active">Flot</li>
+                        </ol>
+                      </div> -->
                     </div>
                 </div><!-- /.container-fluid -->
             </section>
 
             <!-- Main content -->
             <section class="content">
+                <div class="container-fluid">
+                <section class="content">
             <div class="card">
                 <div class="card-header">
                 <h3 class="card-title">
-                    <?php
-                        if($post['category_title']){
-                            echo '['.$post['category_title'].']';
-                        }
-                    ?>
-                    <div class="input-group input-group-lg">
-                        <select class="custom-select rounded-0" id="category">
-                            <option>Value 1</option>
-                            <option>Value 2</option>
-                            <option>Value 3</option>
-                        </select>
-                        <input type="text" id="title" name="title" class="form-control rounded-0" value="<?=$post['title']?>">
-                    </div>                    
+                    <?=$product['name']?>
                 </h3>
                 <div class="card-tools">
                     <div>
-                        <label for="hits">조회수</label>
-                        <span id="hits" class="form-control-static"><?=$post['hits']?></span>
-                        <label for="hits">| 작성일</label>
-                        <span id="hits" class="form-control-static"><?=$post['regist_date']?></span>
+                      <div>
+                        <a href="<?=ADMIN_DIR?>/prodouct/list.php" class="btn btn-default" role="button">목록</a>
+                        <a href="<?=ADMIN_DIR?>/prodouct/list.php" class="btn btn-primary" role="button">수정</a>
+                      </div>
                     </div>
                 </div>
                 </div>
@@ -64,20 +61,24 @@
                     <div class="form-group">
                         <label class="col-sm-2" for="writer">작성자</label>
                         <div id="writer" class="col-sm-10">
-                            <p class="form-control-static"><?=$post['writer']?></p>
+                            <p class="form-control-static">작성자명</p>
                         </div>
                         <label class="col-sm-2" for="writer">내용</label>
-                        <textarea id="summernote"><?=$post['contents']?></textarea>
+                        <div id="writer" class="col-sm-10">
+                            <p class="form-control-static">내용 영역</p>
+                        </div>
                     </div>
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer text-center">
-                    <a href="<?=ADMIN_DIR?>/boards/list.php" class="btn btn-default" role="button">목록</a>
+                    
                 </div>
                 </form>
                 <!-- /.card-footer-->
             </div>
+            </section>
+                </div><!-- /.container-fluid -->
             </section>
             <!-- /.content -->
         </div>
@@ -99,23 +100,15 @@
     <script src="<?=ADMIN_PLUGIN?>/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="../dist/js/adminlte.min.js"></script>
-    <!-- Summernote -->
-    <script src="<?=ADMIN_PLUGIN?>/summernote/summernote-bs4.min.js"></script>
+    <!-- DataTables -->
+    <link rel="stylesheet" href="<?=ADMIN_PLUGIN?>/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="<?=ADMIN_PLUGIN?>/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="<?=ADMIN_PLUGIN?>/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <script src="<?=ADMIN_PLUGIN?>/jszip/jszip.min.js"></script>
+    <script src="<?=ADMIN_PLUGIN?>/pdfmake/pdfmake.min.js"></script>
+    <script src="<?=ADMIN_PLUGIN?>/pdfmake/vfs_fonts.js"></script>
     <!-- Page specific script -->
     <script>
-        $(function () {
-            // Summernote
-            $('#summernote').summernote()
-        });
-        $("#delete_post").click(function(){
-            $result = confirm('게시글을 삭제 시키시겠습니까?');
-            if($result)
-            {
-                location.href = "<?=ADMIN_DIR?>/boards/delete_process.php?post_id=<?=$post['id']?>";
-            }else{
-                return false;
-            }            
-        });
     </script>
 </body>
 
