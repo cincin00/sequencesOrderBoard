@@ -46,16 +46,16 @@ function updateProduct(array $params)
 
     $table = PRODUCT_TBL;
     $query = '';
-    
+
     // Set 조건
-    if(validSingleData($params, 'set')){
+    if (validSingleData($params, 'set')) {
         // Table 조건
-        if(validSingleData($params, 'table')){
+        if (validSingleData($params, 'table')) {
             $query = 'UPDATE '.$params['table'].' SET '.$params['set'];
         } else {
             $query = 'UPDATE '.$table.' SET '.$params['set'];
-        }        
-    }else{
+        }
+    } else {
         $msg = '갱신할 정보가 유효하지 않습니다.';
         $location = ADMIN_DIR.'/product/list.php';
 
@@ -63,14 +63,14 @@ function updateProduct(array $params)
     }
 
     // Where 조건
-    if(validSingleData($params, 'where')){
+    if (validSingleData($params, 'where')) {
         $query .= ' WHERE '.$params['where'];
     }
 
-    if(validSingleData($params, 'debug')){
-        if($params['debug'] === true){
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
             dd($query);
-        }        
+        }
     }
 
     $response = $dbh->exec($query);
@@ -80,19 +80,17 @@ function updateProduct(array $params)
 
 /**
  * 관리자 상품 목록 조회
+ * 
+ * @return array
  */
 function getProductForAdminList()
 {
+    // 목록 조회 조건
     $productCondtion = [
-        'select' => '`product`.*, `product_img`.uuid,`product_img`.origin_name,`product_img`.extension,`product_img`.path',
-        'join' => [
-            'left' => '`product_img` ON `product_img`.id = `product`.image_id',
-        ],
-        'where' => '`product`.is_delete = 0',
-        //'debug' => true
+        'where' => '`product`.is_delete = 0',        
     ];
     $tmpProduct = getProduct($productCondtion, 1);
-
+    
     foreach ($tmpProduct as $index => $data) {
         // 번호(id), 상품명(name), 가격(price), 표시여부(is_visible), 등록일(regist_date)
         $product[$index] = $data;
@@ -110,11 +108,15 @@ function getProductForAdminList()
 
 /**
  * 관리자 상품 상세 페이지
+ * 
+ * @param array 데이터 조회 조건 
+ * @return array
  */
 function getProductForAdminView(array $params)
 {
     // 반환값 초기화
-    $response = $msg = $location = '';
+    $response = [];
+    $msg = $location = '';
     // 상품 조회 데이터 검증
     $valid = validSingleData($params, 'product_id');
     if ($valid === false) {
@@ -125,12 +127,7 @@ function getProductForAdminView(array $params)
 
     // 상품 데이터 조회
     $productCondtion = [
-        'select' => '`product`.*, `product_img`.uuid,`product_img`.origin_name,`product_img`.extension,`product_img`.path',
-        'join' => [
-            'left' => '`product_img` ON `product_img`.id = `product`.image_id',
-        ],
         'where' => '`product`.id = '.$params['product_id'],
-        //'debug' => true
     ];
     $product = getProduct($productCondtion);
     if (count($product) < 1) {
@@ -138,8 +135,57 @@ function getProductForAdminView(array $params)
         $location = ADMIN_DIR.'/product/list.php';
         commonMoveAlert($msg, $location);
     }
-
+    // 상품 이미지 조회
+    $productImgCondtion = [
+        'where' => 'product_id = '.$params['product_id'],
+        //'debug' => true
+    ];
+    $productImg = getProductImage($productImgCondtion, 1);
     $response = $product;
+    $response['product_img'] = $productImg;
+
+    return $response;
+}
+
+/**
+ * 상품 이미지 업로드
+ * 
+ * @param array $params 파일 정보
+ * @return bool
+ */
+function uploadProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    $query = 'INSERT INTO '.$table.'(`product_id`, `uuid`, `origin_name`, `extension` , `size`, `path`, `upload_date`) VALUES("'.$params['product_id'].'", "'.uniqid().'", "'.$params['name'][0].'", "'.$params['type'][0].'", "'.$params['size'][0].'", "'.$params['path'].'", "'.date('Y-m-d H:i:s').'")';
+    
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 상품 이미지 정보 조회
+ * 
+ * @param array $params 상품 이미지 검색 데이터
+ * @param int $fetchType 전체 조회 여부(0:단일조회,1:전체조회)
+ * @return array
+ */
+function getProductImage(array $params, int $fetchType = 0)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_IMG_TBL;
+    $query = queryBuilder($table, $params);
+    $result = $dbh->query($query);
+    if ($fetchType > 0) {
+        $response = $result->fetchAll();
+    } else {
+        $response = $result->fetch();
+    }
 
     return $response;
 }
