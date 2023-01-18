@@ -28,8 +28,9 @@
                             <h1>상품 관리</h1>
                         </div>
                         <div class="col-sm-6" style="text-align:right;">
-                            <a href="<?=ADMIN_DIR?>/product/write.php" class="btn btn-primary" id="rgistProduct">상품등록</a>
-                      </div>
+                            <a href="<?=ADMIN_DIR?>/product/write.php" class="btn btn-primary"
+                                id="rgistProduct">상품등록</a>
+                        </div>
                     </div>
                 </div><!-- /.container-fluid -->
             </section>
@@ -39,19 +40,23 @@
                 <div class="container-fluid">
                     <table id="datatable-layout" class="table table-bordered table-striped" data-page-length='10'>
                         <tbody>
-                        <?php 
+                            <?php 
                                 if($proudct){ 
                                     foreach($proudct as $index => $data){
                                 ?>
-                                <tr class="text-center" >
-                                    <td class="col-index"><?=($index+1)?></td>
-                                    <td class="col-name text-left"><img src="<?=$data['img_path'];?>" style="padding-right:10px;width:50px;height:auto;"/><?=$data['name']??'-';?></td>
-                                    <td class="col-price"><?=$data['price'];?></td>
-                                    <td class="col-visible"><?=$data['is_visible'];?></td>
-                                    <td class="col-regdate"><?=$data['regist_date'];?></td>
-                                    <td class="col-detail-btn"><a href="<?=ADMIN_DIR.'/product/modify.php'.'?product_id='.$data['id']?>" class="btn btn-default" role="button">상세</a></td>
-                                </tr>
-                                <?php
+                            <tr class="text-center">
+                                <td class="col-index"><?=($index+1)?></td>
+                                <td class="col-name text-left"><img src="<?=$data['img_path'];?>"
+                                        style="padding-right:10px;width:50px;height:auto;" /><?=$data['name']??'-';?>
+                                </td>
+                                <td class="col-price"><?=$data['price'];?></td>
+                                <td class="col-visible"><?=$data['is_visible'];?></td>
+                                <td class="col-regdate"><?=$data['regist_date'];?></td>
+                                <td class="col-detail-btn"><a
+                                        href="<?=ADMIN_DIR.'/product/modify.php'.'?product_id='.$data['id']?>"
+                                        class="btn btn-default" role="button">상세</a></td>
+                            </tr>
+                            <?php
                                     }
                                 }
                                 ?>
@@ -97,50 +102,70 @@
     <script src="<?=ADMIN_PLUGIN?>/datatables-buttons/js/buttons.colVis.min.js"></script>
     <!-- Page specific script -->
     <script>
-        let dataTable = $("#datatable-layout");
-        dataTable.DataTable({
-            order: [[ 0, 'desc' ], [ 1, 'asc' ]],
-            searching: false,
-            columns: [
-                {title: '번호', class: 'text-center'},
-                {title: '상품명',},
-                {title: '판매가', class: 'text-center'},
-                {title: '표시여부', class: 'text-center'},
-                {title: '등록일', class: 'text-center'},
-                {title: '상세', class: 'text-center', orderable: false},
-            ],
-            language: {
-            "decimal":        "",
-            "emptyTable":     "상품 정보가 존재하지 않습니다.",
-            "info":           "Showing _START_ to _END_ of _TOTAL_ entries",
-            "infoEmpty":      "Showing 0 to 0 of 0 entries",
-            "infoFiltered":   "(filtered from _MAX_ total entries)",
-            "infoPostFix":    "",
-            "thousands":      ",",
-            "lengthMenu":     "_MENU_ 개씩 보기",
+    let dataTable = $("#datatable-layout");
+    dataTable.DataTable({
+        order: [
+            [0, 'desc'],
+            [1, 'asc']
+        ],
+        searching: false,
+        columns: [{
+                title: '번호',
+                class: 'text-center'
+            },
+            {
+                title: '상품명',
+            },
+            {
+                title: '판매가',
+                class: 'text-center'
+            },
+            {
+                title: '표시여부',
+                class: 'text-center'
+            },
+            {
+                title: '등록일',
+                class: 'text-center'
+            },
+            {
+                title: '상세',
+                class: 'text-center',
+                orderable: false
+            },
+        ],
+        language: {
+            "decimal": "",
+            "emptyTable": "상품 정보가 존재하지 않습니다.",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "_MENU_ 개씩 보기",
             "loadingRecords": "로딩중...",
-            "processing":     "",
-            "search":         "검색:",
-            "zeroRecords":    "검색 결과가 없습니다.",
+            "processing": "",
+            "search": "검색:",
+            "zeroRecords": "검색 결과가 없습니다.",
             "paginate": {
-                "first":      "처음",
-                "last":       "마지막",
-                "next":       "다음",
-                "previous":   "이전"
+                "first": "처음",
+                "last": "마지막",
+                "next": "다음",
+                "previous": "이전"
             },
             "aria": {
-                "sortAscending":  ": activate to sort column ascending",
+                "sortAscending": ": activate to sort column ascending",
                 "sortDescending": ": activate to sort column descending"
             }
         }
-        });
-        
-        let priceCol = dataTable.find(".col-price");
-        priceCol.each(function(index, item){
-            let price = $(item).html();
-            let convertPrice = Number(price).toLocaleString('ko-KR');
-            $(item).html(convertPrice);
-        });
+    });
+
+    let priceCol = dataTable.find(".col-price");
+    priceCol.each(function(index, item) {
+        let price = $(item).html();
+        let convertPrice = Number(price).toLocaleString('ko-KR');
+        $(item).html(convertPrice);
+    });
     </script>
 </body>
 

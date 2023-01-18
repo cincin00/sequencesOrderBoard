@@ -40,7 +40,7 @@
             <section class="content">
                 <div class="container-fluid">
                     <form class="form-horizontal" name="product_update" method="post"
-                        action="<?=ADMIN_DIR?>/product/write_process.php">
+                        action="<?=ADMIN_DIR?>/product/write_process.php" enctype="multipart/form-data">
                         <section class="content">
                             <div class="card">
                                 <div class="card-header">
@@ -193,6 +193,13 @@
                     console.log(obj);
                 });
                 this.on("addedfile", function(file) {});
+                this.on('sending', function(file, xhr, formData) {
+                    // Append all form inputs to the formData Dropzone will POST
+                    var data = $('#frmTarget').serializeArray();
+                    $.each(data, function(key, el) {
+                        formData.append(el.name, el.value);
+                    });
+                });
             }
         });
 

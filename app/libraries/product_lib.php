@@ -96,11 +96,13 @@ function getProductForAdminList()
     ];
     $tmpProduct = getProduct($productCondtion, 1);
     
+    $nameLimitLength = 15;
+
     foreach ($tmpProduct as $index => $data) {
         // 번호(id), 상품명(name), 가격(price), 표시여부(is_visible), 등록일(regist_date)
         $product[$index] = $data;
         $product[$index]['id'] = $data['id'];
-        $product[$index]['name'] = cutStr($data['name'], 10);
+        $product[$index]['name'] = (mb_strlen($data['name']) > $nameLimitLength ? cutStr($data['name'], $nameLimitLength).'....' : $data['name']);
         $product[$index]['price'] = $data['price'];
         $product[$index]['is_visible'] = ($data['is_visible'] === 1 ? '공개' : '비공개');
         $product[$index]['regist_date'] = $data['regist_date'];
@@ -194,4 +196,39 @@ function getProductImage(array $params, int $fetchType = 0)
     }
 
     return $response;
+}
+
+/**
+ * 상품 데이터 저장
+ * 
+ * @param array  
+ * @return bool
+ */
+function setProduct(array $params)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_TBL;
+    $query = 'INSERT INTO '.$table.' (`name`, `description`, `price`, `status`, `is_visible`, `regist_date`) VALUES ("'.$params['product_name'].'", "'.$params['product_desc'].'", "'.$params['product_price'].'", "'.$params['product_status'].'", "'.$params['is_visible'].'", "'.date('Y-m-d H:i:s').'")';
+    $response['result'] = $dbh->exec($query);
+    $response['product_id'] = $dbh->lastInsertId();
+
+    return $response;
+}
+
+/**
+ * 상품 등록 유효성 검증
+ */
+function validProduct(array $params){
+    $msg = $location = '';
+     if(validSingleData($params, 'product_name') === false){
+        $msg = '상품명은 필수 입니다.';
+        $location = ADMIN_DIR.'/product/write.php';
+     }
+
+     if($msg && $location){
+        commonMoveAlert($msg, $location);
+     }
+     
 }
