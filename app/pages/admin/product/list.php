@@ -4,7 +4,6 @@
   require_once('../../../libraries/admin_lib.php');
 
   $proudct = getProductForAdminList();
-  
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,12 +27,9 @@
                         <div class="col-sm-6">
                             <h1>상품 관리</h1>
                         </div>
-                        <!-- <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                          <li class="breadcrumb-item"><a href="#">Home</a></li>
-                          <li class="breadcrumb-item active">Flot</li>
-                        </ol>
-                      </div> -->
+                        <div class="col-sm-6" style="text-align:right;">
+                            <a href="<?=ADMIN_DIR?>/product/write.php" class="btn btn-primary" id="rgistProduct">상품등록</a>
+                      </div>
                     </div>
                 </div><!-- /.container-fluid -->
             </section>
@@ -49,7 +45,7 @@
                                 ?>
                                 <tr class="text-center" >
                                     <td class="col-index"><?=($index+1)?></td>
-                                    <td class="col-name"><img src="<?=PATH_COMMON_RESOURCE?>/no_image.jpg" style="padding-right:10px;width:50px;height:auto;"/><?=$data['name']??'-';?></td>
+                                    <td class="col-name text-left"><img src="<?=$data['img_path'];?>" style="padding-right:10px;width:50px;height:auto;"/><?=$data['name']??'-';?></td>
                                     <td class="col-price"><?=$data['price'];?></td>
                                     <td class="col-visible"><?=$data['is_visible'];?></td>
                                     <td class="col-regdate"><?=$data['regist_date'];?></td>
@@ -106,12 +102,12 @@
             order: [[ 0, 'desc' ], [ 1, 'asc' ]],
             searching: false,
             columns: [
-                {title: '번호'},
-                {title: '상품명'},
-                {title: '판매가'},
-                {title: '표시여부'},
-                {title: '등록일'},
-                {title: '상세', orderable: false},
+                {title: '번호', class: 'text-center'},
+                {title: '상품명',},
+                {title: '판매가', class: 'text-center'},
+                {title: '표시여부', class: 'text-center'},
+                {title: '등록일', class: 'text-center'},
+                {title: '상세', class: 'text-center', orderable: false},
             ],
             language: {
             "decimal":        "",

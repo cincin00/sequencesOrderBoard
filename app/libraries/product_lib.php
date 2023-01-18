@@ -87,7 +87,12 @@ function getProductForAdminList()
 {
     // 목록 조회 조건
     $productCondtion = [
-        'where' => '`product`.is_delete = 0',        
+        'select' => '`product`.*, MAX(`product_img`.id) AS img_id, MIN(`product_img`.path) AS img_path',
+        'join' => [
+            'left' => '`product_img` ON `product`.id = `product_img`.product_id'
+        ],
+        'where' => '`product`.is_delete = 0',
+        'groupby' => '`product`.id',
     ];
     $tmpProduct = getProduct($productCondtion, 1);
     
@@ -99,6 +104,7 @@ function getProductForAdminList()
         $product[$index]['price'] = $data['price'];
         $product[$index]['is_visible'] = ($data['is_visible'] === 1 ? '공개' : '비공개');
         $product[$index]['regist_date'] = $data['regist_date'];
+        $product[$index]['img_path'] = (empty($data['img_path']) === true ? PATH_COMMON_RESOURCE.'/no_image.jpg' : DOMAIN.$data['img_path']);
     }
 
     $response = $product;
