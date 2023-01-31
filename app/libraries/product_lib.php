@@ -98,6 +98,7 @@ function getProductForAdminList()
     
     $nameLimitLength = 15;
 
+    // @todo: front 에서 처리하자!
     foreach ($tmpProduct as $index => $data) {
         // 번호(id), 상품명(name), 가격(price), 표시여부(is_visible), 등록일(regist_date)
         $product[$index] = $data;
@@ -194,6 +195,26 @@ function getProductImage(array $params, int $fetchType = 0)
     } else {
         $response = $result->fetch();
     }
+
+    return $response;
+}
+
+/**
+ * 상품 이미지 삭제
+ * 
+ * @param array 상품 이미지 정보
+ * @return bool
+ */
+function deleteProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    $query = 'DELETE FROM '.$table.' WHERE product_id = ' . $params['product_id'] . ' AND id = ' . $params['product_image_id'];
+    $result = $dbh->query($query);
+
+    $response = $result;
 
     return $response;
 }

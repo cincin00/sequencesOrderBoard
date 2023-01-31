@@ -9,7 +9,7 @@
     $params['is_visible'] = (isset($_POST['is_visible']) === true ? $_POST['is_visible'] : 0);
     $params['product_status'] = (isset($_POST['product_status']) === true ? $_POST['product_status'] : 0);
     $params['product_desc'] = (isset($_POST['product_desc']) === true ? $_POST['product_desc'] : '');
-var_dump($_POST);var_dump($_FILES);dd('END');
+var_dump($_REQUEST);var_dump($_POST);var_dump($_FILES);dd('END');
     // 유효성 검증
     validProduct($params);
     // 상품 등록

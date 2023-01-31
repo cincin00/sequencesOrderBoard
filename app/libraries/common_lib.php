@@ -202,6 +202,7 @@
      */
     function upload_file(string $folder, array $params)
     {
+        // 반환값 초기화
         $response = [
             'result' => false,
             'uuid' => '',
@@ -239,4 +240,37 @@
         $response['uuid'] = $uuid;
 
         return $response;
+    }
+
+    /**
+     * 파일 삭제 함수
+     *
+     * @param string $folder 이미지 삭제 폴더명
+     * @param array $params 이미지 정보
+     */
+    function delete_file(string $folder, array $params)
+    {
+        // 반환값 초기화
+        $response = [
+            'result' => false,
+            'path' => '',
+            'msg' => '',
+        ];
+
+        try{
+            // 파일 존재 검증
+            $fileName = '/opt/homebrew/var/www/board01/public_html'.$params['product_path'];
+            // if(file_exists($fileName) === false){
+            //     throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
+            // }
+            // 파일 삭제 - 성공 / 실패
+            $response['result'] = unlink($fileName);
+            if($response['result'] === false){
+                throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
+            }
+        }catch(Exception $e){
+            $response['msg'] = $e->getMessage();
+        }
+
+        return $response;        
     }

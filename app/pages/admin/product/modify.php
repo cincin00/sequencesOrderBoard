@@ -4,7 +4,6 @@
   require_once('../../../libraries/admin_lib.php');
 
   $product = getProductForAdminView($_GET);
-
   ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -170,6 +169,7 @@
         $('#product_detail').summernote();
         // Dropzone Init        
         $('#productDropzone').dropzone({
+            addRemoveLinks: true,
             //자동 업로드
             //autoProcessQueue: false,
             //전송받는 파일 파라미터명            
@@ -183,12 +183,53 @@
             //첨부 개수
             maxFiles: 5,
             //미리보기 텍스트 설정
-            dictDefaultMessage: '상품 이미지를 업로드해주세요.(최대 5개/5MB)',
+            dictCancelUpload: "업로드 취소",
+            dictCancelUploadConfirmation:"업로드를 취소하시겠습니까?",
+            dictDefaultMessage: "상품 이미지를 업로드해주세요.(최대 5개/5MB)",
+            dictFallbackMessage: "현재 브라우저에서는 드래그앤드랍을 지원하지 않습니다.",
+            dictFallbackText: "Please use the fallback form below to upload your files like in the olden days.",
+            dictFileSizeUnits: {tb: 'TB', gb: 'GB', mb: 'MB', kb: 'KB', b: 'b'},
+            dictFileTooBig: "업로드할 피일이 너무 큽니다. ({{filesize}}MiB). 최대 업로드 가능 용량: {{maxFilesize}}MiB.",
+            dictInvalidFileType: "지원하지 않는 업로드 형식입니다.",
+            dictMaxFilesExceeded: "최대 업로드 가능 파일 수량은 {{maxFiles}}개입니다.",
+            dictRemoveFile: "파일 삭제",
+            dictRemoveFileConfirmation: null,
+            dictResponseError: "Server responded with {{statusCode}} code.",
+            dictUploadCanceled: "파일 업로드 취소됨.",     
             // 업로드 확장자 제한
             acceptedFiles: 'image/*',
             // 통신 URL 
             url: '<?=ADMIN_DIR?>/product/image_upload.php?product_id=' + productId,
-            //validation을 여기서 설정하면 된다.
+            /** Dropzone 초기화 함수 */
+            init: function() {
+                // 업로드 이미지 존재하는 경우 Dropzone 영역에 표시
+                if (productImg) {
+                    for (let i = 0; i < productImg.length; i++) {
+                        let imgUrl = domain + productImg[i].path;
+                        // 파일 정보
+                        let mockFile = {
+                            name: productImg[i].uuid + '_' + productImg[i].origin_name,
+                            size: productImg[i].size,
+                            type: productImg[i].extension,
+                            status: Dropzone.ADDED,
+                            url: imgUrl,
+                            imgId: productImg[i].id,
+                            path: productImg[i].path,
+                        };
+                        this.files.push(mockFile);
+                        this.displayExistingFile(mockFile, imgUrl);
+                    }
+                }
+                // this.on('success', function(file, responseText) {
+                //     //obj 객체를 확인해보면 서버에 전송된 후 response 값을 확인할 수 있다.
+                //     let obj = JSON.parse(responseText);
+                // });
+                // this.on("addedfile", function(file) {});
+            },
+            /** 이미지 업로드 성공 함수 */
+            success: function(file){
+                console.log(file);                
+            },
             accept: function(file, done) {
                 let imgLimit = this.options.maxFiles;
                 let imgCnt = productImg.length;
@@ -201,29 +242,30 @@
                     alert('최대 업로드 가능한 이미지는 ' + imgLimit + '개 입니다.');
                 }
             },
-            //서버로 파일이 전송되면 실행되는 함수
-            init: function() {
-                //Populate any existing thumbnails
-                if (productImg) {
-                    for (let i = 0; i < productImg.length; i++) {
-                        let imgUrl = domain + productImg[i].path;
-                        let mockFile = {
-                            name: productImg[i].uuid + '_' + productImg[i].origin_name,
-                            size: productImg[i].size,
-                            type: productImg[i].extension,
-                            status: Dropzone.ADDED,
-                            url: imgUrl
-                        };
-                        this.files.push(mockFile);
-                        this.displayExistingFile(mockFile, imgUrl);
-                    }
-                }
-                this.on('success', function(file, responseText) {
-                    //obj 객체를 확인해보면 서버에 전송된 후 response 값을 확인할 수 있다.
-                    let obj = JSON.parse(responseText);
-                    console.log(obj);
+            /** 이미지 삭제 함수 */ 
+            removedfile: function(file) {
+                console.log('removedfile');
+                console.log(file);
+                // Dropzone 영역에서 지우기
+                file.previewElement.remove();
+                // DB 내역 지우기
+                let imageId = file.imgId;
+                let filePath = file.path;
+                let url = '<?=ADMIN_DIR?>/product/image_delete.php';
+                let data = {
+                    product_id: productId,
+                    product_image_id: imageId,
+                    product_path: filePath,
+                };
+                $.post(url, data, function(res){                    
+                    console.log(res);
+                    // let data = JSON.parse(res);
+                    // alert(data.msg);
+                }).fail(function(res){
+                    console.log(res);
+                    //let data = JSON.parse(res);
+                    //alert(data.msg);
                 });
-                this.on("addedfile", function(file) {});
             }
         });
 
