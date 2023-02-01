@@ -129,7 +129,7 @@ function getProductForSkinView(array $params)
     $valid = validSingleData($params, 'product_id');
     if ($valid === false) {
         $msg = '상품 조회 필수 데이터가 존재하지 않습니다.';
-        $location = ADMIN_DIR.'/product/list.php';
+        $location = PAGES_DIR.'/product/list.php';
         commonMoveAlert($msg, $location);
     }
 
@@ -139,9 +139,9 @@ function getProductForSkinView(array $params)
         //'debug' => true
     ];
     $product = getProduct($productCondtion);
-    if (count($product) < 1) {
+    if (empty($product) || count($product) < 1) {
         $msg = '존재하지 않은 상품입니다.';
-        $location = ADMIN_DIR.'/product/list.php';
+        $location = PAGES_DIR.'/product/list.php';
         commonMoveAlert($msg, $location);
     }
     // 상품 이미지 조회
