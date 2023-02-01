@@ -1,0 +1,4 @@
+# Mac 기본 파일 제외
+.DS_Store
+# 첨부파일 제외
+storage
