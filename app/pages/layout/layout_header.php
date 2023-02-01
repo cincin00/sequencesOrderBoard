@@ -47,3 +47,33 @@
         </div>
     </div>
 </div>
+
+<nav class="nav_area">
+    <ul>
+        <li><a href="<?=DOMAIN?>/app/pages/board/list.php">게시판</a></li>
+        <li><a href="<?=DOMAIN?>/app/pages/product/list.php">상품</a></li>
+    </ul>
+</nav>
+
+<style>
+    .nav_area {
+        display:block;
+        float:left;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .nav_area > ul > li {
+        display: inline;
+    }
+    .nav_area > ul > li > a {
+        color: #000000;
+        text-decoration: none;
+        text-align: center;
+        font-weight: bold; 
+        background-color: #FFDAB9; 
+        padding: 8px;
+    }
+</style>
+

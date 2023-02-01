@@ -78,6 +78,38 @@ function updateProduct(array $params)
     return $response;
 }
 
+function getProductForSkinList()
+{
+    // 목록 조회 조건
+    $productCondtion = [
+        'select' => '`product`.*, MAX(`product_img`.id) AS img_id, MIN(`product_img`.path) AS img_path',
+        'join' => [
+            'left' => '`product_img` ON `product`.id = `product_img`.product_id'
+        ],
+        'where' => '`product`.is_delete = 0 AND is_visible = 1',
+        'groupby' => '`product`.id',
+    ];
+    $tmpProduct = getProduct($productCondtion, 1);
+    $nameLimitLength = 15;
+    $descLimitLength = 30;
+
+    foreach ($tmpProduct as $index => $data) {
+        // 번호(id), 상품명(name), 가격(price), 표시여부(is_visible), 등록일(regist_date)
+        $product[$index] = $data;
+        $product[$index]['id'] = $data['id'];
+        $product[$index]['name'] = (mb_strlen($data['name']) > $nameLimitLength ? cutStr($data['name'], $nameLimitLength).'....' : $data['name']);
+        $product[$index]['description'] = (mb_strlen($data['description']) > $descLimitLength ? cutStr(htmlspecialchars_decode($data['description']), $descLimitLength).'....' : htmlspecialchars_decode($data['description']));
+        $product[$index]['price'] = $data['price'];
+        $product[$index]['is_visible'] = ($data['is_visible'] === 1 ? '공개' : '비공개');
+        $product[$index]['regist_date'] = $data['regist_date'];
+        $product[$index]['img_path'] = (empty($data['img_path']) === true ? PATH_COMMON_RESOURCE.'/no_image.jpg' : DOMAIN.$data['img_path']);
+    }
+
+        $response = $product;
+
+    return $response;
+}
+
 /**
  * 관리자 상품 목록 조회
  * 

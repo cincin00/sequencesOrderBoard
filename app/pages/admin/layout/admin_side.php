@@ -57,6 +57,14 @@
                 상품 관리
               </p>
             </a>
+          </li> 
+          <li class="nav-item">
+            <a href="<?=ADMIN_DIR?>/category/list.php" class="nav-link">
+              <i class="nav-icon fa fa-gift"></i>
+              <p>
+                카테고리 관리
+              </p>
+            </a>
           </li>          
           <li class="nav-item">
             <a href="pages/widgets.html" class="nav-link">
