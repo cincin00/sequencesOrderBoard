@@ -78,6 +78,10 @@ function updateProduct(array $params)
     return $response;
 }
 
+/**
+ * 상품 목록 페이지 데이터 조회
+ * @return array
+ */
 function getProductForSkinList()
 {
     // 목록 조회 조건
@@ -105,14 +109,57 @@ function getProductForSkinList()
         $product[$index]['img_path'] = (empty($data['img_path']) === true ? PATH_COMMON_RESOURCE.'/no_image.jpg' : DOMAIN.$data['img_path']);
     }
 
-        $response = $product;
+    $response = $product;
+
+    return $response;
+}
+
+/**
+ * 상품 상세 페이지 데이터 조회
+ *
+ * @param array $params
+ * @return array
+ */
+function getProductForSkinView(array $params)
+{
+    // 반환값 초기화
+    $response = [];
+    $msg = $location = '';
+    // 상품 조회 데이터 검증
+    $valid = validSingleData($params, 'product_id');
+    if ($valid === false) {
+        $msg = '상품 조회 필수 데이터가 존재하지 않습니다.';
+        $location = ADMIN_DIR.'/product/list.php';
+        commonMoveAlert($msg, $location);
+    }
+
+    // 상품 데이터 조회
+    $productCondtion = [
+        'where' => '`product`.id = '.$params['product_id'] . ' AND `product`.is_delete = 0 AND `product`.is_visible = 1',
+        //'debug' => true
+    ];
+    $product = getProduct($productCondtion);
+    if (count($product) < 1) {
+        $msg = '존재하지 않은 상품입니다.';
+        $location = ADMIN_DIR.'/product/list.php';
+        commonMoveAlert($msg, $location);
+    }
+    // 상품 이미지 조회
+    $productImgCondtion = [
+        'where' => 'product_id = '.$params['product_id'],
+        //'debug' => true
+    ];
+    $productImg = getProductImage($productImgCondtion, 1);
+    $response = $product;
+    $response['description'] = htmlspecialchars_decode($product['description']);
+    $response['product_img'] = $productImg;
 
     return $response;
 }
 
 /**
  * 관리자 상품 목록 조회
- * 
+ *
  * @return array
  */
 function getProductForAdminList()
@@ -127,7 +174,7 @@ function getProductForAdminList()
         'groupby' => '`product`.id',
     ];
     $tmpProduct = getProduct($productCondtion, 1);
-    
+
     $nameLimitLength = 15;
 
     // @todo: front 에서 처리하자!
@@ -149,8 +196,8 @@ function getProductForAdminList()
 
 /**
  * 관리자 상품 상세 페이지
- * 
- * @param array 데이터 조회 조건 
+ *
+ * @param array 데이터 조회 조건
  * @return array
  */
 function getProductForAdminView(array $params)
@@ -190,7 +237,7 @@ function getProductForAdminView(array $params)
 
 /**
  * 상품 이미지 업로드
- * 
+ *
  * @param array $params 파일 정보
  * @return bool
  */
@@ -201,7 +248,7 @@ function uploadProductImage(array $params)
 
     $table = PRODUCT_IMG_TBL;
     $query = 'INSERT INTO '.$table.'(`product_id`, `uuid`, `origin_name`, `extension` , `size`, `path`, `upload_date`) VALUES("'.$params['product_id'].'", "'.uniqid().'", "'.$params['name'][0].'", "'.$params['type'][0].'", "'.$params['size'][0].'", "'.$params['path'].'", "'.date('Y-m-d H:i:s').'")';
-    
+
     $response = $dbh->exec($query);
 
     return $response;
@@ -209,7 +256,7 @@ function uploadProductImage(array $params)
 
 /**
  * 상품 이미지 정보 조회
- * 
+ *
  * @param array $params 상품 이미지 검색 데이터
  * @param int $fetchType 전체 조회 여부(0:단일조회,1:전체조회)
  * @return array
@@ -233,7 +280,7 @@ function getProductImage(array $params, int $fetchType = 0)
 
 /**
  * 상품 이미지 삭제
- * 
+ *
  * @param array 상품 이미지 정보
  * @return bool
  */
@@ -253,8 +300,8 @@ function deleteProductImage(array $params)
 
 /**
  * 상품 데이터 저장
- * 
- * @param array  
+ *
+ * @param array
  * @return bool
  */
 function setProduct(array $params)
@@ -273,15 +320,15 @@ function setProduct(array $params)
 /**
  * 상품 등록 유효성 검증
  */
-function validProduct(array $params){
+function validProduct(array $params)
+{
     $msg = $location = '';
-     if(validSingleData($params, 'product_name') === false){
+    if (validSingleData($params, 'product_name') === false) {
         $msg = '상품명은 필수 입니다.';
         $location = ADMIN_DIR.'/product/write.php';
-     }
+    }
 
-     if($msg && $location){
+    if ($msg && $location) {
         commonMoveAlert($msg, $location);
-     }
-     
+    }
 }

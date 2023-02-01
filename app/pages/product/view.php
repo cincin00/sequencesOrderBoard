@@ -1,5 +1,6 @@
 <?php
     require_once('../../../index.php');
+    $product = getProductForSkinView($_GET);
 ?>
 <!doctype html>
 <html lang="en">
@@ -29,33 +30,38 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-sm-6">
-                                <h3 class="d-inline-block d-sm-none">상품명(모바일)</h3>
+                                <h3 class="d-inline-block d-sm-none"><?=$product['name'];?></h3>
+                                <?php if($product['product_img']){ ?>
                                 <div class="col-12">
-                                    <img src="<?=ADMIN_DIST?>/img/prod-1.jpg" class="product-image" alt="Product Image">
+                                    <img src="<?=$product['product_img'][0]['path'];?>" class="product-image" alt="<?=$product['product_img'][0]['origin_name'];?>">
                                 </div>
                                 <div class="col-12 product-image-thumbs">
-                                    <div class="product-image-thumb active"><img src="<?=ADMIN_DIST?>/img/prod-1.jpg"
-                                            alt="Product Image"></div>
-                                    <div class="product-image-thumb"><img src="<?=ADMIN_DIST?>/img/prod-2.jpg"
-                                            alt="Product Image"></div>
-                                    <div class="product-image-thumb"><img src="<?=ADMIN_DIST?>/img/prod-3.jpg"
-                                            alt="Product Image"></div>
-                                    <div class="product-image-thumb"><img src="<?=ADMIN_DIST?>/img/prod-4.jpg"
-                                            alt="Product Image"></div>
-                                    <div class="product-image-thumb"><img src="<?=ADMIN_DIST?>/img/prod-5.jpg"
-                                            alt="Product Image"></div>
+                                    <?php foreach($product['product_img'] as $index => $data){ ?>
+                                    <div class="product-image-thumb <?php echo ($index === 0 ? 'active' : '');?>">
+                                        <img src="<?=DOMAIN.$data['path']?>" alt="<?=$data['origin_name']?>">
+                                    </div>
+                                    <?php } ?>
                                 </div>
+                                <?php } else{ ?>
+                                <div class="col-12">
+                                    <img src="<?=PATH_COMMON_RESOURCE.'/no_image.jpg'?>" class="product-image" alt="no_image">
+                                </div>
+                                <div class="col-12 product-image-thumbs">                                    
+                                    <div class="product-image-thumb active">
+                                        <img src="<?=PATH_COMMON_RESOURCE.'/no_image.jpg'?>" alt="no_image">
+                                    </div>                                    
+                                </div>
+                                <?php } ?>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <h3 class="my-3">상품명(PC)</h3>
+                                <h3 class="my-3"><?=$product['name'];?></h3>
                                 <p>상품 요약</p>
-
                                 <hr>
                                 <div class="bg-gray py-2 px-3 mt-4">
                                     <h2 class="mb-0">
-                                        상품 가격
+                                        <?=$product['price'];?>
                                     </h2>
-                                </div>₩
+                                </div>
 
                                 <div class="mt-4">
                                     <div class="btn btn-default btn-lg btn-flat">
@@ -82,7 +88,6 @@
                                         <i class="fas fa-rss-square fa-2x"></i>
                                     </a>
                                 </div>
-
                             </div>
                         </div>
                         <div class="row mt-4">
@@ -101,7 +106,7 @@
                             </nav>
                             <div class="tab-content p-3" id="nav-tabContent">
                                 <div class="tab-pane fade show active" id="product-desc" role="tabpanel"
-                                    aria-labelledby="product-desc-tab"> 상품상세 설명 </div>
+                                    aria-labelledby="product-desc-tab"> <?=$product['description'];?> </div>
                                 <div class="tab-pane fade" id="product-comments" role="tabpanel"
                                     aria-labelledby="product-comments-tab"> 상품 문의 </div>
                                 <div class="tab-pane fade" id="product-rating" role="tabpanel"
@@ -123,12 +128,15 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="<?=ADMIN_PLUGIN?>/fontawesome-free/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="<?=ADMIN_DIST?>/css/adminlte.min.css">
     <style>
       .content-wrapper {
         margin: 0px !important;
+      }
+      .show {
+        display: contents !important;
       }
     </style>
     <!-- jQuery -->
@@ -144,7 +152,12 @@
             $('.product-image').prop('src', $image_element.attr('src'))
             $('.product-image-thumb.active').removeClass('active')
             $(this).addClass('active')
-        })
+        });
+        $('#product-tab > a').on('click',function(){
+            let target = $(this).attr('href');
+            $('#nav-tabContent > ' + target).removeClass('show');
+            $('#nav-tabContent > ' + target).css('display', 'contents !important');
+        });
     })
     </script>
 </body>
