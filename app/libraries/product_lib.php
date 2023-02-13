@@ -8,6 +8,10 @@ require_once(BASEPATH.'/app/libraries/common_lib.php');
 const PRODUCT_TBL = 'product';
 // 상품 이미지 테이블
 const PRODUCT_IMG_TBL = 'product_img';
+// 상품 카테고리 테이블
+const PRODUCT_CATEGORY_TBL = 'product_category';
+// 상품 카테고리 루트 코드명
+const ROOT = 'root';
 
 /**
  * 상품 데이터 조회
@@ -331,4 +335,220 @@ function validProduct(array $params)
     if ($msg && $location) {
         commonMoveAlert($msg, $location);
     }
+}
+
+/**
+ * 상품 카테고리 조회
+ *
+ * @param array $params 조회 조건
+ * @param int $fetchType 전체 조회 여부(0:단일조회,1:전체조회)
+ * @return array
+ */
+function getCategory(array $params, int $fetchType = 0)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_CATEGORY_TBL;
+    $query = queryBuilder($table, $params);
+    $result = $dbh->query($query);
+    if ($fetchType > 0) {
+        $response = $result->fetchAll();
+    } else {
+        $response = $result->fetch();
+    }
+
+    return $response;
+}
+
+/**
+ * 관리자 카테고리 목록
+ *
+ * @param
+ * @return json
+ */
+function getCategoryForAdminCategoryList()
+{
+    $response = null;
+    $categoryCondtion = [
+        'where' => '1 = 1',
+    ];
+    $categoryTemp = getCategory($categoryCondtion, 1);
+
+    foreach ($categoryTemp as $index => $data) {
+        // 최상위 노드
+        if ($data['depth'] === 1) {
+            $category[$index]['id'] = $data['category_code'];
+            $category[$index]['parent'] = '#';
+            $category[$index]['text'] = $data['name'];
+            $category[$index]['state']['opened'] = true;
+            //$category[$index]['state']['selected'] = true;
+            $category[$index]['category_code'] = $data['category_code'];
+        } else {
+            $category[$index]['id'] = $data['category_code'];
+            $category[$index]['parent'] = setTreeNodeParent($data);
+            $category[$index]['text'] = $data['name'];
+            $category[$index]['state']['opened'] = true;
+            $category[$index]['category_code'] = $data['category_code'];
+        }
+    }
+
+    $response = json_encode($category);
+
+    return $response;
+}
+
+/**
+ * 노드의 부모 카테고리를 찾는 함수
+ */
+function setTreeNodeParent(array $data)
+{
+    // 반환값 초기화
+    $response = '';
+
+    $slashPos = ($data['depth'] - 2);
+    $parentCode = substr($data['category_code'], 0, $slashPos);
+    $response =  (empty($parentCode) === false ? $parentCode : 'root');
+
+    return $response;
+}
+
+/**
+ * 상품 카테고리 저장
+ *
+ * @param array $params
+ * @return bool
+ */
+function setCategory(array $params)
+{
+    global $dbh;
+    $response = false;
+    $table = PRODUCT_CATEGORY_TBL;
+    $query = 'INSERT INTO '.$table.'(`name`, `depth`, `depth_order` , `category_code`) VALUES("'.$params['name'].'", "'.$params['depth'].'", "'.$params['depth_order'].'", "'.$params['category_code'].'")';
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 카테고리 코드 생성
+ *
+ * @param int $depth 생성된 노드의 깊이
+ * @param int $order 생성된 노드의 순서
+ * @param string $parentCode 생성된 노드의 부모 카테고리 코드
+ * @return string
+ */
+function setCategoryCode(int $depth, int $order, string $parentCode)
+{
+    // 카테고리 코드 초기화
+    $categoryCode = '';
+    // 매핑 데이터
+    $baseCode = [
+        '0' => 'a',
+        '1' => 'b',
+        '2' => 'c',
+        '3' => 'd',
+        '4' => 'e',
+        '5' => 'f',
+        '6' => 'g',
+        '7' => 'h',
+        '8' => 'i',
+        '9' => 'j',
+        '10' => 'k',
+        '11' => 'l',
+        '12' => 'm',
+        '13' => 'n',
+        '14' => 'o',
+        '15' => 'p',
+        '16' => 'q',
+        '17' => 'r',
+        '18' => 's',
+        '19' => 't',
+        '20' => 'u',
+        '21' => 'v',
+        '22' => 'w',
+        '23' => 'x',
+        '24' => 'y',
+        '25' => 'z',
+    ];
+    if ($order > 25) {
+        echo('1차 카테고리는 최대 25개까지만 추가할수 있습니다.');
+    }
+    if ($depth === 2 && $parentCode === ROOT) {
+        // 첫번째 카테고리
+        $categoryCode = $baseCode[$order];
+    } else {
+        $categoryCode = $parentCode.$baseCode[$order];
+    }
+
+    return $categoryCode;
+}
+
+/**
+ * 관리자 카테고리 삭제 목록
+ *
+ * @param string $categoryCode
+ * @param int $depth
+ * @return array
+ */
+function getCategoryForAdminCategoryDelete(string $categoryCode, int $depth)
+{
+    $response = [];
+    $categoryCondtion = [
+        'where' => 'depth >= '.$depth.' AND category_code LIKE "'.$categoryCode.'%"',
+    ];
+    $categoryTemp = getCategory($categoryCondtion, 1);
+
+    foreach ($categoryTemp as $data) {
+        $response[] = $data['category_code'];
+    }
+
+    return $response;
+}
+
+/**
+ * 카테고리 삭제
+ * 
+ * @param string $parmas
+ * @return bool
+ */
+function deleteCategory(string $categoryCode)
+{
+    global $dbh;
+    $response = false;
+    $table = PRODUCT_CATEGORY_TBL;
+    $query = 'DELETE FROM '.$table.' WHERE category_code = "'.$categoryCode.'"';
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 카테고리명 수정
+ */
+function renameCategory(string $categoryCode){
+
+    // 반환값 초기화
+    $response = false;
+    // 업데이트문 조건식
+    $updateCondtion = [
+
+    ];
+    $response = updateCategory($updateCondtion);
+
+    return $response;
+}
+
+function updateCategory(array $params)
+{
+    global $dbh;
+    $response = false;
+    $table = PRODUCT_CATEGORY_TBL;
+    //$query = 'DELETE FROM '.$table.' WHERE category_code = "'.$categoryCode.'"';
+
+    //$response = $dbh->exec($query);
+
+    return $response;
 }
