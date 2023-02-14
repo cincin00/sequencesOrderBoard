@@ -115,7 +115,7 @@ let editor = new FroalaEditor('#post_content', {
 });
 /** Modify JS */
 let modify = new Modify();
-modify.cancelClick('<?=BOARD_DIR?>');
+modify.cancelClick('<?=BOARD_DIR?>/list.php');
 
 function validForm() {
     let result = modify.validForm();

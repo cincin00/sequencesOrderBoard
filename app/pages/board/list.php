@@ -1,22 +1,16 @@
 <?php
 
   require_once('../../../index.php');
-
-  // 게시판 설정 로드 - 계층형 게시판(1) 고정
-  $boardData = getBoard(['where'=>1]);
-  // 페이징 처리
-  list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($_GET, 1);
-  // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
-  $params = [
-    'select' => '`post`.*, `bc`.title as `category_title`',
-    'join' => [
-        'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
-    ],
-    'where' => '`post`.board_id = 1 AND `post`.is_delete = 0',
-    'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
-    'limit' => $startRow.", ".$length,
-  ];
-  $postData = getPost($params, 1);
+//  $_GET = [];
+  // all, title, contents
+//   $_GET['target'] = 'all';
+//   $_GET['keyword'] = '';
+//   $_GET['page'] = '1';
+//   $_GET['block'] = '5';
+//   $_GET['length'] = '10';
+//   $tmp = getPostForListTmp($_GET);
+//   dd($tmp);
+  list($boardData, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPostForList($_GET);
   ?>
 <!doctype html>
 <html lang="en">
@@ -36,14 +30,14 @@
                 </div>
             </div>
         </div>
-        <?php if (false) { ?>
         <!-- 검색어 -->
-        <div class="mar-medium">
-            <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
-                placeholder="검색어를 입력해주세요">
-            <button type="button" class="btn btn-default pos-right">검색</button>
-        </div>
-        <?php } ?>
+        <form>
+            <div class="mar-medium">
+                <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
+                    placeholder="검색어를 입력해주세요" autocomplete="off">
+                <button type="button" class="btn btn-default pos-right">검색</button>
+            </div>
+        </form>        
         <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">

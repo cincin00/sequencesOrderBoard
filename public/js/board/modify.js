@@ -41,7 +41,7 @@ class Modify {
      */
     cancelClick(domain = '') {
         $("#cancel").on('click', function () {
-            window.location.href = domain + '/list.php';
+            window.location.href = domain;
         });
     }
 }

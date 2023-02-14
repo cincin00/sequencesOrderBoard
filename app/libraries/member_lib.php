@@ -38,8 +38,8 @@ function validSession()
     if (isset($_SESSION) === false) {
         session_start();
     } else {
-        session_destroy();
-        session_start();
+        //session_destroy();
+        //session_start();
     }
 }
 

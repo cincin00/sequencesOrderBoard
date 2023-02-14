@@ -1,43 +1,6 @@
 <?php
     require_once('../../../index.php');
-    
-    $boardId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
-
-    // 게시판 설정 로드 - 게층형 게시판 고정
-    $boardData = getBoard(['where'=>$boardId]);
-    if (empty($boardData) === true) {
-        commonMoveAlert('존재하지 않는 게시판입니다.',BOARD_DIR.'/list.php');
-    }
-
-    // 게시판 카테고리 로드
-    $categoryResult = getCategoryData(['where'=>'board_id = '.$boardId, 'orderby'=>'sort_order'], 1);
-
-    foreach ($categoryResult as $categoryData) {
-        $category[$categoryData['sort_order']] = [
-            'category_id' => $categoryData['id'],
-            'title' => $categoryData['title']
-        ];
-    }
-
-    // 답글 기능 로드
-    if (isset($_GET['reply']) === true && empty($_GET['reply']) === false) {
-        $replyId = $_GET['reply'];
-        if ($replyId > 0) {
-            $params = [
-                'select' => '`post`.*, `bc`.title as `category_title`',
-                'join' => [
-                    'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
-                ],
-                'where' => '`post`.id = "'.$replyId.'" AND `post`.board_id = "'.$boardId.'"',
-            ];
-            $replyPostData = getPost($params);
-        } else {
-            commonMoveAlert('존재하지 않은 게시글입니다.', BOARD_DIR.'/list.php');
-        }
-    }
-
-    // 로그인 검증
-    $isLogin = (isset($_SESSION['id']) === true ? true : false);
+    list($boardId, $boardData, $category, $replyPostData, $isLogin) = boardWriteViewData($_GET);
     ?>
 <!doctype html>
 <html lang="en">

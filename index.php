@@ -15,17 +15,24 @@ $subject = $_SERVER['REQUEST_URI'];
 $pattern = '/app\/pages\/[a-zA-Z]*\/[a-zA-Z|_]*.php/smi';
 // fail: 0 or false, success: array
 preg_match($pattern, $subject, $matches);
+
 // FIXME common_lib.php를 최상위로 올려서 처리하자!
 if(empty($matches) === false){
     // URL은 1개만 전달되므로 0번째 고정 - e.g) /app/pages/board/view.php
     $requestUri = explode('/',$matches[0]);
     define('CURRENT_PAGE', str_replace('.php', '', $requestUri[3]));
     switch($requestUri[2]){
+        case 'admin':
+            require_once(BASEPATH.'/app/libraries/admin_lib.php');
         case 'board':
             require_once(BASEPATH.'/app/libraries/board_lib.php');
+            require_once(BASEPATH.'/app/libraries/mypage_lib.php');
             break;
         case 'member':
             require_once(BASEPATH.'/app/libraries/member_lib.php');
+            break;
+        case 'product':
+            require_once(BASEPATH.'/app/libraries/product_lib.php');
             break;
         default:
             require_once(BASEPATH.'/app/libraries/common_lib.php');

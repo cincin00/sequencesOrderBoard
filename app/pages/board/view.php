@@ -1,43 +1,6 @@
 <?php
     require_once('../../../index.php');
-    
-    $baordId = isset($_GET['board_id']) === true ? $_GET['board_id'] : 0;
-    $postId = isset($_GET['id']) === true ? $_GET['id'] : 0;
-
-    // 게시판 설정 로드
-    $boardData = getBoard(['where'=>$baordId]);
-    if (empty($boardData) === true) {
-        commonMoveAlert('존재하지 않는 게시판입니다.',BOARD_DIR.'/list.php');
-    }
-
-    // 게시글 정보 조회
-    $params = [
-        'select' => '`post`.*, `bc`.title as `category_title`',
-        'join' => [
-            'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
-        ],
-        'where' => '`post`.id = "'.$postId.'" AND `post`.board_id = "'.$baordId.'"',
-    ];
-    $postData = getPost($params);
-    if (empty($postData) === true) {
-        commonMoveAlert('존재하지 않는 게시글입니다.',BOARD_DIR.'/list.php');
-    }
-
-    // 조회수 증가 처리
-    $hitsUpdateQuery = "UPDATE post SET hits = hits + 1 WHERE id = ".$postId;
-    $dbh->query($hitsUpdateQuery);
-
-    // 비회원, 회원 게시글 분기 처리
-    $isMember = $isOwn = $isMemberOwn = false;
-    if ($postData['member_id']) {
-        $isMemberOwn = true;
-        if (isset($_SESSION['id'])) {
-            $isMember = true;
-            if ($postData['member_id'] === $_SESSION['id']) {
-                $isOwn = true;
-            }
-        }
-    }
+    list($boardData, $postData, $isMember, $isOwn, $isMemberOwn) = boardViewData($_GET);
     ?>
 <!doctype html>
 <html lang="en">
