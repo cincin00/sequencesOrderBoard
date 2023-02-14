@@ -527,14 +527,19 @@ function deleteCategory(string $categoryCode)
 
 /**
  * 카테고리명 수정
+ * 
+ * @param string $categoryName
+ * @param string $categoryCode
  */
-function renameCategory(string $categoryCode){
+function renameCategory(string $categoryName, string $categoryCode){
 
     // 반환값 초기화
     $response = false;
     // 업데이트문 조건식
     $updateCondtion = [
-
+        'set' => 'name = "'.$categoryName.'"',
+        'where' => 'category_code = "'.$categoryCode.'"',
+        //'debug' => true
     ];
     $response = updateCategory($updateCondtion);
 
@@ -546,9 +551,26 @@ function updateCategory(array $params)
     global $dbh;
     $response = false;
     $table = PRODUCT_CATEGORY_TBL;
-    //$query = 'DELETE FROM '.$table.' WHERE category_code = "'.$categoryCode.'"';
 
-    //$response = $dbh->exec($query);
+    
+    // 수정 처리 시 변경 값은 필수값
+    if(validSingleData($params, 'set')){
+        $query = 'UPDATE '.$table.' SET '.$params['set'];
+    }else{
+        commonAlert('카테고리 정보 수정 실패.');
+    }
+
+    if(validSingleData($params, 'where')){
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if(validSingleData($params, 'debug')){
+        if($params['debug'] === true){
+            dd($query);
+        }
+    }
+
+    $response = $dbh->exec($query);
 
     return $response;
 }

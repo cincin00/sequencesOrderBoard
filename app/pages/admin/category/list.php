@@ -202,11 +202,13 @@
 
             sel = sel[0];
             let default_text = '';
-            let callbackFun = function(){
+            let callbackFun = function(e){
+                
                 let params = {
                     // 전송 모드
                     mode: 'rename_node',
-                    category_code: sel[0],
+                    category_code: sel,
+                    name: e.text,
                     node_depth: depth
                 };
                 categoryHandler(ref, params)

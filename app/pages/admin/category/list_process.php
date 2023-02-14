@@ -35,7 +35,7 @@
           }
           
       } elseif ($params['mode'] === 'rename_node') {
-        $result = renameCategory($params['category_code']);
+        $result = renameCategory($params['name'], $params['category_code']);
         if($result){
             $response['data'] = getCategoryForAdminCategoryList();
             echo $response['data'];
