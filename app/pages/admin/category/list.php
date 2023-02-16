@@ -85,7 +85,7 @@
     <script>
     let categoryRaw = '<?=$category;?>';
     let parseCategory = JSON.parse(categoryRaw);
-    //console.log(parseCategory);
+
     $(function() {
         let jsTree = $('#product_category_div');
 
@@ -111,7 +111,7 @@
             // 선택한 노드(생성된 노드의 부모 노드)
             let sel = ref.get_selected();
             let maxCategory = sel[0].toString().length;
-            if(maxCategory>3){
+            if(maxCategory>3 && sel[0].toString() !== 'root'){
                 alert('최대 하위 카테고리는 4개까지 가능합니다.');
                 return false;
             }
@@ -216,6 +216,7 @@
             ref.edit(sel, default_text, callbackFun);
         });
 
+        
         /**
          * [jsTree]현재 노드의 정보 반환
          * @param {object} jtObj jstree 객체
