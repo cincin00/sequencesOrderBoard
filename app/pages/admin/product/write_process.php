@@ -9,7 +9,7 @@
     $params['product_price'] = (isset($_POST['product_price']) === true ? $_POST['product_price'] : 0);
     $params['is_visible'] = (isset($_POST['is_visible']) === true ? $_POST['is_visible'] : 0);
     $params['product_status'] = (isset($_POST['product_status']) === true ? $_POST['product_status'] : 0);
-    $params['product_desc'] = (isset($_POST['product_desc']) === true ? $_POST['product_desc'] : '');
+    $params['product_desc'] = (isset($_POST['product_desc']) === true ? htmlentities($_POST['product_desc']) : '');
     $params['files_seq'] = (isset($_POST['files_seq']) === true ? $_POST['files_seq'] : []);
 
     // 유효성 검증

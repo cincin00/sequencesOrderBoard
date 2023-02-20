@@ -31,8 +31,8 @@
                     <img src="<?=$data['img_path'];?>" alt="<?=$data['name'];?>">
                     <div class="caption">
                         <h3><?=$data['name'];?></h3>
-                        <p><?=$data['description'];?></p>
-                        <!-- <p><a href="#" class="btn btn-primary" role="button">구매</a> <a href="#" class="btn btn-default" role="button">장바구니</a></p> -->
+                        <!-- <p><?=$data['description'];?></p> -->
+                        <p><a href="#" class="btn btn-primary" role="button">구매</a> <a href="#" class="btn btn-default" role="button">장바구니</a></p>
                         <p class="btn-area"><a href="<?=DOMAIN?>/app/pages/product/view.php?product_id=<?=$data['id'];?>" class="btn btn-default" role="button">보기</a></p>
                     </div>
                     </div>
