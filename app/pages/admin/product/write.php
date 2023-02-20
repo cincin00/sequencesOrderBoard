@@ -39,8 +39,11 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <!-- <form id="productDropzone" class="form-horizontal dropzone" action="<?=ADMIN_DIR?>/product/write_process.php" name="product_update" method="post" enctype="multipart/form-data"> -->
-                    <form id="product-form" class="form-horizontal dropzone" action="<?=ADMIN_DIR?>/product/write_process.php" method="post" enctype="multipart/form-data">
+                    <form id="dropzone-form" name="dropzone-form" class="dropzone form-horizontal" method="POST"
+                        action="<?=ADMIN_DIR?>/product/image_upload.php" enctype="multipart/form-data"></form>
+                    <form id="product-form" class="form-horizontal" action="<?=ADMIN_DIR?>/product/write_process.php"
+                        method="post">
+                        <input type="hidden" name="files_seq" id="files_seq" />
                         <section class="content">
                             <div class="card">
                                 <div class="card-header">
@@ -50,7 +53,7 @@
                                         <div>
                                             <a href="<?=ADMIN_DIR?>/product/list.php" class="btn btn-default"
                                                 role="button">목록</a>
-                                            <button id="btn-write" type="submit" class="btn btn-primary">등록</button>
+                                            <button id="btn-write" type="button" class="btn btn-primary">등록</button>
                                         </div>
                                     </div>
                                 </div>
@@ -134,68 +137,66 @@
     <script src="<?=ADMIN_PLUGIN?>/pdfmake/pdfmake.min.js"></script>
     <script src="<?=ADMIN_PLUGIN?>/pdfmake/vfs_fonts.js"></script>
     <!-- dropzone -->
-    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <script src="<?=VENDER?>/dropzone-5.9.3/dropzone.min.js"></script>
+    <link rel="stylesheet" href="<?=VENDER?>/dropzone-5.9.3/dropzone.min.css" type="text/css" />
     <!-- Summernote -->
     <script src="<?=ADMIN_PLUGIN?>/summernote/summernote-bs4.min.js"></script>
     <!-- Page specific script -->
     <script>
+    // Dropzone Init
     //Dropzone.autoDiscover = false;
+    Dropzone.options.dropzoneForm = {
+        addRemoveLinks: true,
+        autoProcessQueue: false,
+        uploadMultiple: true,
+        parallelUploads: 5,
+        maxFiles: 5,
+        // 언어 설정
+        dictCancelUpload: "업로드 취소",
+        dictCancelUploadConfirmation: "업로드를 취소하시겠습니까?",
+        dictDefaultMessage: "상품 이미지를 업로드해주세요.(최대 5개/5MB)",
+        dictFallbackMessage: "현재 브라우저에서는 드래그앤드랍을 지원하지 않습니다.",
+        dictFallbackText: "Please use the fallback form below to upload your files like in the olden days.",
+        dictFileSizeUnits: { tb: 'TB', gb: 'GB',mb: 'MB',kb: 'KB',b: 'b' },
+        dictFileTooBig: "업로드할 피일이 너무 큽니다. ({{filesize}}MiB). 최대 업로드 가능 용량: {{maxFilesize}}MiB.",
+        dictInvalidFileType: "지원하지 않는 업로드 형식입니다.",
+        dictMaxFilesExceeded: "최대 업로드 가능 파일 수량은 {{maxFiles}}개입니다.",
+        dictRemoveFile: "파일 삭제",
+        dictRemoveFileConfirmation: null,
+        dictResponseError: "Server responded with {{statusCode}} code.",
+        dictUploadCanceled: "파일 업로드 취소됨.",
+        init: function() {
+            console.log("dropzone Init");
+            myDropzone = this;
+            // 폼 등록 체이닝 시작
+            $("#btn-write").on('click', function() {
+                // 1 - 1. 큐 이미지 폼 전송 
+                myDropzone.processQueue();
+            });
+        },
+        // 1 - 2
+        sendingmultiple: function() {
+            console.log('sendingmultiple callback');
+        },
+        // 2 - 1. dropzone upload suceess
+        successmultiple: function(files, response) {
+            console.log('successmultiple callback');
+            $("#files_seq").val(response);
+            $("#product-form").submit();
+        },
+        // 2 - 2. dropzone upload fail
+        errormultiple: function(v) {
+            console.log('errormultiple callback');
+        },
+    }
+
     $(function() {
         let domain = '<?=DOMAIN?>';
         let productId = '';
         let productImgOri = '';
         let productImg = {};
-
         // Summernote Init
-        $('#product_detail').summernote();
-        // Dropzone Init
-        Dropzone.autoDiscover = false;
-        Dropzone.options.productForm = {
-            url: '<?=ADMIN_DIR?>/product/write_process.php',
-            addRemoveLinks: true,
-            autoProcessQueue: false,
-            uploadMultiple: true,
-            parallelUploads: 5,
-            maxFiles: 5,
-            // 언어 설정
-            dictCancelUpload: "업로드 취소",
-            dictCancelUploadConfirmation: "업로드를 취소하시겠습니까?",
-            dictDefaultMessage: "상품 이미지를 업로드해주세요.(최대 5개/5MB)",
-            dictFallbackMessage: "현재 브라우저에서는 드래그앤드랍을 지원하지 않습니다.",
-            dictFallbackText: "Please use the fallback form below to upload your files like in the olden days.",
-            dictFileSizeUnits: {tb: 'TB',gb: 'GB',mb: 'MB',kb: 'KB',b: 'b'},
-            dictFileTooBig: "업로드할 피일이 너무 큽니다. ({{filesize}}MiB). 최대 업로드 가능 용량: {{maxFilesize}}MiB.",
-            dictInvalidFileType: "지원하지 않는 업로드 형식입니다.",
-            dictMaxFilesExceeded: "최대 업로드 가능 파일 수량은 {{maxFiles}}개입니다.",
-            dictRemoveFile: "파일 삭제",
-            dictRemoveFileConfirmation: null,
-            dictResponseError: "Server responded with {{statusCode}} code.",
-            dictUploadCanceled: "파일 업로드 취소됨.",
-            init: function() {
-                myDropzone = this;
-                this.element.querySelector("#btn-write").addEventListener("click", function(e) {
-                    console.log('등록버튼 눌림');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    myDropzone.processQueue();
-                });
-                // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
-                // of the sending event because uploadMultiple is set to true.
-                this.on("sendingmultiple", function() {
-                    // Gets triggered when the form is actually being sent.
-                    // Hide the success button or the complete form.
-                });
-                this.on("successmultiple", function(files, response) {
-                    // Gets triggered when the files have successfully been sent.
-                    // Redirect user or notify of success.
-                });
-                this.on("errormultiple", function(files, response) {
-                    // Gets triggered when there was an error sending the files.
-                    // Maybe show form again, and notify user of error
-                });
-            },
-        };
+        $('#product_detail').summernote();;
     });
     </script>
 </body>

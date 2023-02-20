@@ -168,6 +168,8 @@ function getProductForSkinView(array $params)
  */
 function getProductForAdminList()
 {
+    // 반환값 초기화
+    $product = [];
     // 목록 조회 조건
     $productCondtion = [
         'select' => '`product`.*, MAX(`product_img`.id) AS img_id, MIN(`product_img`.path) AS img_path',
@@ -252,10 +254,39 @@ function uploadProductImage(array $params)
 
     $table = PRODUCT_IMG_TBL;
     $query = 'INSERT INTO '.$table.'(`product_id`, `uuid`, `origin_name`, `extension` , `size`, `path`, `upload_date`) VALUES("'.$params['product_id'].'", "'.uniqid().'", "'.$params['name'][0].'", "'.$params['type'][0].'", "'.$params['size'][0].'", "'.$params['path'].'", "'.date('Y-m-d H:i:s').'")';
-
-    $response = $dbh->exec($query);
-
+    $dbh->exec($query);
+    // 추가한 이미지 데이터의 순번 반환
+    $response = $dbh->lastInsertId();
+    
     return $response;
+}
+
+function updateProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    // 수정 처리 시 변경 값은 필수값
+    if (validSingleData($params, 'set')) {
+        $query = 'UPDATE '.$table.' SET '.$params['set'];
+    } else {
+        commonAlert('이미지 정보 수정 실패.');
+    }
+
+    if (validSingleData($params, 'where')) {
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
+            dd($query);
+        }
+    }
+
+    $response =$dbh->exec($query);
+    
+    return $response;    
 }
 
 /**
@@ -509,7 +540,7 @@ function getCategoryForAdminCategoryDelete(string $categoryCode, int $depth)
 
 /**
  * 카테고리 삭제
- * 
+ *
  * @param string $parmas
  * @return bool
  */
@@ -527,12 +558,12 @@ function deleteCategory(string $categoryCode)
 
 /**
  * 카테고리명 수정
- * 
+ *
  * @param string $categoryName
  * @param string $categoryCode
  */
-function renameCategory(string $categoryName, string $categoryCode){
-
+function renameCategory(string $categoryName, string $categoryCode)
+{
     // 반환값 초기화
     $response = false;
     // 업데이트문 조건식
@@ -552,20 +583,20 @@ function updateCategory(array $params)
     $response = false;
     $table = PRODUCT_CATEGORY_TBL;
 
-    
+
     // 수정 처리 시 변경 값은 필수값
-    if(validSingleData($params, 'set')){
+    if (validSingleData($params, 'set')) {
         $query = 'UPDATE '.$table.' SET '.$params['set'];
-    }else{
+    } else {
         commonAlert('카테고리 정보 수정 실패.');
     }
 
-    if(validSingleData($params, 'where')){
+    if (validSingleData($params, 'where')) {
         $query .= ' WHERE '.$params['where'];
     }
 
-    if(validSingleData($params, 'debug')){
-        if($params['debug'] === true){
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
             dd($query);
         }
     }

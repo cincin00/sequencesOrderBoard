@@ -209,16 +209,17 @@
             'path' => '',
             'msg' => '',
         ];
+
         // 업로드 경로
         $folderPath = PATH_STORAGE.'/'.$folder.'/';
         // 파일명 - 파일 정보
-        $fileName = $params['name'][0];
+        $fileName = $params['name'];
         // 파일 확장자 - 파일 정보
-        $fileExt = $params['type'][0];
+        $fileExt = $params['type'];
         // 파일 크기 - 파일 정보
-        $fileSize = $params['size'][0];
+        $fileSize = $params['size'];
         // 임시 업로드 경로
-        $tmpPath = $params['tmp_name'][0];
+        $tmpPath = $params['tmp_name'];
         // 파일 사이즈 검증 - 최대 5MB(1024*5)
         $maxSize = 5 * 1024 * 1024;
         if ($maxSize < $fileSize) {
@@ -257,7 +258,7 @@
             'msg' => '',
         ];
 
-        try{
+        try {
             // 파일 존재 검증
             $fileName = '/opt/homebrew/var/www/board01/public_html'.$params['product_path'];
             // if(file_exists($fileName) === false){
@@ -265,12 +266,12 @@
             // }
             // 파일 삭제 - 성공 / 실패
             $response['result'] = unlink($fileName);
-            if($response['result'] === false){
-                throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
+            if ($response['result'] === false) {
+                throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.', );
             }
-        }catch(Exception $e){
+        } catch(Exception $e) {
             $response['msg'] = $e->getMessage();
         }
 
-        return $response;        
+        return $response;
     }
