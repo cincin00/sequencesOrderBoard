@@ -257,7 +257,7 @@ function uploadProductImage(array $params)
     $dbh->exec($query);
     // 추가한 이미지 데이터의 순번 반환
     $response = $dbh->lastInsertId();
-    
+
     return $response;
 }
 
@@ -285,8 +285,8 @@ function updateProductImage(array $params)
     }
 
     $response =$dbh->exec($query);
-    
-    return $response;    
+
+    return $response;
 }
 
 /**

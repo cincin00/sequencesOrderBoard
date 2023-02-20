@@ -129,8 +129,8 @@ function getPostForList($params)
 
 /**
  * 게시판 목록 조회 함수
- * 
- * @description 
+ *
+ * @description
  * - 반환 데이터: 게시판 정보, 게시글 정보, 페이징 정보
  * - 목록 페이지에 페이징을 위한 데이터: [처음], [이전], [페이지 시작 번호], [블록당 페이지 번호], [페이지 끝 번호], [다음], [마지막]
  */
@@ -186,11 +186,11 @@ function getPostForListTmp($params)
     $select = 'SELECT post.*, board_category.*';
     $from = ' FROM post';
     $join = ' LEFT JOIN board_category ON post.board_id = board_category.board_id';
-    $where = ' WHERE post.is_delete = 0 AND post.board_id = '.$boardId;    
-    if(empty($keyword) === false){
-        if($target === 'title'){
+    $where = ' WHERE post.is_delete = 0 AND post.board_id = '.$boardId;
+    if (empty($keyword) === false) {
+        if ($target === 'title') {
             $where .= ' AND post.title LIKE "%'.$keyword.'%"';
-        } else if($target === 'contents'){
+        } elseif ($target === 'contents') {
             $where .= ' AND post.contents LIKE "$'.$keyword.'%"';
         } else {
             $where .= ' AND post.title LIKE "%'.$keyword.'%" AND post.contents LIKE "%'.$keyword.'%"';
@@ -204,7 +204,8 @@ function getPostForListTmp($params)
     $totalQuery = $dbh->query($totalPageSql);
     $limitQuery = $dbh->query($limitPageSql);
     $totalRes = $totalQuery->fetchAll();
-    $limitRes = $limitQuery->fetchAll();dd($totalPageSql);
+    $limitRes = $limitQuery->fetchAll();
+    dd($totalPageSql);
     $totalPostNum = count($totalRes);
     // 전체 페이지
     $totalPage = ceil($totalPostNum/$length);
