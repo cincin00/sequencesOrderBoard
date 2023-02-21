@@ -20,22 +20,31 @@
         }
     }
 
-    foreach($refineFiles as $file){
-        // 실물 파일 복사
-        $result = upload_file('product', $file);
-        if ($result['result'] === true) {
-            $pathTmp = explode('/', $result['path']);
-            $index = count($pathTmp);
-            $path = '/storage/product/'.$pathTmp[$index-1];
-            $files['path'] = $path;
-            $files['uuid'] = $result['uuid'];
-            $files['product_id'] = $productId;
-            // 파일 정보 DB 추가
-            $uploadRes = uploadProductImage($files);
-            if($uploadRes !== false){
-                $response[] = $uploadRes;
+    if (count($refineFiles) <= 5) {
+        foreach ($refineFiles as $file) {
+            // 실물 파일 복사
+            $result = upload_file('product', $file);
+            if ($result['result'] === true) {
+                $pathTmp = explode('/', $result['path']);
+                $index = count($pathTmp);
+                $path = '/storage/product/'.$pathTmp[$index-1];
+                $files['path'] = $path;
+                $files['uuid'] = $result['uuid'];
+                $files['product_id'] = $productId;
+                // 파일 정보 DB 추가
+                $uploadRes = uploadProductImage($files);
+                if ($uploadRes !== false) {
+                    $response[] = $uploadRes;
+                }
+            } else {
+                // 업로드 실패
+                header('HTTP/1.1 500 Internal Server Error');
+                header('Content-type: text/plain');
+                $response = $result['msg'];
             }
         }
+    } else {
+        $response = '최대 업로드 수량을 초과하였습니다.';
     }
 
     echo json_encode($response);

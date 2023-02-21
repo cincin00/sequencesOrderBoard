@@ -12,19 +12,22 @@
     $params['product_desc'] = (isset($_POST['product_desc']) === true ? htmlentities($_POST['product_desc']) : '');
     $params['files_seq'] = (isset($_POST['files_seq']) === true ? $_POST['files_seq'] : []);
 
-    // 유효성 검증
-    validProduct($params);
-    // 상품 등록
-    $reslut = setProduct($params);
+    // 유효성 검증 및 $msg, $location 변수 초기화
+    list($validResult, $msg, $location) = validProduct($params);
+    // 이미지 정보 가공
+    $fileSeq = getProductImgSeq($params);
 
+    if($validResult){
+        // 상품 등록
+        $reslut = setProduct($params);
+    } else {
+        $reslut['result'] = $validResult;
+    }
+
+    // 상품 정상 저장된 경우
     if ($reslut['result']) {
         // 등록 이미지 있는 경우 맵핑
         if (empty($params['files_seq']) === false) {
-            $pattern = '/[\[\]\"]/';
-            $replacement = '';
-            $subject = $params['files_seq'];
-            $regxRes = preg_replace($pattern, $replacement, $subject);
-            $fileSeq = explode(',', $regxRes);
             foreach ($fileSeq as $seq) {
                 $updateFileImgCondtion = [
                     'set' => 'product_id = ' . $reslut['product_id'],
@@ -38,15 +41,19 @@
         $msg = '상품 등록이 되었습니다.';
         $location = ADMIN_DIR.'/product/modify.php?product_id='.$reslut['product_id'];
     } else {
-        $msg = '상품 등록을 실패하였습니다.';
-        $location = ADMIN_DIR.'/product/write.php';
+        // 이미지 정상 등록 실패된 경우 잉여 이미지 정보 DB에서 삭제
+        foreach($fileSeq as $seq) {
+            $deleteCondtion = [
+                'product_id' => '0',
+                'product_image_id' => $seq,
+            ];
+            deleteProductImage($deleteCondtion);
+        }
+        if(empty($msg) === true && empty($location) === true){
+            $msg = '상품 등록을 실패하였습니다.';
+            $location = ADMIN_DIR.'/product/write.php';
+        }
     }
-
-    /**
-     * 잉여 데이터 삭제
-     * - 이미지 데이터 DB에서 삭제
-     * - 실물 정보 서버에서 삭제
-     */
 
     // 상품 등록 결과 반환
     commonMoveAlert($msg, $location);

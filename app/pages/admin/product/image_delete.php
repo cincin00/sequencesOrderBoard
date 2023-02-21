@@ -20,6 +20,8 @@
         $response['result'] = true;
         $response['msg'] = '이미지가 삭제되었습니다.';        
     } else {
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-type: text/plain');
         $response['result'] = false;
         $response['msg'] = '이미지 업로드 실패 사유: '.$result['msg'];
     }

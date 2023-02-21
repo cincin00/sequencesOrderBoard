@@ -334,6 +334,32 @@ function deleteProductImage(array $params)
 }
 
 /**
+ * 폼에 전달한 이미지 업로드 순번 가공 후 반환
+ *
+ * @param array $params 이미지 업로드 순번 모음
+ * @return array
+ */
+function getProductImgSeq(array $params)
+{
+    // 반환값 초기화
+    $fileSeq = [];
+    // 검증 패턴
+    $pattern = '/[\[\]\"]/';
+    // 치환 문구
+    $replacement = '';
+    // 치환 대상
+    $subject = $params['files_seq'];
+    $regxRes = preg_replace($pattern, $replacement, $subject);
+    // 유효한 경우에만 데이터 할당
+    if ($regxRes) {
+        $fileSeq = explode(',', $regxRes);
+    }
+
+
+    return $fileSeq;
+}
+
+/**
  * 상품 데이터 저장
  *
  * @param array
@@ -357,15 +383,20 @@ function setProduct(array $params)
  */
 function validProduct(array $params)
 {
+    $result = true;
     $msg = $location = '';
     if (validSingleData($params, 'product_name') === false) {
+        $result = false;
         $msg = '상품명은 필수 입니다.';
         $location = ADMIN_DIR.'/product/write.php';
     }
-
-    if ($msg && $location) {
-        commonMoveAlert($msg, $location);
+    if (validSingleData($params, 'product_price') === false) {
+        $result = false;
+        $msg = '상품 가격은 필수 입니다.';
+        $location = ADMIN_DIR.'/product/write.php';
     }
+
+    return [$result, $msg, $location];
 }
 
 /**

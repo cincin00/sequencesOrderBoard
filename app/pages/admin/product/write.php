@@ -143,8 +143,7 @@
     <script src="<?=ADMIN_PLUGIN?>/summernote/summernote-bs4.min.js"></script>
     <!-- Page specific script -->
     <script>
-    // Dropzone Init
-    //Dropzone.autoDiscover = false;
+    // 드랍존 객체 초기화
     Dropzone.options.dropzoneForm = {
         addRemoveLinks: true,
         autoProcessQueue: false,
@@ -157,7 +156,13 @@
         dictDefaultMessage: "상품 이미지를 업로드해주세요.(최대 5개/5MB)",
         dictFallbackMessage: "현재 브라우저에서는 드래그앤드랍을 지원하지 않습니다.",
         dictFallbackText: "Please use the fallback form below to upload your files like in the olden days.",
-        dictFileSizeUnits: { tb: 'TB', gb: 'GB',mb: 'MB',kb: 'KB',b: 'b' },
+        dictFileSizeUnits: {
+            tb: 'TB',
+            gb: 'GB',
+            mb: 'MB',
+            kb: 'KB',
+            b: 'b'
+        },
         dictFileTooBig: "업로드할 피일이 너무 큽니다. ({{filesize}}MiB). 최대 업로드 가능 용량: {{maxFilesize}}MiB.",
         dictInvalidFileType: "지원하지 않는 업로드 형식입니다.",
         dictMaxFilesExceeded: "최대 업로드 가능 파일 수량은 {{maxFiles}}개입니다.",
@@ -170,26 +175,47 @@
             myDropzone = this;
             // 폼 등록 체이닝 시작
             $("#btn-write").on('click', function() {
-                // 1 - 1. 큐 이미지 폼 전송 
+                // 큐 이미지 폼 전송 
                 myDropzone.processQueue();
             });
         },
-        // 1 - 2
+        // 드랍존 이미지 전송 이벤트
         sendingmultiple: function() {
             console.log('sendingmultiple callback');
         },
-        // 2 - 1. dropzone upload suceess
+        // 드랍존 이미지 전송 성공 이벤트
         successmultiple: function(files, response) {
-            console.log('successmultiple callback');
             $("#files_seq").val(response);
             $("#product-form").submit();
         },
-        // 2 - 2. dropzone upload fail
-        errormultiple: function(v) {
-            console.log('errormultiple callback');
+        // 드랍존 이미지 전송 실패 이벤트
+        errormultiple: function(files, response) {
+            let jsonValidRes = strJsonValid(response);
+            if(jsonValidRes){
+                let errorMsg = JSON.parse(response);
+                $("div.dz-error-message").html(errorMsg);
+            } else{
+                $("div.dz-error-message").html(response);
+            }
         },
     }
 
+    /**
+     * 전달 받은 문자열 JOSN 형식인지 체크
+     * 
+     * @params {string} params
+     * @return bool
+     */
+    function strJsonValid(params) {
+        try {
+            // JSON 형식인 경우
+            var json = JSON.parse(params);
+            return (typeof json === 'object');
+        } catch (e) {
+            // JSON 형식이 아닌 경우
+            return false;
+        }
+    }
     $(function() {
         let domain = '<?=DOMAIN?>';
         let productId = '';

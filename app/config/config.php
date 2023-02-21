@@ -13,6 +13,8 @@ define('PATH_COMMON_RESOURCE', DOMAIN.'/resource/images');
 // 공용 storage 폴더
 define('PATH_COMMON_STORAGE', DOMAIN.'/storage');
 define('PATH_STORAGE','/opt/homebrew/var/www/board01/public_html/storage');
+// 사이트 최상위 폴더
+define('PATH_ROOT','/opt/homebrew/var/www/board01/public_html');
 // 관리자 플러그인 폴더
 define('ADMIN_PLUGIN', DOMAIN.'/app/pages/admin/plugins');
 define('ADMIN_DIST', DOMAIN.'/app/pages/admin/dist');

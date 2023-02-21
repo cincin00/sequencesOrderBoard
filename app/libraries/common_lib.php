@@ -260,10 +260,10 @@
 
         try {
             // 파일 존재 검증
-            $fileName = '/opt/homebrew/var/www/board01/public_html'.$params['product_path'];
-            // if(file_exists($fileName) === false){
-            //     throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
-            // }
+            $fileName = PATH_ROOT.$params['product_path'];
+            if(file_exists($fileName) === false){
+                throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
+            }
             // 파일 삭제 - 성공 / 실패
             $response['result'] = unlink($fileName);
             if ($response['result'] === false) {
