@@ -1,5 +1,6 @@
 <?php
     require_once('../../../index.php');
+    checkLogin();
     list($boardId, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPostForMypostList($_GET);
 ?>
 <!doctype html>
