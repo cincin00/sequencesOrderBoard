@@ -434,6 +434,7 @@ function getCategoryForAdminCategoryList()
     $response = null;
     $categoryCondtion = [
         'where' => '1 = 1',
+        'orderby' => 'category_code ASC',
     ];
     $categoryTemp = getCategory($categoryCondtion, 1);
 
