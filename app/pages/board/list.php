@@ -1,16 +1,7 @@
 <?php
 
   require_once('../../../index.php');
-//  $_GET = [];
-  // all, title, contents
-//   $_GET['target'] = 'all';
-//   $_GET['keyword'] = '';
-//   $_GET['page'] = '1';
-//   $_GET['block'] = '5';
-//   $_GET['length'] = '10';
-//   $tmp = getPostForListTmp($_GET);
-//   dd($tmp);
-  list($boardData, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPostForList($_GET);
+  list($boardData, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow, $currentPageUrl) = getPostForList($_GET);  
   ?>
 <!doctype html>
 <html lang="en">
@@ -31,13 +22,14 @@
             </div>
         </div>
         <!-- 검색어 -->
-        <form>
+        <form action="<?=BOARD_DIR?>/list.php" method="get">
             <div class="mar-medium">
-                <input type="text" class="form-control pos-right" id="keyword" style="width:300px;"
-                    placeholder="검색어를 입력해주세요" autocomplete="off">
-                <button type="button" class="btn btn-default pos-right">검색</button>
+                <input type="text" name="keyword" class="form-control pos-right" id="keyword" style="width:300px;"
+                    placeholder="검색어를 입력해주세요(제목,내용,작성자)" autocomplete="off"
+                    value="<?php if(isset($_GET['keyword'])){echo $_GET['keyword'];}?>">
+                <button type="submit" class="btn btn-default pos-right">검색</button>
             </div>
-        </form>        
+        </form>
         <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">
@@ -61,12 +53,12 @@
             </thead>
             <tbody class="board-list-head">
                 <?php
-                // 게시글 데이터가 있는 경우
-                if ($postData) {
-                    // 게시글번호 = 전체 게시글 수량 - 시작 게시글 번호
-                    $index = $totalRow - $startRow;
-                    foreach ($postData as $row) {
-                        ?>
+                    // 게시글 데이터가 있는 경우
+                    if ($postData) {
+                        // 게시글번호 = 전체 게시글 수량 - 시작 게시글 번호
+                        $index = $totalRow - $startRow;
+                        foreach ($postData as $row) {
+                ?>
                 <tr>
                     <!-- 게시글번호 -->
                     <td class="board-list-table-baqh">
@@ -129,14 +121,14 @@
             </div>
             <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$firstPage?>" id="first">처음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$prePage?>" id="prev">이전</a>
-                <?php for ($i=1;$i<=$totalPage;$i++) { ?>
-                <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>"
-                    href="<?=BOARD_DIR?>/list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
+                <a class="btn btn-default" href="<?=$firstPage?>" id="first">처음</a>
+                <a class="btn btn-default" href="<?=$prePage?>" id="prev">이전</a>
+                <?php foreach($currentPageUrl as $index => $pageUrl){ ?>
+                <a class="btn <?=$currentPage == ($index + 1) ? 'btn-primary' : 'btn-default'; ?>" href="<?=$pageUrl?>"
+                    id="page" data-page="<?=($index + 1)?>"><?=($index + 1)?></a>
                 <?php } ?>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$nextPage?>" id="next">다음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/list.php?page=<?=$lastPage?>" id="last">마지막</a>
+                <a class="btn btn-default" href="<?=$nextPage?>" id="next">다음</a>
+                <a class="btn btn-default" href="<?=$lastPage?>" id="last">마지막</a>
             </div>
         </div>
     </div>

@@ -39,22 +39,23 @@ function getPagingData(array $params, int $boardId)
 {
     // 현재 페이지 번호(기본: 1페이지)
     $currentPage = (isset($params['page']) === true ? $params['page'] : 1);
+    // 검색어
+    $keyword = (isset($params['keyword']) === true ? htmlspecialchars($params['keyword']) : '');
     // 게시글 전체 수량(삭제 처리되지 않은 게시글만 조회)
     if (validSingleData($params, 'row_params')) {
         $rowParams = $params['row_params'];
     } else {
         $rowParams = [
             'select' => 'COUNT(*) as `total_cnt`',
-            'where' => 'board_id = '.$boardId.' AND is_delete = 0'
+            'where' => $boardId.' AND is_delete = 0 AND title LIKE "%'.$keyword.'%" OR contents LIKE "%'.$keyword.'%" OR writer LIKE "%'.$keyword.'%"',
+            'debug' => false
         ];
     }
+
     $totalRow = getPost($rowParams)['total_cnt'];
-    /////////////////////////////////////////////////////////////////////////////////////
+
     // 1개 페이지에 표시할 게시글 수
     $length = 10;
-    // 블록당 페이지 수
-    $block = 5;
-
     // 전체 페이지 수 - 0인 경우 1 페이지로 고정
     $totalPage = ceil($totalRow/$length) > 0 ? ceil($totalRow/$length) : 1;
     // 처음 페이지
@@ -68,13 +69,14 @@ function getPagingData(array $params, int $boardId)
     //현재 시작 게시글 번호
     $startRow = ($currentPage - 1) * $length;
 
-
+    // 블록당 페이지 수
+    // $block = 5;
     // 현재 블록 번호 ( 현재 페이지 / 블록당 페이지 수 )
     //$currentBlock = ceil($currentPage / $block);
     // 전체 블록 번호 ( 전체 페이지 / 블록당 페이지 수 )
     //$totalBlock = ceil($totalPage / $block);
 
-    return [$firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
+    return [$firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow, $keyword];
 }
 
 /**
@@ -108,23 +110,43 @@ function getPost(array $params, int $fetchType = 0)
  */
 function getPostForList($params)
 {
+    
     // 게시판 설정 로드 - 계층형 게시판(1) 고정
     $boardData = getBoard(['where'=>1]);
+    // URL 데이터 정재
+    $params = validDuplicationData($params);
     // 페이징 처리 (처음페이지, 이전페이지, 현재페이지, 다음페이지, 마지막페이지, 전체페이지, 페이지당 게시글 수, 시작 게시글, 전체 게시글)
-    list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($params, 1);
+    list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow, $keyword) = getPagingData($params, 1);
     // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
     $params = [
         'select' => '`post`.*, `bc`.title as `category_title`',
         'join' => [
             'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
         ],
-        'where' => '`post`.board_id = 1 AND `post`.is_delete = 0',
+        'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND (`post`.title LIKE "%'.$keyword.'%" OR `post`.contents LIKE "%'.$keyword.'%" OR `post`.writer LIKE "%'.$keyword.'%")',
         'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
         'limit' => $startRow.", ".$length,
+        'debug' => false
       ];
     $postData = getPost($params, 1);
 
-    return [$boardData, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
+    // 페이징 데이터 가공
+    $baseUrl = BOARD_DIR.'/list.php?';
+    $fpu = (empty($firstPage) == false ? 'page='.$firstPage : '');
+    $ppu = (empty($prePage) == false ? 'page='.$prePage : '');
+    $npu = (empty($nextPage) == false ? 'page='.$nextPage : '');
+    $lpu = (empty($lastPage) == false ? 'page='.$lastPage : '');
+    $key = (empty($keyword) === false ? '&keyword='.$keyword : '');
+
+    for($i=1;$i<=$totalPage;$i++){
+        $currentPageUrl[] = $baseUrl.'page='.$i.$key;
+    }
+    $firstPageUrl = $baseUrl.$fpu.$key;
+    $prePageUrl = $baseUrl.$ppu.$key;
+    $nextPageUrl = $baseUrl.$npu.$key;
+    $lastPageUrl = $baseUrl.$lpu.$key;
+
+    return [$boardData, $postData, $firstPageUrl, $prePageUrl, $currentPage, $nextPageUrl, $lastPageUrl, $totalPage, $length, $startRow, $totalRow, $currentPageUrl];
 }
 
 /**
@@ -235,27 +257,46 @@ function getPostForListTmp($params)
 function getPostForMypostList($params)
 {
     $boardId = 1;
-
-    // 페이징 처리
+    // 검색어
+    $keyword = (isset($params['keyword']) === true ? htmlspecialchars($params['keyword']) : '');    
+    $keywordCondtion = (empty($keyword) === false ? ' AND (`post`.title LIKE "%'.$keyword.'%" OR `post`.contents LIKE "%'.$keyword.'%" OR `post`.writer LIKE "%'.$keyword.'%")' : '');
     $params['row_params'] = [
         'select' => 'COUNT(*) as `total_cnt`',
-        'where' => 'board_id = '.$boardId.' AND is_delete = 0 AND member_id = "'.$_SESSION['id'].'" '
+        'where' => 'board_id = '.$boardId.' AND is_delete = 0 AND member_id = '.$_SESSION['id'].$keywordCondtion,
+        //'debug' => true,
     ];
-
-    list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($params, 1);
+    // 페이징 처리
+    list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow, $keyword) = getPagingData($params, 1);
     // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
     $params = [
       'select' => '`post`.*, `bc`.title as `category_title`',
       'join' => [
           'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
       ],
-      'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND member_id = "'.$_SESSION['id'].'"' ,
+      'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND `post`.member_id = '.$_SESSION['id'].$keywordCondtion,
       'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
       'limit' => $startRow.", ".$length,
+      //'debug' => true,
     ];
     $postData = getPost($params, 1);
 
-    return [$boardId, $postData,  $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
+    // 페이징 데이터 가공
+    $baseUrl = BOARD_DIR.'/mypost_list.php?';
+    $fpu = (empty($firstPage) == false ? 'page='.$firstPage : '');
+    $ppu = (empty($prePage) == false ? 'page='.$prePage : '');
+    $npu = (empty($nextPage) == false ? 'page='.$nextPage : '');
+    $lpu = (empty($lastPage) == false ? 'page='.$lastPage : '');
+    $key = (empty($keyword) === false ? '&keyword='.$keyword : '');
+
+    for($i=1;$i<=$totalPage;$i++){
+        $currentPageUrl[] = $baseUrl.'page='.$i.$key;
+    }
+    $firstPageUrl = $baseUrl.$fpu.$key;
+    $prePageUrl = $baseUrl.$ppu.$key;
+    $nextPageUrl = $baseUrl.$npu.$key;
+    $lastPageUrl = $baseUrl.$lpu.$key;
+
+    return [$boardId, $postData,  $firstPageUrl, $prePageUrl, $currentPage, $nextPageUrl, $lastPageUrl, $totalPage, $length, $startRow, $totalRow, $currentPageUrl];
 }
 
 /**

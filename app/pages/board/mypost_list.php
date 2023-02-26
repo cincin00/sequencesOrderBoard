@@ -1,7 +1,7 @@
 <?php
     require_once('../../../index.php');
     checkLogin();
-    list($boardId, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPostForMypostList($_GET);
+    list($boardId, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow, $currentPageUrl) = getPostForMypostList($_GET);
 ?>
 <!doctype html>
 <html lang="en">
@@ -21,6 +21,15 @@
                 </div>
             </div>
         </div>
+        <!-- 검색어 -->
+        <form action="<?=BOARD_DIR?>/mypost_list.php" method="get">
+            <div class="mar-medium">
+                <input type="text" name="keyword" class="form-control pos-right" id="keyword" style="width:300px;"
+                    placeholder="검색어를 입력해주세요(제목,내용,작성자)" autocomplete="off"
+                    value="<?php if(isset($_GET['keyword'])){echo $_GET['keyword'];}?>">
+                <button type="submit" class="btn btn-default pos-right">검색</button>
+            </div>
+        </form>
         <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">
@@ -107,14 +116,14 @@
         <div style="font-size:12px;">
             <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$firstPage?>" id="first">처음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$prePage?>" id="prev">이전</a>
-                <?php for ($i=1;$i<=$totalPage;$i++) { ?>
-                <a class="btn <?=$currentPage == $i ? 'btn-primary' : 'btn-default'; ?>"
-                    href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$i?>" id="page" data-page="<?=$i?>"><?=$i?></a>
+                <a class="btn btn-default" href="<?=$firstPage?>" id="first">처음</a>
+                <a class="btn btn-default" href="<?=$prePage?>" id="prev">이전</a>
+                <?php foreach($currentPageUrl as $index => $pageUrl){ ?>
+                <a class="btn <?=$currentPage == ($index + 1) ? 'btn-primary' : 'btn-default'; ?>" href="<?=$pageUrl?>"
+                    id="page" data-page="<?=($index + 1)?>"><?=($index + 1)?></a>
                 <?php } ?>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$nextPage?>" id="next">다음</a>
-                <a class="btn btn-default" href="<?=BOARD_DIR?>/mypost_list.php?page=<?=$lastPage?>" id="last">마지막</a>
+                <a class="btn btn-default" href="<?=$nextPage?>" id="next">다음</a>
+                <a class="btn btn-default" href="<?=$lastPage?>" id="last">마지막</a>
             </div>
         </div>
     </div>

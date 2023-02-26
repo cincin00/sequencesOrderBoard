@@ -275,3 +275,28 @@
 
         return $response;
     }
+
+    /**
+     * 배열 키 중복 제거
+     * 
+     * 단, 키 중복인 경우 마지막 키의 값으로 할당한다.
+     * @todo 다중 배열 처리
+     */
+    function validDuplicationData(array $params){
+        // 반환 값 초기화
+        $response = [];
+        // 배열 형식 검증
+        if(is_array($params) === true){
+            foreach($params as $key => $value){
+                // 새로 할당하는 배열 변수에 존재하는 키(key)인지 검증
+                if(in_array($key,$response) === false){
+                    $response[$key] = $value;
+                }else{
+                    unset($response[$key]);
+                    $response[$key] = $value;
+                }                
+            }
+        }
+        
+        return $response;
+    }
