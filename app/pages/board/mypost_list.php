@@ -1,7 +1,7 @@
 <?php
     require_once('../../../index.php');
     checkLogin();
-    list($boardId, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow, $currentPageUrl) = getPostForMypostList($_GET);
+    $result = getPostForMypostList($_GET);
 ?>
 <!doctype html>
 <html lang="en">
@@ -30,7 +30,7 @@
                 <button type="submit" class="btn btn-default pos-right">검색</button>
             </div>
         </form>
-        <div class="pad-top-large h5"> <?=$currentPage.' / '.$totalPage.' 페이지 (전체: '.$totalRow.'개)';?> </div>
+        <div class="pad-top-large h5"> <?=$result['current_page'].' / '.$result['total_page'].' 페이지 (전체: '.$result['total_row'].'개)';?> </div>
         <!-- 게시글 목록 -->
         <table class="board-list-table">
             <colgroup>
@@ -53,12 +53,12 @@
             </thead>
             <tbody class="board-list-head">
                 <?php
-                // 게시글 데이터가 있는 경우
-                if ($postData) {
-                    // 게시글번호 = 전체 게시글 수량 - 시작 게시글 번호
-                    $index = $totalRow - $startRow;
-                    foreach ($postData as $row) {
-                        ?>
+                    // 게시글 데이터가 있는 경우
+                    if ($result['post_data']) {
+                        // 게시글번호 = 전체 게시글 수량 - 시작 게시글 번호
+                        $index = $result['total_row'] - $result['start_row'];
+                        foreach ($result['post_data'] as $row) {
+                ?>
                 <tr>
                     <!-- 게시글번호 -->
                     <td class="board-list-table-baqh">
@@ -116,14 +116,14 @@
         <div style="font-size:12px;">
             <!-- 페이징 -->
             <div id="paging" class="mar-top-large" style="text-align:center;">
-                <a class="btn btn-default" href="<?=$firstPage?>" id="first">처음</a>
-                <a class="btn btn-default" href="<?=$prePage?>" id="prev">이전</a>
-                <?php foreach($currentPageUrl as $index => $pageUrl){ ?>
-                <a class="btn <?=$currentPage == ($index + 1) ? 'btn-primary' : 'btn-default'; ?>" href="<?=$pageUrl?>"
-                    id="page" data-page="<?=($index + 1)?>"><?=($index + 1)?></a>
+                <a class="btn btn-default" href="<?=$result['first_page_url']?>" id="first">처음</a>
+                <a class="btn btn-default" href="<?=$result['pre_page_url']?>" id="prev">이전</a>
+                <?php foreach($result['current_page_url']['url'] as $index => $pageUrl){ ?>
+                <a class="btn <?=$result['current_page'] == $result['current_page_url']['page'][$index] ? 'btn-primary' : 'btn-default'; ?>" href="<?=$pageUrl?>"
+                    id="page" data-page="<?=($index + 1)?>"><?=$result['current_page_url']['page'][$index]?></a>
                 <?php } ?>
-                <a class="btn btn-default" href="<?=$nextPage?>" id="next">다음</a>
-                <a class="btn btn-default" href="<?=$lastPage?>" id="last">마지막</a>
+                <a class="btn btn-default" href="<?=$result['next_page_url']?>" id="next">다음</a>
+                <a class="btn btn-default" href="<?=$result['last_page_url']?>" id="last">마지막</a>
             </div>
         </div>
     </div>
