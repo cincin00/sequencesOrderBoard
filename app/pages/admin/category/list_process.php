@@ -72,34 +72,82 @@
           $isExistCategory = getCategory($categoryCondtion);
           // 기존 데이터 재정렬
           if (empty($isExistCategory) === false) {
-              var_dump('기존 데이터 존재');
-              var_dump($isExistCategory['depth_order']);
-              if($isExistCategory['depth_order'] <= 25){
-                
+              // 이동하려는 차수의 전체 수량이 25(A-Z)의 길이를 초과하는지 검증
+              if (getCountCategoryDepth($isExistCategory['depth']) >= 26) {
+                  $msg = '현재 카테고리 차수에 추가할 수 있는 수량을 초과하였습니다.';
+              } else {
+                  /**
+                   * New Logic
+                   * - 현재 이동된 카테고리 코드 조회(setCategoryCode)✓
+                   * - 현재 생성된 카테고리 코드가 존재하는지 검증(getCategory)✓
+                   * - 최대 카테고리에 도달했는지 검증(getCountCategoryDepth)✓
+                   * -- 존재하지 않는 경우
+                   * --- 신규 카테고리로 데이터 갱신(setCategory)
+                   * --- 하위 카테고리 데이터 갱신(setSubCategory)
+                   * --- 데이터 재조회 및 반환(getCategoryForAdminCategoryList)
+                   * -- 존재하는 경우(changeCategory)
+                   * --- 신규 생성된 카테고리 다음 코드(N+1) 값 조회 후 존재 여부 검증
+                   * --- 반복 x 신규 생성된 카테고리 존재하지 않을 때 까지!
+                   * Example) A-AB-ABC => DBC(targetCategoryCode)
+                   */
+                  dd('EOF');
               }
-              /**
-               * 재귀 방식으로 나 -> 하위 -> 다음 (반복)
-               * - 현재 깊이 확인
-               * - 현재 깊이를 갖고 있는 코드 정보 확인
-               * - 가장 마지막 순번에 있는 코드 부터 재정렬 시작(depth_order로 알 수 있음.), 현재 순번($isExistCategory['depth_order'])까지 반복
-               * - 
-               * $isExistCategory['id']
-               * $isExistCategory['name']
-               * $isExistCategory['depth']
-               * $isExistCategory['depth_order']
-               * $isExistCategory['category_code']
-               */
           } else {
-              $insertCondtion = [
-                'name' => $params['name'],
-                'depth' => $currentDepth,
-                'depth_order' => $params['depth_order'],
-                'category_code' => $newCategoryCode,
+              // 이동되는 카테고리 정보 갱신
+              $mainUpdateCondtion = [
+                  'set' => 'category_code = "'.$newCategoryCode.'"',
+                  'where' => 'category_code = "'.$params['category_code'].'"',
+                  'debug' => false,
               ];
-              // 신규 카테고리 정보 갱신
-              $insertRes = setCategory($insertCondtion);
-              if ($insertRes === false) {
+              $mainUpdateRes = updateCategory($mainUpdateCondtion);
+              if ($mainUpdateRes === false) {
                   $msg = '카테고리 갱신 오류.';
+                  $response['msg'] = $msg;
+                  $response['data'] = getCategoryForAdminCategoryList();
+                  echo json_encode($response);
+                  exit;
+              }
+
+              // 갱신 처리할 하위 카테고리 코드 조회
+              $subSelectCondtion = [
+                  'select' => 'category_code',
+                  'where' => 'category_code LIKE "'.$params['category_code'].'%"',
+                  'debug' => false,
+              ];
+              $mainSelectRes = getCategory($subSelectCondtion, 1);
+              if ($mainSelectRes) {
+                  foreach ($mainSelectRes as $categoryCode) {
+                      $temp[] = $categoryCode['category_code'];
+                  }
+              }
+
+              // 이동되는 카테고리 하위 정보 갱신
+              $subUpdateCondtion = [
+                'set' => 'category_code = REPLACE(category_code, "'.$params['category_code'].'", "'.$newCategoryCode.'")',
+                'where' => 'category_code IN ("'.implode('","', $temp).'")',
+                //'debug' => true,
+              ];
+              $subUpdateRes = updateCategory($subUpdateCondtion);
+              if ($subUpdateRes === false) {
+                  // 하위 카테고리 갱신 실패 시 앞서 갱신한 상위 카테고리 복구
+                  $rollbackMainUpdateCondtion = [
+                    'set' => 'category_code = "'.$params['category_code'].'"',
+                    'where' => 'category_code = "'.$newCategoryCode.'"',
+                    'debug' => false,
+                ];
+                $rollbackMainUpdateRes = updateCategory($rollbackMainUpdateCondtion);
+                  // 이동되는 카테고리 정보 갱신
+                  $mainUpdateCondtion = [
+                        'set' => 'category_code = "'.$newCategoryCode.'"',
+                        'where' => 'category_code = "'.$params['category_code'].'"',
+                        'debug' => false,
+                  ];
+                  $mainUpdateRes = updateCategory($mainUpdateCondtion);
+                  $msg = '하위 카테고리 갱신 오류.';
+                  $response['msg'] = $msg;
+                  $response['data'] = getCategoryForAdminCategoryList();
+                  echo json_encode($response);
+                  exit;
               }
           }
 

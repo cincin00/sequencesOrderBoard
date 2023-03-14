@@ -609,6 +609,13 @@ function renameCategory(string $categoryName, string $categoryCode)
     return $response;
 }
 
+
+/**
+ * 카테고리 정보 갱신
+ * 
+ * @param array $params
+ * @return bool
+ */
 function updateCategory(array $params)
 {
     global $dbh;
@@ -636,4 +643,54 @@ function updateCategory(array $params)
     $response = $dbh->exec($query);
 
     return $response;
+}
+
+/**
+ * 전달 받은 카테고리 차수의 총 개수를 반환하는 함수
+ * 
+ * @param int $depth
+ */
+function getCountCategoryDepth(int $depth)
+{
+    // 반환값 초기화
+    $response = 0;
+    $categoryCondtion = [
+        'select' => 'COUNT(*) AS `num`',
+        'where' => 'depth = '.$depth,
+        'debug' => false,
+      ];
+      $totalNumOfDepth = getCategory($categoryCondtion);
+      $response = $totalNumOfDepth['num'];
+
+      return $response;
+}
+
+/**
+ * 카테고리코드의 부모 코드를 반환
+ * 
+ * @param string $categoryCode
+ */
+function getParentCategoryCode(string $categoryCode)
+{
+    // 반환값 초기화
+    $response = '';
+    $parentNodeCodeLen = (strlen($categoryCode) - 1) > 0 ? strlen($categoryCode) - 1 : 1;
+    $parentNodeCode = substr($categoryCode, 0, $parentNodeCodeLen);
+    $response = $parentNodeCode;
+    
+    return $response;
+}
+
+/**
+ * 카테고리 정보를 변경하는 재귀함수
+ * 
+ * @param string $endNode
+ * @return
+ */
+function changeCategoryNode(string $endNode)
+{
+    //  반환값 초기화
+    $response = [];
+
+
 }

@@ -233,6 +233,8 @@
                 node_order: data.position,
                 // 새로운 부모 노드 코드
                 parent_code: data.parent,
+                // 기존 카테고리 코드
+                category_code: data.node.id,
             };
             //console.log(data);
             // 이동 전 부모 노드 ID

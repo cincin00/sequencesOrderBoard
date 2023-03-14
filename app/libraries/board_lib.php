@@ -79,7 +79,7 @@ function getPagingData(array $params, int $boardId)
     $response['total_block'] = ceil($response['total_page'] / $block);
     // 시작 블록 페이지 ((현재블록 - 1) * 블록당 페이지 수 ) + 1
     $response['start_block_page'] = (($currentBlock - 1) * $block) + 1;
-    // 종료 블록 페이지 (시작 블록 페이지 + 블록당 페이지 수 - 1, 단 종료 블록 페이지은 전체 페이지를 초과할 수 없다.)
+    // 종료 블록 페이지 (시작 블록 페이지 + 블록당 페이지 수 - 1, 단 종료 블록 페이지은 전체 페이지를 초과할 수 없다.) todo 계산하기 편하게 바꾸기
     $response['end_block_page'] = ($response['start_block_page'] + $block - 1) > $response['last_page'] ? $response['last_page'] : ($response['start_block_page'] + $block - 1) ;
 
     return $response;
