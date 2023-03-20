@@ -1,5 +1,6 @@
 <?php
     require_once('../../../index.php');
+    checkLogin();
     list($postData, $isMember, $isOwn, $isMemberOwn) = mypostViewData($_GET);
     ?>
 <!doctype html>
@@ -89,18 +90,19 @@
         text: 'Thumbnail'
     });
     /** Board View Js */
-    let viewData = {
-        baseUrl: '<?=BOARD_DIR?>',
-        boardId: <?=$baordId?>,
-        postId: <?=$postData['id']?>,
-    }
-    let view = new View(viewData);
-    $('#passwdSubmitBtn').on('click', function() {
-        let mode = $(this).data('mode');
-        let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);
-        // 비밀번호 팝업 이벤트
-        view.passwordFormEvent(param);
-    });
+    // TODO FIXME
+    // let viewData = {
+    //     baseUrl: '<?=BOARD_DIR?>',
+    //     boardId: <?=$boardId?>,
+    //     postId: <?=$postData['id']?>,
+    // }
+    // let view = new View(viewData);
+    // $('#passwdSubmitBtn').on('click', function() {
+    //     let mode = $(this).data('mode');
+    //     let param = view.passwrodFormParamCreate(mode, <?=$postData['id']?>);
+    //     // 비밀번호 팝업 이벤트
+    //     view.passwordFormEvent(param);
+    // });
 
     $("#password_form #password").on('keydown', function(e) {
         if (e.keyCode === 13) {

@@ -209,16 +209,17 @@
             'path' => '',
             'msg' => '',
         ];
+
         // 업로드 경로
         $folderPath = PATH_STORAGE.'/'.$folder.'/';
         // 파일명 - 파일 정보
-        $fileName = $params['name'][0];
+        $fileName = $params['name'];
         // 파일 확장자 - 파일 정보
-        $fileExt = $params['type'][0];
+        $fileExt = $params['type'];
         // 파일 크기 - 파일 정보
-        $fileSize = $params['size'][0];
+        $fileSize = $params['size'];
         // 임시 업로드 경로
-        $tmpPath = $params['tmp_name'][0];
+        $tmpPath = $params['tmp_name'];
         // 파일 사이즈 검증 - 최대 5MB(1024*5)
         $maxSize = 5 * 1024 * 1024;
         if ($maxSize < $fileSize) {
@@ -257,20 +258,45 @@
             'msg' => '',
         ];
 
-        try{
+        try {
             // 파일 존재 검증
-            $fileName = '/opt/homebrew/var/www/board01/public_html'.$params['product_path'];
-            // if(file_exists($fileName) === false){
-            //     throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
-            // }
-            // 파일 삭제 - 성공 / 실패
-            $response['result'] = unlink($fileName);
-            if($response['result'] === false){
+            $fileName = PATH_ROOT.$params['product_path'];
+            if(file_exists($fileName) === false){
                 throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.',);
             }
-        }catch(Exception $e){
+            // 파일 삭제 - 성공 / 실패
+            $response['result'] = unlink($fileName);
+            if ($response['result'] === false) {
+                throw new Exception('존재하지 않는 파일이거나 경로가 올바르지 않습니다.', );
+            }
+        } catch(Exception $e) {
             $response['msg'] = $e->getMessage();
         }
 
-        return $response;        
+        return $response;
+    }
+
+    /**
+     * 배열 키 중복 제거
+     * 
+     * 단, 키 중복인 경우 마지막 키의 값으로 할당한다.
+     * @todo 다중 배열 처리
+     */
+    function validDuplicationData(array $params){
+        // 반환 값 초기화
+        $response = [];
+        // 배열 형식 검증
+        if(is_array($params) === true){
+            foreach($params as $key => $value){
+                // 새로 할당하는 배열 변수에 존재하는 키(key)인지 검증
+                if(in_array($key,$response) === false){
+                    $response[$key] = $value;
+                }else{
+                    unset($response[$key]);
+                    $response[$key] = $value;
+                }                
+            }
+        }
+        
+        return $response;
     }

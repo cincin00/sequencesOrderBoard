@@ -37,44 +37,52 @@ function getBoard(array $params, int $fetchType = 0)
  */
 function getPagingData(array $params, int $boardId)
 {
+    // 반환값 초기화
+    $response = [];
     // 현재 페이지 번호(기본: 1페이지)
-    $currentPage = (isset($params['page']) === true ? $params['page'] : 1);
+    $response['current_page'] = (isset($params['page']) === true ? $params['page'] : 1);
+    // 검색어
+    $response['keyword'] = (isset($params['keyword']) === true ? htmlspecialchars($params['keyword']) : '');
     // 게시글 전체 수량(삭제 처리되지 않은 게시글만 조회)
     if (validSingleData($params, 'row_params')) {
         $rowParams = $params['row_params'];
     } else {
         $rowParams = [
             'select' => 'COUNT(*) as `total_cnt`',
-            'where' => 'board_id = '.$boardId.' AND is_delete = 0'
+            'where' => $boardId.' AND is_delete = 0 AND (title LIKE "%'.$response['keyword'].'%" OR contents LIKE "%'.$response['keyword'].'%" OR writer LIKE "%'.$response['keyword'].'%")',
+            'debug' => false
         ];
     }
-    $totalRow = getPost($rowParams)['total_cnt'];
-    /////////////////////////////////////////////////////////////////////////////////////
+
+    $response['total_row'] = getPost($rowParams)['total_cnt'];
+
     // 1개 페이지에 표시할 게시글 수
-    $length = 10;
+    $response['length'] = 10;
+    // 전체 페이지 수 - 0인 경우 1 페이지로 고정
+    $response['total_page'] = ceil($response['total_row']/$response['length']) > 0 ? ceil($response['total_row']/$response['length']) : 1;
+    // 처음 페이지
+    $response['first_page'] =  1 ;
+    // 이전 페이지
+    $response['pre_page'] = ($response['current_page'] - 1) > 0 ? $response['current_page'] - 1 : 1;
+    // 다음 페이지
+    $response['next_page'] = ($response['current_page'] + 1) <= $response['total_page'] ? $response['current_page'] + 1 : $response['total_page'] ;
+    // 마지막 페이지
+    $response['last_page'] = $response['total_page'];
+    //현재 시작 게시글 번호
+    $response['start_row'] = ($response['current_page'] - 1) * $response['length'];
+
     // 블록당 페이지 수
     $block = 5;
+    // 현재 블록 번호 올림 ( 현재 페이지 / 블록당 페이지 수 )
+    $currentBlock = ceil($response['current_page'] / $block);
+    // 전체 블록 번호 올림 ( 전체 페이지 / 블록당 페이지 수 )
+    $response['total_block'] = ceil($response['total_page'] / $block);
+    // 시작 블록 페이지 ((현재블록 - 1) * 블록당 페이지 수 ) + 1
+    $response['start_block_page'] = (($currentBlock - 1) * $block) + 1;
+    // 종료 블록 페이지 (시작 블록 페이지 + 블록당 페이지 수 - 1, 단 종료 블록 페이지은 전체 페이지를 초과할 수 없다.) todo 계산하기 편하게 바꾸기
+    $response['end_block_page'] = ($response['start_block_page'] + $block - 1) > $response['last_page'] ? $response['last_page'] : ($response['start_block_page'] + $block - 1) ;
 
-    // 전체 페이지 수 - 0인 경우 1 페이지로 고정
-    $totalPage = ceil($totalRow/$length) > 0 ? ceil($totalRow/$length) : 1;
-    // 처음 페이지
-    $firstPage =  1 ;
-    // 이전 페이지
-    $prePage = ($currentPage - 1) > 0 ? $currentPage - 1 : 1;
-    // 다음 페이지
-    $nextPage = ($currentPage + 1) <= $totalPage ? $currentPage + 1 : $totalPage ;
-    // 마지막 페이지
-    $lastPage = $totalPage;
-    //현재 시작 게시글 번호
-    $startRow = ($currentPage - 1) * $length;
-
-
-    // 현재 블록 번호 ( 현재 페이지 / 블록당 페이지 수 )
-    //$currentBlock = ceil($currentPage / $block);
-    // 전체 블록 번호 ( 전체 페이지 / 블록당 페이지 수 )
-    //$totalBlock = ceil($totalPage / $block);
-
-    return [$firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
+    return $response;
 }
 
 /**
@@ -108,29 +116,70 @@ function getPost(array $params, int $fetchType = 0)
  */
 function getPostForList($params)
 {
+    // 반환값 초기화
+    $response = [];
     // 게시판 설정 로드 - 계층형 게시판(1) 고정
-    $boardData = getBoard(['where'=>1]);
+    $response['board_data'] = getBoard(['where'=>1]);
+    // URL 데이터 정재
+    $params = validDuplicationData($params);
     // 페이징 처리 (처음페이지, 이전페이지, 현재페이지, 다음페이지, 마지막페이지, 전체페이지, 페이지당 게시글 수, 시작 게시글, 전체 게시글)
-    list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($params, 1);
+    $result = getPagingData($params, 1);
     // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
     $params = [
         'select' => '`post`.*, `bc`.title as `category_title`',
         'join' => [
             'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
         ],
-        'where' => '`post`.board_id = 1 AND `post`.is_delete = 0',
+        'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND (`post`.title LIKE "%'.$result['keyword'].'%" OR `post`.contents LIKE "%'.$result['keyword'].'%" OR `post`.writer LIKE "%'.$result['keyword'].'%")',
         'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
-        'limit' => $startRow.", ".$length,
+        'limit' => $result['start_row'].", ".$result['length'],
+        'debug' => false
       ];
-    $postData = getPost($params, 1);
+    $response['post_data'] = getPost($params, 1);
 
-    return [$boardData, $postData, $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
+    // 페이징 데이터 가공
+    $baseUrl = BOARD_DIR.'/list.php?';
+    $ppu = (empty($result['pre_page']) == false ? 'page='.$result['pre_page'] : '');
+    $fpu = (empty($result['first_page']) == false ? 'page='.$result['first_page'] : '');
+    $lpu = (empty($result['last_page']) == false ? 'page='.$result['last_page'] : '');
+    $npu = (empty($result['next_page']) == false ? 'page='.$result['next_page'] : '');
+    $key = (empty($result['keyword']) === false ? '&keyword='.$result['keyword'] : '');
+
+    for($i=$result['start_block_page'];$i<=$result['end_block_page'];$i++){
+        $response['current_page_url']['url'][] = $baseUrl.'page='.$i.$key;
+        $response['current_page_url']['page'][] = $i;
+    }
+
+    // 이전 블록
+    $response['pre_page_url'] = $baseUrl.$ppu.$key;
+    // 시작 페이지 
+    $response['first_page_url'] = $baseUrl.$fpu.$key;
+    // 마지막 페이지
+    $response['last_page_url'] = $baseUrl.$lpu.$key;
+    // 다음 블록
+    $response['next_page_url'] = $baseUrl.$npu.$key;
+    // 현재 페이지
+    $response['current_page'] = $result['current_page'];
+    // 전체 페이지
+    $response['total_page'] = $result['total_page'];
+    // 전체 게시글 수
+    $response['length'] = $result['length'];
+    // 시작 
+    $response['start_row'] = $result['start_row'];
+    // 전체
+    $response['total_row'] = $result['total_row'];
+    $response['first_page'] = $result['first_page'];
+    $response['pre_page'] = $result['pre_page'];
+    $response['next_page'] = $result['next_page'];
+    $response['last_page'] = $result['last_page'];
+
+    return $response;
 }
 
 /**
  * 게시판 목록 조회 함수
- * 
- * @description 
+ *
+ * @description
  * - 반환 데이터: 게시판 정보, 게시글 정보, 페이징 정보
  * - 목록 페이지에 페이징을 위한 데이터: [처음], [이전], [페이지 시작 번호], [블록당 페이지 번호], [페이지 끝 번호], [다음], [마지막]
  */
@@ -186,11 +235,11 @@ function getPostForListTmp($params)
     $select = 'SELECT post.*, board_category.*';
     $from = ' FROM post';
     $join = ' LEFT JOIN board_category ON post.board_id = board_category.board_id';
-    $where = ' WHERE post.is_delete = 0 AND post.board_id = '.$boardId;    
-    if(empty($keyword) === false){
-        if($target === 'title'){
+    $where = ' WHERE post.is_delete = 0 AND post.board_id = '.$boardId;
+    if (empty($keyword) === false) {
+        if ($target === 'title') {
             $where .= ' AND post.title LIKE "%'.$keyword.'%"';
-        } else if($target === 'contents'){
+        } elseif ($target === 'contents') {
             $where .= ' AND post.contents LIKE "$'.$keyword.'%"';
         } else {
             $where .= ' AND post.title LIKE "%'.$keyword.'%" AND post.contents LIKE "%'.$keyword.'%"';
@@ -204,7 +253,8 @@ function getPostForListTmp($params)
     $totalQuery = $dbh->query($totalPageSql);
     $limitQuery = $dbh->query($limitPageSql);
     $totalRes = $totalQuery->fetchAll();
-    $limitRes = $limitQuery->fetchAll();dd($totalPageSql);
+    $limitRes = $limitQuery->fetchAll();
+    dd($totalPageSql);
     $totalPostNum = count($totalRes);
     // 전체 페이지
     $totalPage = ceil($totalPostNum/$length);
@@ -233,28 +283,69 @@ function getPostForListTmp($params)
  */
 function getPostForMypostList($params)
 {
+    // 반환값 초기화
+    $response = [];
     $boardId = 1;
-
-    // 페이징 처리
+    // 검색어
+    $response['keyword'] = (isset($params['keyword']) === true ? htmlspecialchars($params['keyword']) : '');    
+    $keywordCondtion = (empty($response['keyword']) === false ? ' AND (`post`.title LIKE "%'.$response['keyword'].'%" OR `post`.contents LIKE "%'.$response['keyword'].'%" OR `post`.writer LIKE "%'.$response['keyword'].'%")' : '');
     $params['row_params'] = [
         'select' => 'COUNT(*) as `total_cnt`',
-        'where' => 'board_id = '.$boardId.' AND is_delete = 0 AND member_id = "'.$_SESSION['id'].'" '
+        'where' => 'board_id = '.$boardId.' AND is_delete = 0 AND member_id = '.$_SESSION['id'].$keywordCondtion,
+        //'debug' => true,
     ];
-
-    list($firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow) = getPagingData($params, 1);
+    // 페이징 처리
+    $result = getPagingData($params, 1);
     // 게시글 정보 조회 - 계층형 게시글 정렬 및 페이징 처리
     $params = [
       'select' => '`post`.*, `bc`.title as `category_title`',
       'join' => [
           'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
       ],
-      'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND member_id = "'.$_SESSION['id'].'"' ,
+      'where' => '`post`.board_id = 1 AND `post`.is_delete = 0 AND `post`.member_id = '.$_SESSION['id'].$keywordCondtion,
       'orderby' => '`post`.group_id DESC, `post`.group_order ASC, `post`.group_depth DESC',
-      'limit' => $startRow.", ".$length,
+      'limit' => $result['start_row'].", ".$result['length'],
+      //'debug' => true,
     ];
-    $postData = getPost($params, 1);
+    $response['post_data'] = getPost($params, 1);
 
-    return [$boardId, $postData,  $firstPage, $prePage, $currentPage, $nextPage, $lastPage, $totalPage, $length, $startRow, $totalRow];
+    // 페이징 데이터 가공
+    $baseUrl = BOARD_DIR.'/mypost_list.php?';
+    $ppu = (empty($result['pre_page']) == false ? 'page='.$result['pre_page'] : '');
+    $fpu = (empty($result['first_page']) == false ? 'page='.$result['first_page'] : '');
+    $lpu = (empty($result['last_page']) == false ? 'page='.$result['last_page'] : '');
+    $npu = (empty($result['next_page']) == false ? 'page='.$result['next_page'] : '');
+    $key = (empty($result['keyword']) === false ? '&keyword='.$result['keyword'] : '');
+
+    for($i=$result['start_block_page'];$i<=$result['end_block_page'];$i++){
+        $response['current_page_url']['url'][] = $baseUrl.'page='.$i.$key;
+        $response['current_page_url']['page'][] = $i;
+    }
+    
+    // 이전 블록
+    $response['pre_page_url'] = $baseUrl.$ppu.$key;
+    // 시작 페이지 
+    $response['first_page_url'] = $baseUrl.$fpu.$key;
+    // 마지막 페이지
+    $response['last_page_url'] = $baseUrl.$lpu.$key;
+    // 다음 블록
+    $response['next_page_url'] = $baseUrl.$npu.$key;
+    // 현재 페이지
+    $response['current_page'] = $result['current_page'];
+    // 전체 페이지
+    $response['total_page'] = $result['total_page'];
+    // 전체 게시글 수
+    $response['length'] = $result['length'];
+    // 시작 
+    $response['start_row'] = $result['start_row'];
+    // 전체
+    $response['total_row'] = $result['total_row'];
+    $response['first_page'] = $result['first_page'];
+    $response['pre_page'] = $result['pre_page'];
+    $response['next_page'] = $result['next_page'];
+    $response['last_page'] = $result['last_page'];
+
+    return $response;
 }
 
 /**

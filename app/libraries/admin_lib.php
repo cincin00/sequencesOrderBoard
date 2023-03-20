@@ -74,13 +74,12 @@
 
     function getMemberForAdminView()
     {
-        $memberId = (isset($_GET['member_id'])===true?$_GET['member_id']:0);
+        $memberId = (isset($_GET['member_id'])===true ? $_GET['member_id'] : 0);
         $params = [
             'where' => 'id='.$memberId,
         ];
         $memberData = getMember($params);
-        if(empty($memberData))
-        {
+        if (empty($memberData)) {
             commonMoveAlert('존재하지 않는 회원입니다.', ADMIN_DIR.'/members/list.php');
         }
 
@@ -105,7 +104,7 @@
 
     function getPostForAdminView()
     {
-        $postId = (isset($_GET['post_id'])===true?$_GET['post_id']:0);
+        $postId = (isset($_GET['post_id'])===true ? $_GET['post_id'] : 0);
         $postCondetion = [
             'select' => '`post`.*, `bc`.title as `category_title`',
             'join' => [

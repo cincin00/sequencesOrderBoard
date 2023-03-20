@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
-<?php require_once('../header.php'); ?>
+<?php 
+    require_once('../header.php'); 
+    checkLogin();
+?>
 
 <body>
     <div class="container">

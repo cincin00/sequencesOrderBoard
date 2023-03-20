@@ -168,6 +168,8 @@ function getProductForSkinView(array $params)
  */
 function getProductForAdminList()
 {
+    // 반환값 초기화
+    $product = [];
     // 목록 조회 조건
     $productCondtion = [
         'select' => '`product`.*, MAX(`product_img`.id) AS img_id, MIN(`product_img`.path) AS img_path',
@@ -252,8 +254,37 @@ function uploadProductImage(array $params)
 
     $table = PRODUCT_IMG_TBL;
     $query = 'INSERT INTO '.$table.'(`product_id`, `uuid`, `origin_name`, `extension` , `size`, `path`, `upload_date`) VALUES("'.$params['product_id'].'", "'.uniqid().'", "'.$params['name'][0].'", "'.$params['type'][0].'", "'.$params['size'][0].'", "'.$params['path'].'", "'.date('Y-m-d H:i:s').'")';
+    $dbh->exec($query);
+    // 추가한 이미지 데이터의 순번 반환
+    $response = $dbh->lastInsertId();
 
-    $response = $dbh->exec($query);
+    return $response;
+}
+
+function updateProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    // 수정 처리 시 변경 값은 필수값
+    if (validSingleData($params, 'set')) {
+        $query = 'UPDATE '.$table.' SET '.$params['set'];
+    } else {
+        commonAlert('이미지 정보 수정 실패.');
+    }
+
+    if (validSingleData($params, 'where')) {
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
+            dd($query);
+        }
+    }
+
+    $response =$dbh->exec($query);
 
     return $response;
 }
@@ -303,6 +334,32 @@ function deleteProductImage(array $params)
 }
 
 /**
+ * 폼에 전달한 이미지 업로드 순번 가공 후 반환
+ *
+ * @param array $params 이미지 업로드 순번 모음
+ * @return array
+ */
+function getProductImgSeq(array $params)
+{
+    // 반환값 초기화
+    $fileSeq = [];
+    // 검증 패턴
+    $pattern = '/[\[\]\"]/';
+    // 치환 문구
+    $replacement = '';
+    // 치환 대상
+    $subject = $params['files_seq'];
+    $regxRes = preg_replace($pattern, $replacement, $subject);
+    // 유효한 경우에만 데이터 할당
+    if ($regxRes) {
+        $fileSeq = explode(',', $regxRes);
+    }
+
+
+    return $fileSeq;
+}
+
+/**
  * 상품 데이터 저장
  *
  * @param array
@@ -326,15 +383,20 @@ function setProduct(array $params)
  */
 function validProduct(array $params)
 {
+    $result = true;
     $msg = $location = '';
     if (validSingleData($params, 'product_name') === false) {
+        $result = false;
         $msg = '상품명은 필수 입니다.';
         $location = ADMIN_DIR.'/product/write.php';
     }
-
-    if ($msg && $location) {
-        commonMoveAlert($msg, $location);
+    if (validSingleData($params, 'product_price') === false) {
+        $result = false;
+        $msg = '상품 가격은 필수 입니다.';
+        $location = ADMIN_DIR.'/product/write.php';
     }
+
+    return [$result, $msg, $location];
 }
 
 /**
@@ -372,6 +434,7 @@ function getCategoryForAdminCategoryList()
     $response = null;
     $categoryCondtion = [
         'where' => '1 = 1',
+        'orderby' => 'category_code ASC',
     ];
     $categoryTemp = getCategory($categoryCondtion, 1);
 
@@ -509,7 +572,7 @@ function getCategoryForAdminCategoryDelete(string $categoryCode, int $depth)
 
 /**
  * 카테고리 삭제
- * 
+ *
  * @param string $parmas
  * @return bool
  */
@@ -527,12 +590,12 @@ function deleteCategory(string $categoryCode)
 
 /**
  * 카테고리명 수정
- * 
+ *
  * @param string $categoryName
  * @param string $categoryCode
  */
-function renameCategory(string $categoryName, string $categoryCode){
-
+function renameCategory(string $categoryName, string $categoryCode)
+{
     // 반환값 초기화
     $response = false;
     // 업데이트문 조건식
@@ -546,26 +609,33 @@ function renameCategory(string $categoryName, string $categoryCode){
     return $response;
 }
 
+
+/**
+ * 카테고리 정보 갱신
+ * 
+ * @param array $params
+ * @return bool
+ */
 function updateCategory(array $params)
 {
     global $dbh;
     $response = false;
     $table = PRODUCT_CATEGORY_TBL;
 
-    
+
     // 수정 처리 시 변경 값은 필수값
-    if(validSingleData($params, 'set')){
+    if (validSingleData($params, 'set')) {
         $query = 'UPDATE '.$table.' SET '.$params['set'];
-    }else{
+    } else {
         commonAlert('카테고리 정보 수정 실패.');
     }
 
-    if(validSingleData($params, 'where')){
+    if (validSingleData($params, 'where')) {
         $query .= ' WHERE '.$params['where'];
     }
 
-    if(validSingleData($params, 'debug')){
-        if($params['debug'] === true){
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
             dd($query);
         }
     }
@@ -573,4 +643,54 @@ function updateCategory(array $params)
     $response = $dbh->exec($query);
 
     return $response;
+}
+
+/**
+ * 전달 받은 카테고리 차수의 총 개수를 반환하는 함수
+ * 
+ * @param int $depth
+ */
+function getCountCategoryDepth(int $depth)
+{
+    // 반환값 초기화
+    $response = 0;
+    $categoryCondtion = [
+        'select' => 'COUNT(*) AS `num`',
+        'where' => 'depth = '.$depth,
+        'debug' => false,
+      ];
+      $totalNumOfDepth = getCategory($categoryCondtion);
+      $response = $totalNumOfDepth['num'];
+
+      return $response;
+}
+
+/**
+ * 카테고리코드의 부모 코드를 반환
+ * 
+ * @param string $categoryCode
+ */
+function getParentCategoryCode(string $categoryCode)
+{
+    // 반환값 초기화
+    $response = '';
+    $parentNodeCodeLen = (strlen($categoryCode) - 1) > 0 ? strlen($categoryCode) - 1 : 1;
+    $parentNodeCode = substr($categoryCode, 0, $parentNodeCodeLen);
+    $response = $parentNodeCode;
+    
+    return $response;
+}
+
+/**
+ * 카테고리 정보를 변경하는 재귀함수
+ * 
+ * @param string $endNode
+ * @return
+ */
+function changeCategoryNode(string $endNode)
+{
+    //  반환값 초기화
+    $response = [];
+
+
 }

@@ -244,8 +244,6 @@
             },
             /** 이미지 삭제 함수 */ 
             removedfile: function(file) {
-                console.log('removedfile');
-                console.log(file);
                 // Dropzone 영역에서 지우기
                 file.previewElement.remove();
                 // DB 내역 지우기
@@ -257,14 +255,12 @@
                     product_image_id: imageId,
                     product_path: filePath,
                 };
-                $.post(url, data, function(res){                    
-                    console.log(res);
-                    // let data = JSON.parse(res);
-                    // alert(data.msg);
+                $.post(url, data, function(res){
+                    let data = JSON.parse(res);
+                    alert(data.msg);
                 }).fail(function(res){
-                    console.log(res);
-                    //let data = JSON.parse(res);
-                    //alert(data.msg);
+                    let data = JSON.parse(res.responseText);
+                    alert(data.msg);
                 });
             }
         });

@@ -85,7 +85,7 @@
     <script>
     let categoryRaw = '<?=$category;?>';
     let parseCategory = JSON.parse(categoryRaw);
-    //console.log(parseCategory);
+
     $(function() {
         let jsTree = $('#product_category_div');
 
@@ -111,7 +111,7 @@
             // 선택한 노드(생성된 노드의 부모 노드)
             let sel = ref.get_selected();
             let maxCategory = sel[0].toString().length;
-            if(maxCategory>3){
+            if(maxCategory>3 && sel[0].toString() !== 'root'){
                 alert('최대 하위 카테고리는 4개까지 가능합니다.');
                 return false;
             }
@@ -216,6 +216,40 @@
             ref.edit(sel, default_text, callbackFun);
         });
 
+        /** 
+         * [jsTree] 노드 이동 기능 
+         * @param {object} e 객체
+         * @param {object} data 이동된 노드 정보
+         */
+        jsTree.on('move_node.jstree',function(e, data){
+            let ref = jsTree.jstree(true);
+            let sel = ref.get_selected();            
+            let params = {
+                // 전송 모드
+                mode: 'move_node',
+                // 카테고리명
+                name: data.node.text,
+                // 새로운 위치
+                node_order: data.position,
+                // 새로운 부모 노드 코드
+                parent_code: data.parent,
+                // 기존 카테고리 코드
+                category_code: data.node.id,
+            };
+            //console.log(data);
+            // 이동 전 부모 노드 ID
+            // data.old_parent            
+            // 이동 전 위치   
+            // data.old_postion
+
+            // 이동 후 부모 노드 ID
+            // data.parent
+            // 이동 후 위치
+            // data.postion
+
+            categoryHandler(ref, params)
+        });
+        
         /**
          * [jsTree]현재 노드의 정보 반환
          * @param {object} jtObj jstree 객체

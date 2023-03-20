@@ -12,6 +12,9 @@ $_SESSION['user_ip'] = $_SERVER['REMOTE_ADDR'];
 // 라이브러리 관리 - 폴더 별 라이브러리 추가!
 // /app/pages/board/view.php?board_id=1&id=73
 $subject = $_SERVER['REQUEST_URI'];
+if($subject === '/index.php'){
+    echo '<script>window.location.href = "http://example01.com/app/pages/board/list.php"</script>';
+}
 $pattern = '/app\/pages\/[a-zA-Z]*\/[a-zA-Z|_]*.php/smi';
 // fail: 0 or false, success: array
 preg_match($pattern, $subject, $matches);
