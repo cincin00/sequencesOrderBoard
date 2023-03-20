@@ -612,7 +612,7 @@ function renameCategory(string $categoryName, string $categoryCode)
 
 /**
  * 카테고리 정보 갱신
- * 
+ *
  * @param array $params
  * @return bool
  */
@@ -647,7 +647,7 @@ function updateCategory(array $params)
 
 /**
  * 전달 받은 카테고리 차수의 총 개수를 반환하는 함수
- * 
+ *
  * @param int $depth
  */
 function getCountCategoryDepth(int $depth)
@@ -659,15 +659,15 @@ function getCountCategoryDepth(int $depth)
         'where' => 'depth = '.$depth,
         'debug' => false,
       ];
-      $totalNumOfDepth = getCategory($categoryCondtion);
-      $response = $totalNumOfDepth['num'];
+    $totalNumOfDepth = getCategory($categoryCondtion);
+    $response = $totalNumOfDepth['num'];
 
-      return $response;
+    return $response;
 }
 
 /**
  * 카테고리코드의 부모 코드를 반환
- * 
+ *
  * @param string $categoryCode
  */
 function getParentCategoryCode(string $categoryCode)
@@ -677,20 +677,204 @@ function getParentCategoryCode(string $categoryCode)
     $parentNodeCodeLen = (strlen($categoryCode) - 1) > 0 ? strlen($categoryCode) - 1 : 1;
     $parentNodeCode = substr($categoryCode, 0, $parentNodeCodeLen);
     $response = $parentNodeCode;
-    
+
+    return $response;
+}
+
+/**
+ * 카테고리 코드 이전/다음 처리
+ *
+ * @todo 뎁스 증가 처리 기능 추가
+ * @description
+ * 전달 받은 카테고리 코드의 마지막 문자열을 찾는다.
+ * 마지막 문자열을 기본 코드에서 찾는다.
+ * 기본 코드에서 0 미만 25초과가 아닌 경우 요청 방식에 따라 index를 _+처리하여 반환하고
+ * 기존 전달 카테고리 마지막 문자열에 추가한다.
+ * 만약 25초과 요청인 경우 깊이 체크를 한다.
+ * 전달 받은 문자열은 최대 카테고리 4차에 의해 최대 길이값 4를 초과할 수 없다.(=카테고리코드 전체 문자열 길이)
+ * 길이가 4미만인 경우 다음 뎁스에 해당하는 코드를 반환한다.
+ * @param string $method 이동 방식(prev,next)
+ * @param string $categoryCode 카테고리코드
+ * @return string
+ */
+function getMoveToCategoryCode(string $method, string $categoryCode)
+{
+    // 반환 값 초기화
+    $response = '';
+    // 기본 코드
+    $baseCode = [
+        '0' => 'a',
+        '1' => 'b',
+        '2' => 'c',
+        '3' => 'd',
+        '4' => 'e',
+        '5' => 'f',
+        '6' => 'g',
+        '7' => 'h',
+        '8' => 'i',
+        '9' => 'j',
+        '10' => 'k',
+        '11' => 'l',
+        '12' => 'm',
+        '13' => 'n',
+        '14' => 'o',
+        '15' => 'p',
+        '16' => 'q',
+        '17' => 'r',
+        '18' => 's',
+        '19' => 't',
+        '20' => 'u',
+        '21' => 'v',
+        '22' => 'w',
+        '23' => 'x',
+        '24' => 'y',
+        '25' => 'z',
+    ];
+    $prevIndex = $nextIndex = 0;
+    // 변경할 글자
+    $targetLetter = substr($categoryCode, -1);
+    $moveCategoryCodeBase = substr($categoryCode, 0, strlen($categoryCode)-1);
+    $letterIndex = array_search($targetLetter, $baseCode);
+    // 카테고리 코드 이동 요청 방식에 따라 분기 처리
+    if ($method === 'prev') { // 이전 카테고리 코드
+        $prevIndex = (int)$letterIndex-1;
+        // 최소값 제한
+        if ($prevIndex<0) {
+            $prevIndex = 0;
+        }
+        $changeLetter = $baseCode[$prevIndex];
+    } elseif ($method === 'next') { // 다음 카테고리 코드
+        $nextIndex = (int)$letterIndex+1;
+        // 최대값 제한
+        if ($nextIndex > 25) {
+            $nextIndex = 25;
+        }
+        $changeLetter = $baseCode[$nextIndex];
+    }
+
+    $response = $moveCategoryCodeBase.$changeLetter;
+
     return $response;
 }
 
 /**
  * 카테고리 정보를 변경하는 재귀함수
  * 
- * @param string $endNode
- * @return
+ * @param string $stratNodeCode(Hint)
+ * @param string $endNodeCode (Hint)
+ 
+ * @return bool
  */
-function changeCategoryNode(string $endNode)
+function changeCategoryNode(string $newCategoryCode, $mainDepthOrder = 0)
 {
-    //  반환값 초기화
-    $response = [];
+    // 반환값 초기화
+    $response = false;
 
+    $moveCategoryCode = getMoveToCategoryCode('next', $newCategoryCode);
+    // 신규 카테고리를 product_category에서 조회해본다.
+    $categoryCondtion = [
+        'where' => 'category_code = "'.$moveCategoryCode.'"',
+        'debug' => false,
+      ];
+    $isExistCategory = getCategory($categoryCondtion);
+    // 하위 카테고리를 신규 카테고리 양식에 맞게 갱신한다.(=재귀)
+    if ($isExistCategory) {
+        $moveCategoryCode = getMoveToCategoryCode('next', $isExistCategory['category_code']);
+        $response = changeCategoryNode($moveCategoryCode, $isExistCategory['depth_order']);
+        if ($response === true) {
+            // 조회 결과가 없는 경우(=겹치는코드가 없다.) 신규 카테고리를 갱신한다.
+            // 이동되는 카테고리 정보 갱신(카테고리 코드, 깊이[카테고리길이+1], 순서)
+            $mainUpdateCondtion = [
+                'set' => 'category_code = "'.$moveCategoryCode.'", depth = '.(strlen($moveCategoryCode)+1).', depth_order = '.$mainDepthOrder,
+                'where' => 'category_code = "'.$newCategoryCode.'"',
+                'debug' => false,
+            ];
+            $mainUpdateRes = updateCategory($mainUpdateCondtion);
+            if ($mainUpdateRes === false) {
+                $msg = '카테고리 갱신 오류.';
+                drawAdminCategoryList($msg);
+            }
 
+            $temp = [];
+            // 갱신 처리할 하위 카테고리 코드 조회
+            $subSelectCondtion = [
+                'select' => 'category_code',
+                'where' => 'category_code LIKE "'.$newCategoryCode.'%" AND category_code != "'.$newCategoryCode.'"',
+                'debug' => false,
+            ];
+            $mainSelectRes = getCategory($subSelectCondtion, 1);
+            if ($mainSelectRes) {
+                foreach ($mainSelectRes as $categoryCode) {
+                    $temp[] = $categoryCode['category_code'];
+                }
+            }
+
+            // 이동되는 카테고리 하위 정보 갱신(카테고리 코드, 깊이[하위는 최대 4차까지 가능])
+            foreach ($temp as $beforeCode) {
+                $newSubCategoryCode = preg_replace('/^'.$newCategoryCode.'/', $moveCategoryCode, $beforeCode);
+                $newSubCategoryDepth = (strlen($newSubCategoryCode)+1);
+                $subUpdateCondtion = [
+                    'set' => 'category_code = "'.$newSubCategoryCode.'",depth = '.$newSubCategoryDepth,
+                    'where' => 'category_code = "'.$beforeCode.'"',
+                  ];
+                $subUpdateRes = updateCategory($subUpdateCondtion);
+            }
+        }
+    } else {
+        // 조회 결과가 없는 경우(=겹치는코드가 없다.) 신규 카테고리를 갱신한다.
+        // 이동되는 카테고리 정보 갱신(카테고리 코드, 깊이[카테고리길이+1], 순서)
+        $mainUpdateCondtion = [
+            'set' => 'category_code = "'.$moveCategoryCode.'", depth = '.(strlen($moveCategoryCode)+1).', depth_order = '.$mainDepthOrder,
+            'where' => 'category_code = "'.$newCategoryCode.'"',
+            'debug' => false,
+        ];
+        $mainUpdateRes = updateCategory($mainUpdateCondtion);
+        if ($mainUpdateRes === false) {
+            $msg = '카테고리 갱신 오류.';
+            drawAdminCategoryList($msg);
+        }
+
+        $temp = [];
+        // 갱신 처리할 하위 카테고리 코드 조회
+        $subSelectCondtion = [
+            'select' => 'category_code',
+            'where' => 'category_code LIKE "'.$newCategoryCode.'%" AND category_code != "'.$newCategoryCode.'"',
+            'debug' => false,
+        ];
+        $mainSelectRes = getCategory($subSelectCondtion, 1);
+        if ($mainSelectRes) {
+            foreach ($mainSelectRes as $categoryCode) {
+                $temp[] = $categoryCode['category_code'];
+            }
+        }
+
+        // 이동되는 카테고리 하위 정보 갱신(카테고리 코드, 깊이[하위는 최대 4차까지 가능])
+        foreach ($temp as $beforeCode) {
+            $newSubCategoryCode = preg_replace('/^'.$newCategoryCode.'/', $moveCategoryCode, $beforeCode);
+            $newSubCategoryDepth = (strlen($newSubCategoryCode)+1);
+            $subUpdateCondtion = [
+                'set' => 'category_code = "'.$newSubCategoryCode.'",depth = '.$newSubCategoryDepth,
+                'where' => 'category_code = "'.$beforeCode.'"',
+              ];
+            $subUpdateRes = updateCategory($subUpdateCondtion);
+        }
+
+        $response = true;
+    }
+
+    return $response;
+}
+
+/**
+ * 관리자 카테고리 리스트 그리기
+ *
+ * @param string $msg 알림내용
+ */
+function drawAdminCategoryList(string $msg = '')
+{
+    $response['msg'] = $msg;
+    $response['data'] = getCategoryForAdminCategoryList();
+    //echo json_encode($response);
+    print_r($response);
+    exit;
 }
