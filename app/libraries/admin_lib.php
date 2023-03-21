@@ -86,14 +86,27 @@
         return $memberData;
     }
 
+    /**
+     * 관리자 게시판 관리 페이지 
+     * 
+     * @param int $boardId 게시판아이디
+     * @return array
+     * @todo ajax 처리로 페이징 기능 동작하도록 수정
+     */
     function getPostForAdminList($boardId)
     {
+        $result = [
+            'start_row' => 0,
+            'length' => 10000,
+        ];
+
         $postCondetion = [
             'select' => '`post`.*, `bc`.title as `category_title`',
             'join' => [
                 'left' => 'board_category as `bc` ON `post`.board_category = `bc`.id'
             ],
-            'where' => '`post`.board_id = '.$boardId
+            'where' => '`post`.board_id = '.$boardId,
+            'limit' => $result['start_row'].", ".$result['length'],
         ];
         $posts = getPost($postCondetion, 1);
 
