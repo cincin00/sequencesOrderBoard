@@ -740,6 +740,8 @@ function changeCategoryNode(string $oldCategoryCode, string $newCategoryCode)
             $msg = '재귀 처리로 카테고리 갱신 실패 : '.$isExistCategory['category_code'].'에서 '.$moveCategoryCode.'로 변경 시도.';
             drawAdminCategoryList($msg);
         }
+    } else {
+        $moveCategoryCode = $newCategoryCode;
     }
     // 2. 신규 카테고리 미중복 처리
     // (1) 이동될 카테고리 신규 카테고리 코드로 갱신
@@ -747,7 +749,7 @@ function changeCategoryNode(string $oldCategoryCode, string $newCategoryCode)
     $mainUpdateCondtion = [
         'set' => 'category_code = "'.$newCategoryCode.'", depth = '.$newCategoryDepth.', depth_order = '.$newCategoryOrder,
         'where' => 'category_code = "'.$oldCategoryCode.'"',
-        'debug' => false,
+        //'debug' => true,
     ];
     $mainUpdateRes = updateCategory($mainUpdateCondtion);
     if ($mainUpdateRes === false) {
@@ -761,8 +763,8 @@ function changeCategoryNode(string $oldCategoryCode, string $newCategoryCode)
     // 갱신 처리할 하위 카테고리 코드 조회
     $subSelectCondtion = [
         'select' => 'category_code',
-        'where' => 'category_code LIKE "'.$newCategoryCode.'%" AND category_code != "'.$newCategoryCode.'"',
-        'debug' => false,
+        'where' => 'category_code LIKE "'.$oldCategoryCode.'%" AND category_code != "'.$oldCategoryCode.'"',
+        //'debug' => true,
     ];
     $mainSelectRes = getCategory($subSelectCondtion, 1);
     if ($mainSelectRes) {
@@ -773,12 +775,13 @@ function changeCategoryNode(string $oldCategoryCode, string $newCategoryCode)
 
     // 이동되는 카테고리 하위 정보 갱신(카테고리 코드, 깊이[하위는 최대 4차까지 가능])
     foreach ($newCategorySubCode as $beforeCode) {
-        $newSubCategoryCode = preg_replace('/^'.$newCategoryCode.'/', $moveCategoryCode, $beforeCode);
+        $newSubCategoryCode = preg_replace('/^'.$oldCategoryCode.'/', $moveCategoryCode, $beforeCode);
         $newSubCategoryDepth = (strlen($newSubCategoryCode)+1);
         $subUpdateCondtion = [
             'set' => 'category_code = "'.$newSubCategoryCode.'",depth = '.$newSubCategoryDepth,
             'where' => 'category_code = "'.$beforeCode.'"',
-            ];
+            //'debug' => true,
+        ];
         $subUpdateRes = updateCategory($subUpdateCondtion);
         if ($subUpdateRes === false) {
             $msg = '[서브]카테고리 갱신 오류.';
