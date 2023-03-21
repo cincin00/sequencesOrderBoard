@@ -13,7 +13,7 @@ $groupIdSelectQuery = 'SELECT group_id FROM `post` ORDER BY group_id DESC LIMIT 
 $result = $dbh->query($groupIdSelectQuery)->fetch();
 $group_id = $result['group_id'];
 // 게시글 데이터를 생성하여 post 테이블에 INSERT 쿼리를 실행.
-for ($i = 1; $i <= 10000; $i++) {
+for ($i = 1; $i <= 1000000; $i++) {
     // 제목
     $title = preg_replace('/[\`\'\"\!\?\,\+\-\_\=\(\)\!\@\#\$\%\^\&\*]/smi', '', $faker->realText(50));
     // 내용
