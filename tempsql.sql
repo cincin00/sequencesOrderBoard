@@ -1,0 +1,9 @@
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(1, 'category', 1, '0', 'root');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(29, '가', 2, '1', 'a');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(30, '나', 2, '2', 'b');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(31, '다', 2, '3', 'c');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(32, '가가', 3, '0', 'aa');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(33, '나가', 3, '0', 'ba');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(34, '나나', 3, '1', 'bb');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(35, '나가가', 4, '0', 'baa');
+INSERT INTO `product_category` (`id`, `name`, `depth`, `depth_order`, `category_code`) VALUES(36, '나가나', 4, '1', 'bab');

@@ -1,0 +1,835 @@
+<?php
+/**
+ * 상품 기능 라이브러리
+ */
+require_once(BASEPATH.'/app/libraries/common_lib.php');
+
+// 상품 테이블
+const PRODUCT_TBL = 'product';
+// 상품 이미지 테이블
+const PRODUCT_IMG_TBL = 'product_img';
+// 상품 카테고리 테이블
+const PRODUCT_CATEGORY_TBL = 'product_category';
+// 상품 카테고리 루트 코드명
+const ROOT = 'root';
+
+/**
+ * 상품 데이터 조회
+ *
+ * @param array $params 조회 조건
+ * @param int $fetchType 전체 조회 여부(0:단일조회,1:전체조회)
+ * @return array
+ */
+function getProduct(array $params, int $fetchType = 0)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_TBL;
+    $query = queryBuilder($table, $params);
+    $result = $dbh->query($query);
+    if ($fetchType > 0) {
+        $response = $result->fetchAll();
+    } else {
+        $response = $result->fetch();
+    }
+
+    return $response;
+}
+
+/**
+ * 상품 데이터 갱신
+ *
+ * @param array $params 갱신 조건
+ * @return bool
+ */
+function updateProduct(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_TBL;
+    $query = '';
+
+    // Set 조건
+    if (validSingleData($params, 'set')) {
+        // Table 조건
+        if (validSingleData($params, 'table')) {
+            $query = 'UPDATE '.$params['table'].' SET '.$params['set'];
+        } else {
+            $query = 'UPDATE '.$table.' SET '.$params['set'];
+        }
+    } else {
+        $msg = '갱신할 정보가 유효하지 않습니다.';
+        $location = ADMIN_DIR.'/product/list.php';
+
+        commonMoveAlert($msg, $location);
+    }
+
+    // Where 조건
+    if (validSingleData($params, 'where')) {
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
+            dd($query);
+        }
+    }
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 상품 목록 페이지 데이터 조회
+ * @return array
+ */
+function getProductForSkinList()
+{
+    // 목록 조회 조건
+    $productCondtion = [
+        'select' => '`product`.*, MAX(`product_img`.id) AS img_id, MIN(`product_img`.path) AS img_path',
+        'join' => [
+            'left' => '`product_img` ON `product`.id = `product_img`.product_id'
+        ],
+        'where' => '`product`.is_delete = 0 AND is_visible = 1',
+        'groupby' => '`product`.id',
+    ];
+    $tmpProduct = getProduct($productCondtion, 1);
+    $nameLimitLength = 15;
+    $descLimitLength = 30;
+
+    foreach ($tmpProduct as $index => $data) {
+        // 번호(id), 상품명(name), 가격(price), 표시여부(is_visible), 등록일(regist_date)
+        $product[$index] = $data;
+        $product[$index]['id'] = $data['id'];
+        $product[$index]['name'] = (mb_strlen($data['name']) > $nameLimitLength ? cutStr($data['name'], $nameLimitLength).'....' : $data['name']);
+        $product[$index]['description'] = (mb_strlen($data['description']) > $descLimitLength ? cutStr(htmlspecialchars_decode($data['description']), $descLimitLength).'....' : htmlspecialchars_decode($data['description']));
+        $product[$index]['price'] = $data['price'];
+        $product[$index]['is_visible'] = ($data['is_visible'] === 1 ? '공개' : '비공개');
+        $product[$index]['regist_date'] = $data['regist_date'];
+        $product[$index]['img_path'] = (empty($data['img_path']) === true ? PATH_COMMON_RESOURCE.'/no_image.jpg' : DOMAIN.$data['img_path']);
+    }
+
+    $response = $product;
+
+    return $response;
+}
+
+/**
+ * 상품 상세 페이지 데이터 조회
+ *
+ * @param array $params
+ * @return array
+ */
+function getProductForSkinView(array $params)
+{
+    // 반환값 초기화
+    $response = [];
+    $msg = $location = '';
+    // 상품 조회 데이터 검증
+    $valid = validSingleData($params, 'product_id');
+    if ($valid === false) {
+        $msg = '상품 조회 필수 데이터가 존재하지 않습니다.';
+        $location = PAGES_DIR.'/product/list.php';
+        commonMoveAlert($msg, $location);
+    }
+
+    // 상품 데이터 조회
+    $productCondtion = [
+        'where' => '`product`.id = '.$params['product_id'] . ' AND `product`.is_delete = 0 AND `product`.is_visible = 1',
+        //'debug' => true
+    ];
+    $product = getProduct($productCondtion);
+    if (empty($product) || count($product) < 1) {
+        $msg = '존재하지 않은 상품입니다.';
+        $location = PAGES_DIR.'/product/list.php';
+        commonMoveAlert($msg, $location);
+    }
+    // 상품 이미지 조회
+    $productImgCondtion = [
+        'where' => 'product_id = '.$params['product_id'],
+        //'debug' => true
+    ];
+    $productImg = getProductImage($productImgCondtion, 1);
+    $response = $product;
+    $response['description'] = htmlspecialchars_decode($product['description']);
+    $response['product_img'] = $productImg;
+
+    return $response;
+}
+
+/**
+ * 관리자 상품 목록 조회
+ *
+ * @return array
+ */
+function getProductForAdminList()
+{
+    // 반환값 초기화
+    $product = [];
+    // 목록 조회 조건
+    $productCondtion = [
+        'select' => '`product`.*, MAX(`product_img`.id) AS img_id, MIN(`product_img`.path) AS img_path',
+        'join' => [
+            'left' => '`product_img` ON `product`.id = `product_img`.product_id'
+        ],
+        'where' => '`product`.is_delete = 0',
+        'groupby' => '`product`.id',
+    ];
+    $tmpProduct = getProduct($productCondtion, 1);
+
+    $nameLimitLength = 15;
+
+    // @todo: front 에서 처리하자!
+    foreach ($tmpProduct as $index => $data) {
+        // 번호(id), 상품명(name), 가격(price), 표시여부(is_visible), 등록일(regist_date)
+        $product[$index] = $data;
+        $product[$index]['id'] = $data['id'];
+        $product[$index]['name'] = (mb_strlen($data['name']) > $nameLimitLength ? cutStr($data['name'], $nameLimitLength).'....' : $data['name']);
+        $product[$index]['price'] = $data['price'];
+        $product[$index]['is_visible'] = ($data['is_visible'] === 1 ? '공개' : '비공개');
+        $product[$index]['regist_date'] = $data['regist_date'];
+        $product[$index]['img_path'] = (empty($data['img_path']) === true ? PATH_COMMON_RESOURCE.'/no_image.jpg' : DOMAIN.$data['img_path']);
+    }
+
+    $response = $product;
+
+    return $response;
+}
+
+/**
+ * 관리자 상품 상세 페이지
+ *
+ * @param array 데이터 조회 조건
+ * @return array
+ */
+function getProductForAdminView(array $params)
+{
+    // 반환값 초기화
+    $response = [];
+    $msg = $location = '';
+    // 상품 조회 데이터 검증
+    $valid = validSingleData($params, 'product_id');
+    if ($valid === false) {
+        $msg = '상품 조회 필수 데이터가 존재하지 않습니다.';
+        $location = ADMIN_DIR.'/product/list.php';
+        commonMoveAlert($msg, $location);
+    }
+
+    // 상품 데이터 조회
+    $productCondtion = [
+        'where' => '`product`.id = '.$params['product_id'],
+    ];
+    $product = getProduct($productCondtion);
+    if (count($product) < 1) {
+        $msg = '존재하지 않은 상품입니다.';
+        $location = ADMIN_DIR.'/product/list.php';
+        commonMoveAlert($msg, $location);
+    }
+    // 상품 이미지 조회
+    $productImgCondtion = [
+        'where' => 'product_id = '.$params['product_id'],
+        //'debug' => true
+    ];
+    $productImg = getProductImage($productImgCondtion, 1);
+    $response = $product;
+    $response['product_img'] = $productImg;
+
+    return $response;
+}
+
+/**
+ * 상품 이미지 업로드
+ *
+ * @param array $params 파일 정보
+ * @return bool
+ */
+function uploadProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    $query = 'INSERT INTO '.$table.'(`product_id`, `uuid`, `origin_name`, `extension` , `size`, `path`, `upload_date`) VALUES("'.$params['product_id'].'", "'.uniqid().'", "'.$params['name'][0].'", "'.$params['type'][0].'", "'.$params['size'][0].'", "'.$params['path'].'", "'.date('Y-m-d H:i:s').'")';
+    $dbh->exec($query);
+    // 추가한 이미지 데이터의 순번 반환
+    $response = $dbh->lastInsertId();
+
+    return $response;
+}
+
+function updateProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    // 수정 처리 시 변경 값은 필수값
+    if (validSingleData($params, 'set')) {
+        $query = 'UPDATE '.$table.' SET '.$params['set'];
+    } else {
+        commonAlert('이미지 정보 수정 실패.');
+    }
+
+    if (validSingleData($params, 'where')) {
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
+            dd($query);
+        }
+    }
+
+    $response =$dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 상품 이미지 정보 조회
+ *
+ * @param array $params 상품 이미지 검색 데이터
+ * @param int $fetchType 전체 조회 여부(0:단일조회,1:전체조회)
+ * @return array
+ */
+function getProductImage(array $params, int $fetchType = 0)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_IMG_TBL;
+    $query = queryBuilder($table, $params);
+    $result = $dbh->query($query);
+    if ($fetchType > 0) {
+        $response = $result->fetchAll();
+    } else {
+        $response = $result->fetch();
+    }
+
+    return $response;
+}
+
+/**
+ * 상품 이미지 삭제
+ *
+ * @param array 상품 이미지 정보
+ * @return bool
+ */
+function deleteProductImage(array $params)
+{
+    global $dbh;
+    $response = false;
+
+    $table = PRODUCT_IMG_TBL;
+    $query = 'DELETE FROM '.$table.' WHERE product_id = ' . $params['product_id'] . ' AND id = ' . $params['product_image_id'];
+    $result = $dbh->query($query);
+
+    $response = $result;
+
+    return $response;
+}
+
+/**
+ * 폼에 전달한 이미지 업로드 순번 가공 후 반환
+ *
+ * @param array $params 이미지 업로드 순번 모음
+ * @return array
+ */
+function getProductImgSeq(array $params)
+{
+    // 반환값 초기화
+    $fileSeq = [];
+    // 검증 패턴
+    $pattern = '/[\[\]\"]/';
+    // 치환 문구
+    $replacement = '';
+    // 치환 대상
+    $subject = $params['files_seq'];
+    $regxRes = preg_replace($pattern, $replacement, $subject);
+    // 유효한 경우에만 데이터 할당
+    if ($regxRes) {
+        $fileSeq = explode(',', $regxRes);
+    }
+
+
+    return $fileSeq;
+}
+
+/**
+ * 상품 데이터 저장
+ *
+ * @param array
+ * @return bool
+ */
+function setProduct(array $params)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_TBL;
+    $query = 'INSERT INTO '.$table.' (`name`, `description`, `price`, `status`, `is_visible`, `regist_date`) VALUES ("'.$params['product_name'].'", "'.$params['product_desc'].'", "'.$params['product_price'].'", "'.$params['product_status'].'", "'.$params['is_visible'].'", "'.date('Y-m-d H:i:s').'")';
+    $response['result'] = $dbh->exec($query);
+    $response['product_id'] = $dbh->lastInsertId();
+
+    return $response;
+}
+
+/**
+ * 상품 등록 유효성 검증
+ */
+function validProduct(array $params)
+{
+    $result = true;
+    $msg = $location = '';
+    if (validSingleData($params, 'product_name') === false) {
+        $result = false;
+        $msg = '상품명은 필수 입니다.';
+        $location = ADMIN_DIR.'/product/write.php';
+    }
+    if (validSingleData($params, 'product_price') === false) {
+        $result = false;
+        $msg = '상품 가격은 필수 입니다.';
+        $location = ADMIN_DIR.'/product/write.php';
+    }
+
+    return [$result, $msg, $location];
+}
+
+/**
+ * 상품 카테고리 조회
+ *
+ * @param array $params 조회 조건
+ * @param int $fetchType 전체 조회 여부(0:단일조회,1:전체조회)
+ * @return array
+ */
+function getCategory(array $params, int $fetchType = 0)
+{
+    global $dbh;
+    $response = [];
+
+    $table = PRODUCT_CATEGORY_TBL;
+    $query = queryBuilder($table, $params);
+    $result = $dbh->query($query);
+    if ($fetchType > 0) {
+        $response = $result->fetchAll();
+    } else {
+        $response = $result->fetch();
+    }
+
+    return $response;
+}
+
+/**
+ * 관리자 카테고리 목록
+ *
+ * @param
+ * @return json
+ */
+function getCategoryForAdminCategoryList()
+{
+    $response = null;
+    $categoryCondtion = [
+        'where' => '1 = 1',
+        'orderby' => 'category_code ASC',
+    ];
+    $categoryTemp = getCategory($categoryCondtion, 1);
+
+    foreach ($categoryTemp as $index => $data) {
+        // 최상위 노드
+        if ($data['depth'] === 1) {
+            $category[$index]['id'] = $data['category_code'];
+            $category[$index]['parent'] = '#';
+            $category[$index]['text'] = $data['name'];
+            $category[$index]['state']['opened'] = true;
+            //$category[$index]['state']['selected'] = true;
+            $category[$index]['category_code'] = $data['category_code'];
+        } else {
+            $category[$index]['id'] = $data['category_code'];
+            $category[$index]['parent'] = setTreeNodeParent($data);
+            $category[$index]['text'] = $data['name'];
+            $category[$index]['state']['opened'] = true;
+            $category[$index]['category_code'] = $data['category_code'];
+        }
+    }
+
+    $response = json_encode($category);
+
+    return $response;
+}
+
+/**
+ * 노드의 부모 카테고리를 찾는 함수
+ */
+function setTreeNodeParent(array $data)
+{
+    // 반환값 초기화
+    $response = '';
+
+    $slashPos = ($data['depth'] - 2);
+    $parentCode = substr($data['category_code'], 0, $slashPos);
+    $response =  (empty($parentCode) === false ? $parentCode : 'root');
+
+    return $response;
+}
+
+/**
+ * 상품 카테고리 저장
+ *
+ * @param array $params
+ * @return bool
+ */
+function setCategory(array $params)
+{
+    global $dbh;
+    $response = false;
+    $table = PRODUCT_CATEGORY_TBL;
+    $query = 'INSERT INTO '.$table.'(`name`, `depth`, `depth_order` , `category_code`) VALUES("'.$params['name'].'", "'.$params['depth'].'", "'.$params['depth_order'].'", "'.$params['category_code'].'")';
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 카테고리 코드 생성
+ *
+ * @param int $depth 생성된 노드의 깊이
+ * @param int $order 생성된 노드의 순서
+ * @param string $parentCode 생성된 노드의 부모 카테고리 코드
+ * @return string
+ */
+function setCategoryCode(int $depth, int $order, string $parentCode)
+{
+    // 카테고리 코드 초기화
+    $categoryCode = '';
+    // 매핑 데이터
+    $baseCode = range('a', 'z');
+    if ($order > 25) {
+        echo('1차 카테고리는 최대 25개까지만 추가할수 있습니다.');
+    }
+    if ($depth === 2 && $parentCode === ROOT) {
+        // 첫번째 카테고리
+        $categoryCode = $baseCode[$order];
+    } else {
+        $categoryCode = $parentCode.$baseCode[$order];
+    }
+
+    return $categoryCode;
+}
+
+/**
+ * 관리자 카테고리 삭제 목록
+ *
+ * @param string $categoryCode
+ * @param int $depth
+ * @return array
+ */
+function getCategoryForAdminCategoryDelete(string $categoryCode, int $depth)
+{
+    $response = [];
+    $categoryCondtion = [
+        'where' => 'depth >= '.$depth.' AND category_code LIKE "'.$categoryCode.'%"',
+    ];
+    $categoryTemp = getCategory($categoryCondtion, 1);
+
+    foreach ($categoryTemp as $data) {
+        $response[] = $data['category_code'];
+    }
+
+    return $response;
+}
+
+/**
+ * 카테고리 삭제
+ *
+ * @param string $parmas
+ * @return bool
+ */
+function deleteCategory(string $categoryCode)
+{
+    global $dbh;
+    $response = false;
+    $table = PRODUCT_CATEGORY_TBL;
+    $query = 'DELETE FROM '.$table.' WHERE category_code = "'.$categoryCode.'"';
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 카테고리명 수정
+ *
+ * @param string $categoryName
+ * @param string $categoryCode
+ */
+function renameCategory(string $categoryName, string $categoryCode)
+{
+    // 반환값 초기화
+    $response = false;
+    // 업데이트문 조건식
+    $updateCondtion = [
+        'set' => 'name = "'.$categoryName.'"',
+        'where' => 'category_code = "'.$categoryCode.'"',
+        //'debug' => true
+    ];
+    $response = updateCategory($updateCondtion);
+
+    return $response;
+}
+
+
+/**
+ * 카테고리 정보 갱신
+ *
+ * @param array $params
+ * @return bool
+ */
+function updateCategory(array $params)
+{
+    global $dbh;
+    $response = false;
+    $table = PRODUCT_CATEGORY_TBL;
+
+
+    // 수정 처리 시 변경 값은 필수값
+    if (validSingleData($params, 'set')) {
+        $query = 'UPDATE '.$table.' SET '.$params['set'];
+    } else {
+        commonAlert('카테고리 정보 수정 실패.');
+    }
+
+    if (validSingleData($params, 'where')) {
+        $query .= ' WHERE '.$params['where'];
+    }
+
+    if (validSingleData($params, 'debug')) {
+        if ($params['debug'] === true) {
+            //dd($query);
+            var_dump($query);
+        }
+    }
+
+    $response = $dbh->exec($query);
+
+    return $response;
+}
+
+/**
+ * 전달 받은 카테고리 차수의 총 개수를 반환하는 함수
+ *
+ * @param int $depth
+ */
+function getCountCategoryDepth(int $depth)
+{
+    // 반환값 초기화
+    $response = 0;
+    $categoryCondtion = [
+        'select' => 'COUNT(*) AS `num`',
+        'where' => 'depth = '.$depth,
+        'debug' => false,
+      ];
+    $totalNumOfDepth = getCategory($categoryCondtion);
+    $response = $totalNumOfDepth['num'];
+
+    return $response;
+}
+
+/**
+ * 카테고리코드의 부모 코드를 반환
+ *
+ * @param string $categoryCode
+ */
+function getParentCategoryCode(string $categoryCode)
+{
+    // 반환값 초기화
+    $response = '';
+    $parentNodeCodeLen = (strlen($categoryCode) - 1) > 0 ? strlen($categoryCode) - 1 : 1;
+    $parentNodeCode = substr($categoryCode, 0, $parentNodeCodeLen);
+    $response = $parentNodeCode;
+
+    return $response;
+}
+
+/**
+ * 카테고리 코드 이전/다음 처리
+ *
+ * @todo 뎁스 증가 처리 기능 추가
+ * @description
+ * 전달 받은 카테고리 코드의 마지막 문자열을 찾는다.
+ * 마지막 문자열을 기본 코드에서 찾는다.
+ * 기본 코드에서 0 미만 25초과가 아닌 경우 요청 방식에 따라 index를 _+처리하여 반환하고
+ * 기존 전달 카테고리 마지막 문자열에 추가한다.
+ * 만약 25초과 요청인 경우 깊이 체크를 한다.
+ * 전달 받은 문자열은 최대 카테고리 4차에 의해 최대 길이값 4를 초과할 수 없다.(=카테고리코드 전체 문자열 길이)
+ * 길이가 4미만인 경우 다음 뎁스에 해당하는 코드를 반환한다.
+ * @param string $method 이동 방식(prev,next)
+ * @param string $categoryCode 카테고리코드
+ * @return string
+ */
+function getMoveToCategoryCode(string $method, string $categoryCode)
+{
+    // 반환 값 초기화
+    $response = '';
+    // 기본 코드
+    $baseCode = range('a', 'z');
+    $prevIndex = $nextIndex = 0;
+    // 변경할 글자
+    $targetLetter = substr($categoryCode, -1);
+    $moveCategoryCodeBase = substr($categoryCode, 0, strlen($categoryCode)-1);
+    $letterIndex = array_search($targetLetter, $baseCode);
+    // 카테고리 코드 이동 요청 방식에 따라 분기 처리
+    if ($method === 'prev') { // 이전 카테고리 코드
+        $prevIndex = (int)$letterIndex-1;
+        // 최소값 제한
+        if ($prevIndex<0) {
+            $prevIndex = 0;
+        }
+        $changeLetter = $baseCode[$prevIndex];
+    } elseif ($method === 'next') { // 다음 카테고리 코드
+        $nextIndex = (int)$letterIndex+1;
+        // 최대값 제한
+        if ($nextIndex > 25) {
+            $nextIndex = 25;
+        }
+        $changeLetter = $baseCode[$nextIndex];
+    }
+
+    $response = $moveCategoryCodeBase.$changeLetter;
+
+    return $response;
+}
+
+/**
+ * 카테고리 정보를 변경하는 재귀함수
+ *
+ * @param string $oldCategoryCocde 변경할 카테고리 코드
+ * @param string $newCategoryCode  변경될 카테고리 코드
+ * @return bool
+ */
+function changeCategoryNode(string $oldCategoryCode, string $newCategoryCode)
+{
+    // 가(a)
+    // 나(b)
+    // 반환값 초기화
+    $response = false;
+    // 신규 카테고리 최대값(A-Z) 검증
+    $newCategoryDepth = strlen($newCategoryCode) + 1;
+    $newCategoryOrder = array_search(substr($newCategoryCode, -1), range('a', 'z'));
+    if (getCountCategoryDepth($newCategoryDepth) > 25) {
+        $msg = '현재 카테고리 차수에 추가할 수 있는 수량을 초과하였습니다.';
+        drawAdminCategoryList($msg);
+    }
+    // 신규 카테고리 최대 차수 검증
+    if (strlen($newCategoryCode) > 5) {
+        $msg = '현재 카테고리 차수에 추가할 수 있는 수량을 초과하였습니다.';
+        drawAdminCategoryList($msg);
+    }
+    // 0. 신규 카테고리 코드의 중복 검증
+    $categoryCondtion = ['where' => 'category_code = "'.$newCategoryCode.'"'];
+    $isExistCategory = getCategory($categoryCondtion);
+
+    // 갱신 처리할 하위 카테고리 코드 조회
+    $SelectCondtion = [
+        'select' => 'id, category_code',
+        'where' => 'category_code LIKE "'.$oldCategoryCode.'%"',
+        //'debug' => true,
+    ];
+    $SelectRes = getCategory($SelectCondtion, 1);
+if (!$SelectRes) {
+    $msg = '현재 카테고리 차수에 추가할 수 있는 수량을 초과하였습니다.';
+    drawAdminCategoryList($msg);
+}
+$tmpSeq = [];
+        // 이동 전 컨테이너에 임시 보관
+        foreach ($SelectRes as $categoryCode) {
+        $beforeCode = $categoryCode['category_code'];
+        var_dump(['beforeCode'=>$beforeCode]);
+        $newSubCategoryCode = preg_replace('/^'.$oldCategoryCode.'/', '?', $beforeCode);
+        var_dump(['newSubCategoryCode'=>$newSubCategoryCode]);
+        $newSubCategoryDepth = (strlen($newSubCategoryCode)+1);
+        $subUpdateCondtion = [
+            'set' => 'category_code = "'.$newSubCategoryCode.'"',
+            'where' => 'category_code = "'.$beforeCode.'"',
+            //'debug' => true,
+        ];
+        $subUpdateRes = updateCategory($subUpdateCondtion);
+        if ($subUpdateRes === false) {
+            $msg = '[서브]카테고리 갱신 오류.';
+            drawAdminCategoryList($msg);
+        }
+        $tmpSeq[] = $categoryCode['id'];
+    }
+
+    var_dump($tmpSeq);
+    // 1. 신규 카테고리 중복 처리
+    if ($isExistCategory) {
+        // - 신규 카테고리 햔칸 이동
+        $moveCategoryCode = getMoveToCategoryCode('next', $isExistCategory['category_code']);
+        // - 0번 부터 반복
+        var_dump(['isExistCategory'=>$isExistCategory['category_code'],'moveCategoryCode'=>$moveCategoryCode]);        
+        $reflectionRes = changeCategoryNode($isExistCategory['category_code'], $moveCategoryCode);
+        if ($reflectionRes === false) {
+            $msg = '재귀 처리로 카테고리 갱신 실패 : '.$isExistCategory['category_code'].'에서 '.$moveCategoryCode.'로 변경 시도.';
+            drawAdminCategoryList($msg);
+        }
+    }
+    $moveCategoryCode = $newCategoryCode;    
+
+    var_dump(['SelectRes'=>$SelectRes]);
+
+var_dump($tmpSeq);
+    // 갱신 처리할 하위 카테고리 코드 조회
+    $SelectCondtion = [
+        'select' => 'id, category_code',
+        'where' => 'id in ("' . implode(', ', $tmpSeq) . '") ',
+        //'debug' => true,
+    ];
+    $SelectRes = getCategory($SelectCondtion, 1);
+    var_dump(['SelectRes'=>$SelectRes]);
+        // 이동되는 카테고리 하위 정보 갱신(카테고리 코드, 깊이[하위는 최대 4차까지 가능])
+        foreach ($SelectRes as $categoryCode) {
+            $beforeCode = $categoryCode['category_code'];
+            var_dump(['beforeCode'=>$beforeCode]);
+            $newSubCategoryCode = preg_replace('/^\?/', $moveCategoryCode, $beforeCode);
+            var_dump(['newSubCategoryCode'=>$newSubCategoryCode]);
+            $newSubCategoryDepth = (strlen($newSubCategoryCode)+1);
+            $subUpdateCondtion = [
+                'set' => 'category_code = "'.$newSubCategoryCode.'",depth = '.$newSubCategoryDepth,
+                'where' => 'id = "'.$categoryCode['id'].'"',
+                //'debug' => true,
+            ];
+            $subUpdateRes = updateCategory($subUpdateCondtion);
+            if ($subUpdateRes === false) {
+                $msg = '[서브]카테고리 갱신 오류.';
+                drawAdminCategoryList($msg);
+            }
+        }
+
+    
+
+    return true;
+}
+
+/**
+ * 관리자 카테고리 리스트 그리기
+ *
+ * @param string $msg 알림내용
+ * @param integer $mode 출력방식(1:배열,2:json)
+ */
+function drawAdminCategoryList(string $msg = '', int $mode = 1)
+{
+    $response['msg'] = $msg;
+    $response['data'] = getCategoryForAdminCategoryList();
+
+    if ($mode === 2) {
+        echo json_encode($response);
+    } else {
+        print_r($response);
+    }
+    exit;
+}
